@@ -3,17 +3,14 @@ import logging
 import serial
 
 from .asynchronous import async_get_rs232_protocol, locked_coro
-from .config import DEVICE_CONFIG, PROTOCOL_CONFIG, get_with_log
+from .config import PROTOCOL_CONFIG
 from .const import *  # noqa: F403
+from .core import load_yaml_dir
 from .sync import synchronized
 
 LOG = logging.getLogger(__name__)
 
-
-def get_device_config(equipment_type, key, log_missing=True):
-    return get_with_log(
-        equipment_type, DEVICE_CONFIG[equipment_type], key, log_missing=log_missing
-    )
+DEVICE_CONFIG = load_yaml_dir(f"{CONFIG_DIR}/series")
 
 
 class EquipmentControllerBase:
