@@ -1,0 +1,101 @@
+- protocol: mcintosh_v1
+0;276;0c  name: "McIntosh v1 API (RS232-C 3.5mm)"
+  description: "RS232 for early McIntosh 3.5mm RS232-C connections (based on https://github.com/RobKikta/IntoBlue/blob/master/McIntosh_RS232ControlApplicationNote.pdf)"
+
+  # default baud rate (see series yaml for overrides per model)
+  connection:
+    rs232:
+      baud: 115200
+      data: 8
+      parity: N
+      stop: 1
+
+  format:
+    command:
+      format: "{cmd}{eol}"
+      eol: ""
+      separator: '#'
+
+    message:
+      format: "{msg}{eol}"
+      eol: "\r"
+      separator: '#'
+
+  api_settings:
+    min_time_between_commands: 0.5
+
+  api_vars:
+    trim:
+      pattern: '\d{1,2}'
+      min: 0
+      max: 14
+      value_names:
+        '0': 'Off'
+	'1': Balance
+	'2': Bass
+	'3': Treble
+	'4': Level
+	'5': Output
+    zone:
+      pattern: '[1-8]'
+      type: int
+      min: 1
+      max: 8
+    power:
+      pattern: '[01]'
+      type: int
+      min: 0
+      max: 1
+    mute:
+      pattern: '[01]'
+      type: int
+      min: 0
+      max: 1
+    volume:
+      type: int
+      min: 0
+      max: 38
+    treble:
+      type: int
+      min: 0
+      max: 14
+    bass:
+      type: int
+      min: 0
+      max: 14
+    balance:
+      type: int
+      min: 0
+      max: 63
+    source:
+      type: int
+      min: 1
+      max: 8
+
+  api_v2:
+    help:
+      api:
+        help:
+	  cmd: '(HLP)'
+
+    rs232_control:
+      description: Enables/disables the RS232 interface
+      api:
+        enabled:
+	  cmd: '(CTL 1)'
+        disabled:
+	  cmd: '(CTL 0)'
+
+    power:
+      api:
+        'on':
+	   cmd: '(PON Z{zone})'
+
+    trim:
+      api:
+        up:
+          description: Increment selected trim value
+          cmd: '(TRU Z{zone} {value})'
+        down:
+          description: Increment selected trim value
+          cmd: '(TRD Z{zone} {value})'
