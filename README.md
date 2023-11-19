@@ -7,6 +7,9 @@
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 [![Build Status](https://github.com/rsnodgrass/pymcintosh/actions/workflows/ci.yml/badge.svg)](https://github.com/rsnodgrass/pymcintosh/actions/workflows/ci.yml)
 
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=WREP29UDAMB6G)
+[![Buy Me A Coffee](https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg)](https://buymeacoffee.com/DYks67r)
+
 This library was created to control McIntosh and Lyngdorf A/V equipment using their
 text-based control protocols over RS232, USB serial connections, and remote IP sockets for the purpose of
 building a [Home Assistant](https://home-assistant.io) integration as well as a command line tool.
@@ -94,36 +97,18 @@ See [pyserial](https://pyserial.readthedocs.io/en/latest/url_handlers.html) for 
 
 ## See Also
 
-* https://github.com/miracle2k/onkyo-eiscp
-
-- has command line utility for control!
-- maps commands to RS232 protocoli with descriptions using OrderedDict (https://github.com/miracle2k/onkyo-eiscp/blob/master/eiscp/commands.py) with some range limits
-- generates the commands from yaml using 'generate_commands_module.py'
-- has config to specify which models a command applies to
-- either confusing or brilliant..not sure
 
 
 
-#### NAD
-
-https://github.com/joopert/nad_receiver
 
 
 
-#### Kaliedescape
+# Future Ideas
 
-https://github.com/home-assistant/core/tree/dev/homeassistant/components/kaleidescape
-
-- fully config flow
-- **recent HA integration, so has all the modern features**
-
+- https://github.com/joopert/nad_receiver
 - pykaliedescape was created within last 2 years by a Principal Engineer (https://github.com/SteveEasley/pykaleidescape)
-
-
-
-
-See also: https://drivers.control4.com/solr/drivers/browse?q=mcintosh
 
 # See Also
 
 - [Earlier McIntosh control in Home Assistant](https://community.home-assistant.io/t/need-help-using-rs232-to-control-a-receiver/95210/8)
+- https://drivers.control4.com/solr/drivers/browse?q=mcintosh
