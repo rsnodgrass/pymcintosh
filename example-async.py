@@ -35,16 +35,16 @@ config = {"baudrate": args.baud}
 
 
 async def main():
-    equipment = create_equipment_controller(
+    device = create_equipment_controller(
         args.type,
         args.url,
         serial_config_overrides=config,
         event_loop=asyncio.get_event_loop(),
     )
 
-    print(equipment.commands())
+    print(device.describe())
 
-    await equipment.power.off()
+    await device.raw("PING?")
 
     # exit()
 

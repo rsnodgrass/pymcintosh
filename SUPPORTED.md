@@ -18,6 +18,12 @@
 
 ![McIntosh](https://raw.githubusercontent.com/rsnodgrass/pymcintosh/main/img/mcintosh-logo.png)
 
+#### Room Correction
+
+| Model(s) | Protocol        | Supported | Notes |
+|----------|:---------------:|:---------:|-------|
+| MEN220   | mcintosh_rconly | YES       |       |
+
 #### Processor
 
 | Model(s) |   Type    | Protocol | Supported | Notes |
@@ -47,7 +53,7 @@
 | Model(s) |   Type    | Protocol | Supported | Notes |
 |----------|:---------:| :---------:|:-----:|----|
 | MAC7200  | Receiver | V? | 2-ch |
-| MHT100 | Receiver | V1 | NO | 
+| MHT100 | Receiver | V1 | NO |
 | MHT200 | Receiver | V1 | NO |
 | MHT300   | Receiver   | V2 | *UNTESTED* |
 | C48 | Receiver | ? | NO | serial RS232-C (3.5mm)

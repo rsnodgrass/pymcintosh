@@ -96,7 +96,7 @@ class EquipmentControllerBase:
         """
         Allows sending a raw command to the device. Generally this should not
         be used except for testing, since all commands should be defined in
-        the yaml protocol configuration.
+        the yaml protocol configuration. No response messages are supported.
         """
         self._write(raw_command)
 
