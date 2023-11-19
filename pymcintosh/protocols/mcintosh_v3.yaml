@@ -68,6 +68,15 @@
         1: Minimal
         2: Normal
         3: All
+    display_brightness:
+      type: int
+      min: 0
+      max: 3
+      names: 
+        0: Full (100%)
+        1: Bright (75%)
+        2: Low (50%)
+        3: Dark (25%)
 
   api_v2:
     verbosity:
@@ -133,10 +142,47 @@
         description: Info button
       menu:
         cmd: '!MENU'
-        description:  Menu Button
+        description: Menu Button
       setup:
         cmd: '!SETUP'
-        description:  Setup button
+        description: Setup button
+
+    device:
+      api:
+        name:
+          description: Returns the name of the device. !DEVICE(MX160) for MX160.
+          cmd: '!DEVICE?'
+          msg: '!DEVICE({name})'
+
+    display_brightness:
+      #aliases: ['display']
+      description: VFD display brightness (0 – 3; 0=100%, 1=75%, 2=50%, 3=25%)
+      api:
+        down:
+          description: Reduce brightness of the VFD display
+          cmd: '!DIM-'
+        up:
+          description: Increase the brightness of the VFD display
+          cmd: '!DIM+'
+        query:
+          description: Request brightness of the VFD display. (0 – 3; 0=100%, 1=75%, 2=50%, 3=25%)
+          cmd: '!DIM?'
+        set:
+          description: Set display brightness level
+          cmd: '!DIM({display_brightness})'
+        full:
+          description: Set display brightness Full (100%)
+          cmd: '!DIM(0)'
+        bright:
+          description: Set display brightness Bright (75%)
+          cmd: '!DIM(1)'
+        low:
+          description: Set display brightness Low (50%)
+          cmd: '!DIM(2)'
+        dark:
+          description: Set display brightness Dark (25%)
+          cmd: '!DIM(3)'
+
 
 
 
