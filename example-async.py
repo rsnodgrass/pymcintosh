@@ -27,7 +27,7 @@ p.add_argument(
     "--baud",
     type=int,
     default=115200,
-    help=f"baud rate if local tty used (default=115200)",
+    help="baud rate if local tty used (default=115200)",
 )
 args = p.parse_args()
 
