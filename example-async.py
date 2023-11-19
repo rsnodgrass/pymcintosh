@@ -6,7 +6,7 @@
 #   ./example-async.py --tty socket:/remote-server:4999/
 
 import logging
-import argparse
+import argparse as arg
 import asyncio
 import sys
 
@@ -23,37 +23,41 @@ handler.setFormatter(formatter)
 LOG.addHandler(handler)
 ####----------------------------------------
 
-parser = argparse.ArgumentParser(
-    description="McIntosh RS232 client example (asynchronous)"
+p = arg.ArgumentParser(description="RS232 client example (asynchronous)")
+p.add_argument(
+    "--address", help="address of communication mechanism to use (e.g. /dev/tty.usbserial-A501SGSZ or socket://server:4999/)", required=True
 )
-parser.add_argument(
-    "--tty", help="/dev/tty to use (e.g. /dev/tty.usbserial-A501SGSZ or socket://remote-server:4999/)", required=True
+p.add_argument(
+    "--equipment", default="mcintosh", help="model (e.g. mcintosh)"
 )
-parser.add_argument(
-    "--model", default="mcintosh8", help=f"model (e.g. mcintosh8, monoprice6)"
-)
-parser.add_argument(
+p.add_argument( # FIXME: this is not required for IP based right?
     "--baud",
     type=int,
-    default=9600,
+    default=115200,
     help="baud rate (9600, 14400, 19200, 38400, 57600, 115200)",
 )
-args = parser.parse_args()
+args = p.parse_args()
 
-serial_config = {"baudrate": args.baud}
-
+config = {
+    "baudrate": args.baud
+}
 
 async def main():
-    zone = 1
-
-    amp = await async_get_amp_controller(
-        args.model,
-        args.tty,
+    equipment = await async_get_equipment_controller(
+        args.equipment,
+        args.address,
         asyncio.get_event_loop(),
-        serial_config_overrides=serial_config,
+        config_overrides=config,
     )
-    await amp.all_off()
-
+    
+    print equipment.commands()
+    
+    
+    await equipment.power.off()
+    
+    
+    
+    
     #    print(f"Xantech amp version = {await amp.sendCommand('version')}")
 
     for zone in range(1, 8):
@@ -68,21 +72,7 @@ async def main():
         status = await amp.zone_status(zone)
         print(f"Zone {zone} status: {status}")
 
-    # ensure all zones are turned off
-    #    for zone in range(1, 8):
-    #        await amp.set_power(zone, False)
-    await amp.all_off()
-
     exit()
-
-    # Valid zones are 11-16 for main mcintosh amplifier
-    # zone_status = await amp.zone_status(zone)
-
-    # Set balance for zone #11
-    # amp.set_balance(zone, 3)
-
-    # Restore zone #11 to it's original state
-    # amp.restore_zone(zone_status.dict)
 
 
 asyncio.run(main())

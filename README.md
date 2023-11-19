@@ -63,5 +63,4 @@ See also: https://drivers.control4.com/solr/drivers/browse?q=mcintosh
 
 # See Also
 
-Earlier McIntosh control in Home Assistant:
-<https://community.home-assistant.io/t/need-help-using-rs232-to-control-a-receiver/95210/8>
+- [Earlier McIntosh control in Home Assistant](https://community.home-assistant.io/t/need-help-using-rs232-to-control-a-receiver/95210/8)

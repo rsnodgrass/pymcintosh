@@ -2,29 +2,31 @@
   name: McIntosh A/V Control
   description: McIntosh A/V Controls
 
+  protocol: mcintosh_v3
+  protocol_definitions:
+    - mcintosh_v3
+
   supported:
     - manufacturer: McIntosh
       model: MX160
+      type: processor
+      tested: false
       
     - manufacturer: McIntosh
       model: MX170
+      type: processor
+      tested: false
   
     - manufacturer: McIntosh
       model: MX180
-      overrides:
-        features:
-          video: true
-          ip_control: true
+      type: processor
+      tested: false
 
   features:
     zones: 8
     sources: 8
-    max_expansion_amps: 1 # 16 zones using DB15-DB15 cable
     rs232_control: true
 
-  protocol: mcintosh_v3
-  protocol_definitions:
-    - mcintosh_v3
 
   protocol_mixins:
     api_vars:

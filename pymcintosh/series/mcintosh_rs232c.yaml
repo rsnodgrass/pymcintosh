@@ -3,8 +3,21 @@
   description: "McIntosh A/V Controls for early models which used the RS232-C 3.5mm jack"
 
   supported:
-    - manufacturer: "McIntosh"
-      model: "MA5200"
+    - manufacturer: McIntosh
+      model: C47
+      type: preamp
+      tested: false
+
+    - manufacturer: McIntosh
+      model: C48
+      type: preamp
+      tested: false
+
+    - manufacturer: McIntosh
+      model: MA5200
+      type: amp
+      tested: false
+
 
   features:
     zones: 8
