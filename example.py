@@ -4,9 +4,14 @@
 #   ./example-async.py --help
 #   ./example.py --tty /dev/tty.usbserial-A501SGSZ
 
+import logging
+import coloredlogs
 import argparse as arg
 from pymcintosh import get_equipment_api
 from pymcintosh.const import BAUD_RATES
+
+LOG = logging.getLogger(__name__)
+coloredlogs.install(level='DEBUG')
 
 p = arg.ArgumentParser(description="RS232 client example (synchronous)")
 p.add_argument(

@@ -6,23 +6,15 @@
 #   ./example-async.py --tty socket:/remote-server:4999/
 
 import logging
+import coloredlogs
 import argparse as arg
 import asyncio
-import sys
 
 from pymcintosh import async_get_equipment_api
 from pymcintosh.const import BAUD_RATES
 
-####----------------------------------------
-LOG = logging.getLogger()
-LOG.setLevel(logging.DEBUG)
-
-handler = logging.StreamHandler(sys.stdout)
-handler.setLevel(logging.DEBUG)
-formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-handler.setFormatter(formatter)
-LOG.addHandler(handler)
-####----------------------------------------
+LOG = logging.getLogger(__name__)
+coloredlogs.install(level='DEBUG')
 
 p = arg.ArgumentParser(description="RS232 client example (asynchronous)")
 p.add_argument(
