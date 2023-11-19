@@ -10,7 +10,8 @@ import argparse as arg
 import asyncio
 import sys
 
-from pymcintosh import async_get_amp_controller
+from pymcintosh import async_get_equipment_api
+from pymcintosh.const import BAUD_RATES
 
 ####----------------------------------------
 LOG = logging.getLogger()
@@ -25,16 +26,14 @@ LOG.addHandler(handler)
 
 p = arg.ArgumentParser(description="RS232 client example (asynchronous)")
 p.add_argument(
-    "--address", help="address of communication mechanism to use (e.g. /dev/tty.usbserial-A501SGSZ or socket://server:4999/)", required=True
+    "--address", help="address of communication interface (e.g. /dev/tty.usbserial-A501SGSZ or socket://server:4999/)", required=True
 )
 p.add_argument(
     "--equipment", default="mcintosh", help="model (e.g. mcintosh)"
 )
-p.add_argument( # FIXME: this is not required for IP based right?
+p.add_argument(
     "--baud",
-    type=int,
-    default=115200,
-    help="baud rate (9600, 14400, 19200, 38400, 57600, 115200)",
+    type=int, default=115200, help=f"baud rate ({BAUD_RATES})",
 )
 args = p.parse_args()
 
@@ -43,7 +42,7 @@ config = {
 }
 
 async def main():
-    equipment = await async_get_equipment_controller(
+    equipment = await async_get_equipment_api(
         args.equipment,
         args.address,
         asyncio.get_event_loop(),
@@ -51,12 +50,7 @@ async def main():
     )
     
     print equipment.commands()
-    
-    
     await equipment.power.off()
-    
-    
-    
     
     #    print(f"Xantech amp version = {await amp.sendCommand('version')}")
 

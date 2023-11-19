@@ -4,61 +4,38 @@
 #   ./example-async.py --help
 #   ./example.py --tty /dev/tty.usbserial-A501SGSZ
 
-import argparse
+import argparse as arg
+from pymcintosh import get_equipment_api
+from pymcintosh.const import BAUD_RATES
 
-from pymcintosh import get_amp_controller
-
-parser = argparse.ArgumentParser(description="McIntosh RS232 client example (synchronous)")
-parser.add_argument(
-    "--tty", help="/dev/tty to use (e.g. /dev/tty.usbserial-A501SGSZ or socket://remote-server:4999/)", required=True
+p = arg.ArgumentParser(description="RS232 client example (synchronous)")
+p.add_argument(
+    "--address", help="address of communication interface (e.g. /dev/tty.usbserial-A501SGSZ or socket://server:4999/)", required=True
 )
-parser.add_argument(
-    "--model", default="mcintosh8", help=f"model (e.g. mcintosh8, monoprice6)"
+p.add_argument(
+    "--equipment", default="mcintosh", help="model (e.g. mcintosh)"
 )
-parser.add_argument(
+p.add_argument(
     "--baud",
-    type=int,
-    default=9600,
-    help="baud rate (9600, 14400, 19200, 38400, 57600, 115200)",
+    type=int, default=115200, help=f"baud rate ({BAUD_RATES})",
 )
-args = parser.parse_args()
+args = p.parse_args()
 
-serial_config = {"baudrate": args.baud}
+config = {
+    "baudrate": args.baud
+}
 
-zone = 1
-amp = get_amp_controller(args.model, args.tty, serial_config_overrides=serial_config)
+def main():
+  zone = 1
+  amp = get_equipment_api(args.model, args.tty, config_overrides=config)
 
-# save the status for all zones before modifying
-zone_status = {}
-for zone in range(1, 9):
-    zone_status[zone] = amp.zone_status(zone)  # save current status for all zones
-    print(f"Zone {zone} status: {zone_status[zone]}")
+  # save the status for all zones before modifying
+  zone_status = {}
+  for zone in range(1, 9):
+      zone_status[zone] = amp.zone_status(zone)  # save current status for all zones
+      print(f"Zone {zone} status: {zone_status[zone]}")
 
-amp.all_off()
-exit
+  amp.all_off()
+  exit
 
-# for zone in range(1, 9):
-#    amp.set_power(zone, True)
-#    amp.set_mute(zone, False)
-#    print(f"Zone {zone} status: {amp.zone_status(zone)}")
-
-source = 1
-amp.set_source(1, source)
-
-# restore zones back to their original states
-for zone in range(1, 9):
-    amp.restore_zone(zone_status[zone])
-
-
-def knight_rider(amp, number_of_times):
-    for _ in range(1, number_of_times + 1):
-        for zone in range(1, 9):
-            amp.set_power(zone, True)
-            amp.set_power(zone, False)
-
-        for zone in range(-7, -1):
-            amp.set_power(-1 * zone, True)
-            amp.set_power(-1 * zone, False)
-
-
-# knight_rider(amp, 2)
+main()
