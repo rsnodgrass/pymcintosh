@@ -284,3 +284,50 @@
         'on':
           description: Mute on
           cmd: '!MUTEON'
+
+    ping:
+     api:
+        ping:
+          description: Ping for a pong (returns PONG)
+          cmd: '!PING'
+          msg: 'PONG'
+
+    power_system:
+      api:
+        'on':
+          description: Turn entire system on
+          cmd: '!PON'
+        'off':
+          description: Turn entire system off
+          cmd: '!POFF'
+        query:
+          description: Query system power status (0=off; 1=on)
+          cmd: '!POWER?'
+          msg: '{power}'
+
+    power_zone_main:
+      api:
+        'on':
+          description: Turn main zone power on
+          cmd: '!POWERONMAIN'
+        'off': 
+          description: Turn main zone power off
+          cmd: '!POWEROFFMAIN'
+        query:
+          description: Query main zone power status (0=off; 1=on)
+          cmd: '!POWERMAIN?'
+          msg: '{power}'
+
+    power_zone_2:
+      api:
+        'on':
+          description: Turn zone 2 power on
+          cmd: '!POWERONZONE2'
+        'off': 
+          description: Turn zone 2 power off
+          cmd: '!POWEROFFZONE2'
+        query:
+          description: Query zone 2 power status (0=off; 1=on)
+          cmd: '!POWERZONE2?'
+          msg: '{power}'
+
