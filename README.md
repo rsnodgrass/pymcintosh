@@ -7,7 +7,7 @@ This supports any serial protocol for communicating with the amps, including RS2
 USB serial ports, and possibly the RS232-over-IP interface for more recent Xantech amps. See below
 for exactly which amplifier models are supported.
 
-Based on [pymcintosh](https://github.com/rsnodgrass/pymcintosh).
+Based on [pyxantech](https://github.com/rsnodgrass/pyxantech).
 
 *GOAL: To eventually merge this with pymonoprice and get rid of a separate implementation.*
 
