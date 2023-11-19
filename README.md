@@ -26,6 +26,43 @@ Visit the [community support discussion thread](https://community.home-assistant
 See [SUPPORTED.md](SUPPORTED.md) for the complete list of supported equipment.
 an
 
+
+## Background
+
+One annoying thing when developing `pyxantech` was that none of the devices
+ever had a protocol definition in a machine readable format. Manufacturers
+would provide a PDF or XLS document (if anything at all) that listed
+the various commands that could be sent via RS232. However, there was no
+consistency for what were generally very similar callable actions when
+controlling preamps/receivers/etc.
+
+During the development of `pyxantech` to became clear that other manufacturers
+had copied the protocol developed by Xantech, with each
+manufacturer just making a very small change in the prefixes or suffixes.
+From this, a very primitive mechanism was built. YAML was chosen
+to be a machine-readable format that was also easily read/updated by humans
+who may have limited programming skills.
+
+This makes it easier and quicker to
+add support for new devices without having to build an entirely new library each
+time (with its own semantics and varying degrees of testing/clarity/documentation).
+Additionally, these definitions make it possible to create similar libraries in
+a variety of languages, all sharing the same protocol definitions.
+
+The evolution found in this `pymcintosh` library takes these ideas further by
+having a much more cohesive definition of protocols. Additional ideas were
+discovered in [onkyo-eiscp](https://github.com/miracle2k/onkyo-eiscp) around
+providing a simple CLI to use the library and grouping commands together
+logically. These ideas combined with the argument definitions and pattern
+matching from `pyxantec`h moved these ideas closer to reality.
+
+
+"The idea is to have a computer-readable definition of the Onkyo protocol, where Onkyo's internal low-level commands are mapped to identifiers that can be understood by humans, and which include descriptions."
+
+"To summarize, if you are implementing your own interface to Onkyo, even if it's in a language other than Python, I encourage you to consider using this YAML file as a basis for the command interface you provide to users. You'll have a complete list of available commands, values, and even supported devices."
+
+
+
 ## Asynchronous / Synchronous
 
 This library provides both an async and a sync implementation. By default, the
@@ -45,17 +82,15 @@ the `create_equipment_controller` factory constructor. For example:
 ## Connection URL
 
 This interface uses URLs for specifying the communication transport
-to use, as defined in [pyserial](https://pyserial.readthedocs.io/en/latest/url_handlers.html).
+to use, as defined in [pyserial](https://pyserial.readthedocs.io/en/latest/url_handlers.html). For example:
 
-Examples:
+| URL                      | Notes                                     |
+|--------------------------|-------------------------------------------|
+| `/dev/ttyUSB0`           | directly attached serial device (Linux)  |
+| `COM3`                   | directly attached serial device (Windows) |
+| `socket://<host>:<port>` | remote host that exposes RS232 over TCP (e.g. [IP2SL](https://github.com/rsnodgrass/virtual-ip2sl)) |
 
-| URL                      | Notes |
-|--------------------------|-------|
-| `/dev/ttyUSB0`           | directly attached serial device on Linux |
-| `COM3`                   | directly attached serial device on Windows |
-| `socket://<host>:<port>` | remote host that exposes RS232 over TCP |
-
-See [pyserial](https://pyserial.readthedocs.io/en/latest/url_handlers.html for additional formats supported.
+See [pyserial](https://pyserial.readthedocs.io/en/latest/url_handlers.html) for additional formats supported.
 
 ## See Also
 
@@ -67,9 +102,6 @@ See [pyserial](https://pyserial.readthedocs.io/en/latest/url_handlers.html for a
 - has config to specify which models a command applies to
 - either confusing or brilliant..not sure
 
-"The idea is to have a computer-readable definition of the Onkyo protocol, where Onkyo's internal low-level commands are mapped to identifiers that can be understood by humans, and which include descriptions."
-
-"To summarize, if you are implementing your own interface to Onkyo, even if it's in a language other than Python, I encourage you to consider using this YAML file as a basis for the command interface you provide to users. You'll have a complete list of available commands, values, and even supported devices."
 
 
 #### NAD
