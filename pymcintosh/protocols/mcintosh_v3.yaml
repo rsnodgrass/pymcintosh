@@ -300,6 +300,9 @@
         'off':
           description: Turn entire system off
           cmd: '!POFF'
+        toggle:
+          description: Toggle system power
+          cmd: '!PTOGGLE'
         query:
           description: Query system power status (0=off; 1=on)
           cmd: '!POWER?'
@@ -331,3 +334,6 @@
           cmd: '!POWERZONE2?'
           msg: '{power}'
 
+  roomperfect:
+    description: RoomPerfect room correction
+    api:
