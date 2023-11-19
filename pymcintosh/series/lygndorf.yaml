@@ -1,0 +1,34 @@
+- series: lyngdorf
+  name: Lyngdorf A/V Control
+  description: Lyngdorf A/V Controls
+
+  models:
+    - manufacturer: Lyngdorf
+      model: MP-40
+      tested: false
+
+    - manufacturer: Lyngdorf
+      model: MP-50
+      tested: false
+  
+    - manufacturer: Lyngdorf
+      model: MP-60
+      tested: false
+
+    - manufacturer: Lyngdorf
+      model: P100
+      tested: false
+
+    - manufacturer: Lyngdorf
+      model: P200
+      tested: false
+
+    - manufacturer: Lyngdorf
+      model: P300
+      tested: false
+
+    - manufacturer: Lyngdorf
+      model: TDAI-3400
+      tested: false
+
+  protocol: lyngdorf
