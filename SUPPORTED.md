@@ -4,7 +4,7 @@
 
 ### Lyngdorf
 
-![Lyngdorf](https://raw.githubusercontent.com/rsnodgrass/pymcintosh/main/img/lyngdorf-logo.png)
+![Lyngdorf](https://raw.githubusercontent.com/rsnodgrass/pymcintosh/main/img/lyngdorf-logo-small.png)
 
 #### Processor
 
@@ -16,7 +16,7 @@
 
 ### McIntosh
 
-![McIntosh](https://raw.githubusercontent.com/rsnodgrass/pymcintosh/main/img/mcintosh-logo.png)
+![McIntosh](https://raw.githubusercontent.com/rsnodgrass/pymcintosh/main/img/mcintosh-logo-small.png)
 
 #### Room Correction
 
