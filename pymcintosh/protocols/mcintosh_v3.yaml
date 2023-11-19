@@ -1,0 +1,658 @@
+- protocol: mcintosh_v3
+  name: McIntosh v3 API
+  description: Based on MX160 Serial Control Manual v3
+  urls:
+    - https://www.mcintoshlabs.com/legacy-products/home-theater-processors/MX160
+    - https://www.docdroid.net/OnipkTW/mx160-serial-control-manual-v3-pdf
+
+  format:
+    command:
+      format: "{cmd}{eol}"
+      eol: ""
+      separator: '#'
+
+    message:
+      format: "{msg}{eol}"
+      eol: "\r"
+      separator: '#'
+
+  api_settings:
+    min_time_between_commands: 0.4
+
+  vars:
+    zone:
+      type: int
+      pattern: '[1-8]'
+      min: 1
+      max: 8
+    power:
+      type: int
+      pattern: '[01]'
+      min: 0
+      max: 1
+    mute:
+      type: int
+      pattern: '[01]'
+      min: 0
+      max: 1
+    volume:
+      type: int
+      min: 0
+      max: 38
+    treble:
+      type: int
+      min: 0
+      max: 14
+    bass:
+      type: int
+      min: 0
+      max: 14
+    balance:
+      type: int
+      min: 0
+      max: 63
+    source:
+      type: int
+      min: 1
+      max: 8
+    verbosity_level:
+      type: int
+      min: 1
+      max: 3
+      values:
+        1: Minimal
+        2: Normal
+        3: All
+    display_brightness:
+      type: int
+      min: 0
+      max: 3
+      values:
+        0: Full (100%)
+        1: Bright (75%)
+        2: Low (50%)
+        3: Dark (25%)
+    interface:
+      type: string
+      values:
+        IP: IP
+        SERIAL: Serial
+    lipsync:
+      type: int
+    loudness:
+      type: int
+      min: 0
+      max: 1
+      pattern: '[01]'
+      values:
+        0: 'Off'
+        1: 'On'
+    roomperfect_position:
+      type: int
+      min: 1
+      max: 9
+      pattern: '[1-9]'
+      values:
+        0: Bypass
+        1: Focus 1
+        2: Focus 2
+        3: Focus 3
+        4: Focus 4
+        5: Focus 5
+        6: Focus 6
+        7: Focus 7
+        8: Focus 8
+        9: Global
+    input:
+      type: int
+      min: 0
+      max: 25
+      values:
+        0: HDMI 1
+        1: HDMI 2
+        2: HDMI 3
+        3: HDMI 4
+        4: HDMI 5
+        5: HDMI 6
+        6: HDMI 7
+        7: HDMI 8
+        8: Audio Return
+        9: SPDIF 1 (Optical)
+        10: SPDIF 2 (Optical)
+        11: SPDIF 3 (Optical)
+        12: SPDIF 4 (Optical)
+        13: SPDIF 5 (AES/EBU)
+        14: SPDIF 6 (Coaxial)
+        15: SPDIF 7 (Coaxial)
+        16: SPDIF 8 (Coaxial)
+        17: USB Audio
+        18: Analog 1
+        19: Analog 2
+        20: Analog 3
+        21: Analog 4
+        22: Balanced 1
+        23: Balanced 2
+        24: Phono
+        25: 8 Channel Analog
+
+  api:
+    verbosity:
+      actions:
+        set:
+          description: Set verbosity level of active interface
+          cmd: '!VERB({verbosity_level})'
+        minimal:
+          cmd: '!VERB(1)'
+        normal:
+          cmd: '!VERB(2)'
+        all:
+          cmd: '!VERB(3)'
+        get:
+          description: Request verbosity level of active interface
+          cmd: '!VERB?'
+          msg: '!VERB({verbosity_level})'
+
+    audio_mode:
+      description: Audio processing mode control
+      actions:
+        down:
+          cmd: '!AUDMODE-'
+          description: Audio processing mode down button
+        'up':
+          cmd: '!AUDMODE+'
+          description: Audio processing mode up button
+        get:
+          cmd: '!AUDMODE?'
+          description: Request audio processing mode
+        modes:
+          cmd: '!AUDMODEL?'
+          description: Get list of audio processing modes
+
+  audio_type:
+    description: Input audio type
+    api:
+      get:
+        cmd: '!AUDTYPE?'
+        description: Return string of the input audio type.
+
+  buttons:
+    description: Remote button presses
+    api:
+      back:
+        cmd: '!BACK'
+        description: Back button
+      down:
+        cmd: '!DIRD'
+        description: Direction Down button
+      left:
+        cmd: '!DIRL'
+        description: Direction Left button
+      right:
+        cmd: '!DIRR'
+        description: Direction Right button
+      up:
+        cmd: '!DIRU'
+        description: Direction Up button
+      enter:
+        cmd: '!ENTER'
+        description: Enter button
+      exit:
+        cmd: '!EXIT'
+        description: Exit button
+      info:
+        cmd: '!INFO'
+        description: Info button
+      menu:
+        cmd: '!MENU'
+        description: Menu Button
+      setup:
+        cmd: '!SETUP'
+        description: Setup button
+      0:
+        cmd: '!NUM(0)'
+        description: Number button 0
+      1:
+        cmd: '!NUM(1)'
+        description: Number button 1
+      2:
+        cmd: '!NUM(2)'
+        description: Number button 2
+      3:
+        cmd: '!NUM(3)'
+        description: Number button 3
+      4:
+        cmd: '!NUM(4)'
+        description: Number button 4
+      5:
+        cmd: '!NUM(5)'
+        description: Number button 5
+      6:
+        cmd: '!NUM(6)'
+        description: Number button 6
+      7:
+        cmd: '!NUM(7)'
+        description: Number button 7
+      8:
+        cmd: '!NUM(8)'
+        description: Number button 8
+      9:
+        cmd: '!NUM(9)'
+        description: Number button 9
+
+    device:
+      actions:
+        name:
+          description: Returns the name of the device
+          cmd: '!DEVICE?'
+          msg: '!DEVICE({name})' # e.g. !DEVICE(MX160) for MX160
+
+    display_brightness:
+      description: VFD display brightness (0 – 3; 0=100%, 1=75%, 2=50%, 3=25%)
+      actions:
+        down:
+          description: Reduce brightness of the VFD display
+          cmd: '!DIM-'
+        up:
+          description: Increase the brightness of the VFD display
+          cmd: '!DIM+'
+        get:
+          description: Request brightness of the VFD display
+          cmd: '!DIM?'
+          msg: 'FIXME'
+        set:
+          description: Set display brightness level
+          cmd: '!DIM({display_brightness})'
+        full:
+          description: Set display brightness Full (100%)
+          cmd: '!DIM(0)'
+        bright:
+          description: Set display brightness Bright (75%)
+          cmd: '!DIM(1)'
+        low:
+          description: Set display brightness Low (50%)
+          cmd: '!DIM(2)'
+        dark:
+          description: Set display brightness Dark (25%)
+          cmd: '!DIM(3)'
+
+    interface:
+      description: Active interface for this session (IP or SERIAL)
+      get:
+        description: Returns the active interface for this section
+        cmd: '!INTERFACE?'
+        msg: '!INTERFACE({interface})'
+
+    lipsync:
+      description: Lipsync
+      actions:
+      set:
+        description: Set the lipsync value
+        cmd: '!LIPSYNC({lipsync})'
+      get:
+        description: Get the lipsync value
+        cmd: '!LIPSYNC?'
+        msg: '!LIPSYNC({lipsync})'
+      range:
+        cmd: '!LIPSYNCRANGE?'
+        description: Get the lipsync value range
+      down:
+        description: Reduce lipsync value
+        cmd: '!LIPSYNC-'
+      up:
+        description: Increase lipsync value
+        cmd: '!LIPSYNC-'
+
+    loudness:
+      description: Loudness
+      actions:
+       'on':
+         description: Turn loudness on
+         cmd: '!LOUDNESS(1)'
+       'off':
+         description: Turn loudness off
+         cmd: '!LOUDNESS(0)'
+       get:
+         description: Get the loudness setting (0=off; 1=on)
+         cmd: '!LOUDNESS?'
+         msg: '{loudness}'
+
+    mute:
+      actions:
+        toggle:
+          description: Mute toggle button
+          cmd: '!MUTE'
+        get:
+          description: get current Mute status
+          cmd: '!MUTE?'
+          msg: '!MUTE{mute}'
+        'off':
+          description: Mute off
+          cmd: '!MUTEOFF'
+        'on':
+          description: Mute on
+          cmd: '!MUTEON'
+
+    ping:
+     api:
+        ping:
+          description: Ping for a pong (returns PONG)
+          cmd: '!PING'
+          msg: 'PONG'
+
+    power_system:
+      actions:
+        'on':
+          description: Turn entire system on
+          cmd: '!PON'
+        'off':
+          description: Turn entire system off
+          cmd: '!POFF'
+        toggle:
+          description: Toggle system power
+          cmd: '!PTOGGLE'
+        get:
+          description: Get system power status (0=off; 1=on)
+          cmd: '!POWER?'
+          msg: '{power}'
+
+    power_zone_main:
+      actions:
+        'on':
+          description: Turn main zone power on
+          cmd: '!POWERONMAIN'
+        'off':
+          description: Turn main zone power off
+          cmd: '!POWEROFFMAIN'
+        get:
+          description: get main zone power status (0=off; 1=on)
+          cmd: '!POWERMAIN?'
+          msg: '{power}'
+
+    power_zone_2:
+      actions:
+        'on':
+          description: Turn zone 2 power on
+          cmd: '!POWERONZONE2'
+        'off':
+          description: Turn zone 2 power off
+          cmd: '!POWEROFFZONE2'
+        get:
+          description: Get zone 2 power status (0=off; 1=on)
+          cmd: '!POWERZONE2?'
+          msg: '{power}'
+
+    roomperfect_focus:
+      description: RoomPerfect room correction focus
+      actions:
+        previous:
+          cmd: '!RPFOC-'
+          description: Previous RoomPerfect position button
+        position:
+          description: Request RoomPerfect position (0=bypass, 1-8=focus1-8, 9=global)
+          cmd: '!RPFOC?'
+        set:
+          description: Set RoomPerfect position (0=bypass, 1-8=focus1-8, 9=global)
+          cmd: '!RPFOC({roomperfect_position})'
+        next:
+          description: Next Roomperfect position button
+          cmd: '!RPFOC+'
+        get:
+          description: Get available RoomPerfect positions
+          cmd: '!RPFOCS?'
+
+    roomperfect_voice:
+      description: RoomPerfect room correction voice
+      actions:
+        previous:
+          description: Previous voicing button
+          cmd: '!RPVOI-'
+        get:
+          description: Get active voicing
+          cmd: '!RPVOI?'
+          msg: 'FIXME'
+        set:
+          description: Set voicing
+          cmd: '!RPVOI({roomperfect_voicing})'
+        next:
+          description: Next voicing button
+          cmd: '!RPVOI+'
+        list:
+          cmd: '!RPVOIS?'
+          description: Request list of available voicings
+          msg: 'FIXME'
+
+
+    source:
+      description: Source selection
+      actions:
+        previous:
+          cmd: '!SRC-'
+          description: Previous source button
+        get:
+          cmd: '!SRC?'
+          description: Get currently active source
+          msg: 'FIXME'
+        set:
+          cmd: '!SRC(x)'
+          description: Select source
+        info:
+          cmd: '!SRC({source})?'
+          description: Get info for source
+          msg: 'FIXME'
+        next:
+          cmd: '!SRC+'
+          description: Next source button
+        list:
+          cmd: '!SRCS?'
+          description: Request list of available sources
+
+    volume_offset:
+      actions:
+        down:
+          description: Decrease Source volume offset
+        get:
+          description: Get source volume offset for current source
+          cmd: '!SRCOFF?'
+        set:
+          description: Set source volume offset for current source
+          cmd: '!SRCOFF(x)'
+        up:
+          description: Increase source volume offset
+          cmd: '!SRCOFF+'
+
+    software:
+      actions:
+        info:
+          description: Request SW information (prints a list of version numbers)
+          cmd: '!SWINFO?'
+
+    trim_bass:
+      actions:
+        down:
+          cmd: '!TRIMBASS-'
+          description: Decreases bass level trim (10 = 1dB)
+        get:
+          cmd: '!TRIMBASS?'
+          description: Get current bass level trim (10 = 1dB)
+        set:
+          cmd: '!TRIMBASS({bass_level})'
+          description: Sets bass level trim (10 = 1dB)
+        up:
+          cmd: '!TRIMBASS+'
+          description: Increases bass level trim (10 = 1dB)
+
+    trim_center:
+      actions:
+        down:
+          cmd: '!TRIMCENTER-'
+          description: Decreases center channel level trim (10 = 1dB)
+        get:
+          cmd: '!TRIMCENTER?'
+          description: get current center channel level trim (10 = 1dB)
+          msg: 'FIXME'
+        set:
+          cmd: '!TRIMCENTER({trim_level})'
+          description: Sets center channel level trim (10 = 1dB)
+        up:
+          cmd: '!TRIMCENTER+'
+          description: Increases center channel level trim (10 = 1dB)
+
+    trim_height:
+      actions:
+        down:
+          cmd: '!TRIMHEIGHT-'
+          description: Decreases height channels level trim (10 = 1dB)
+        get:
+          cmd: '!TRIMHEIGHT?'
+          description: Gete current height channels level trim (10 = 1dB)
+          msg: 'FIXME'
+        set:
+          cmd: '!TRIMHEIGHT({trim_level})'
+          description: Sets height channels level trim (10 = 1dB)
+        up:
+          cmd: '!TRIMHEIGHT+'
+          description: Increases height channels level trim (10 = 1dB)
+
+    trim_lfe:
+      actions:
+        down:
+          cmd: '!TRIMLFE-'
+          description: Decreases LFE channel level trim (10 = 1dB)
+        get:
+          cmd: '!TRIMLFE?'
+          description: Get current LFE channel level trim (10 = 1dB)
+          msg: 'FIXME'
+        set:
+          cmd: '!TRIMLFE({trim_level})'
+          description: Sets LFE channel level trim (10 = 1dB)
+        up:
+          cmd: '!TRIMLFE+'
+          description: Increases LFE channel level trim (10 = 1dB)
+
+    trim_surrounds:
+      actions:
+        down:
+          cmd: '!TRIMSURRS-'
+          description: Decreases surround channels level trim (10 = 1dB)
+        get:
+          cmd: '!TRIMSURRS?'
+          description: Get current surround channels level trim (10 = 1dB)
+          msg: 'FIXME'
+        set:
+          cmd: '!TRIMSURRS({trim_level})'
+          description: Sets surround channels level trim (10 = 1dB)
+        up:
+          cmd: '!TRIMSURRS+'
+          description: Increases surround channels level trim (10 = 1dB)
+
+    trim_trebble:
+      actions:
+        down:
+          cmd: '!TRIMTREB-'
+          description: Decreases treble level trim (10 = 1dB)
+        get:
+          cmd: '!TRIMTREB?'
+          description: Get current treble level trim (10 = 1dB)
+          msg: 'FIXME'
+        set:
+          cmd: '!TRIMTREB({trim_level})'
+          description: Sets treble level trim (10 = 1dB)
+        up:
+          cmd: '!TRIMTREB+'
+          description: Increases treble level trim (10 = 1dB)
+
+    volume:
+      actions:
+        down:
+          cmd: '!VOL-'
+          description: Decrease volume
+        down_by_x:
+          cmd: '!VOL-({volume_increment})'
+          description: Decrease volume by x
+        get:
+          cmd: '!VOL?'
+          description: Get current volume
+          msg: 'FIXME'
+        set:
+          cmd: '!VOL({volume})'
+          description: Set volume to x
+        up:
+          cmd: '!VOL+'
+          description: Increase volume
+        up_by_x:
+          cmd: '!VOL+({volume_increment})'
+          description: Increase volume by x
+
+    zone_2_mute:
+      actions:
+        toggle:
+          cmd: '!ZMUTE'
+          description: Toggle Zone B Mute
+        get:
+          cmd: '!ZMUTE?'
+          description: get current Zone B Mute status
+          msg: 'FIXME'
+        'off':
+          cmd: '!ZMUTEOFF'
+          description: Zone B Mute off
+        'on':
+          cmd: '!ZMUTEON'
+          description: Zone B Mute on
+
+    zone_2_power:
+      actions:
+        'off':
+          cmd: '!ZPOFF'
+          description: Zone Power Off
+        'on':
+          cmd: '!ZPON'
+          description: Zone Power On
+        toggle:
+          cmd: '!ZPTOGGLE'
+          description: Zone Power Toggle
+
+    zone_2_source:
+      actions:
+        previous:
+          cmd: '!ZSRC-'
+          description: Previous zone B source button
+        get:
+          cmd: '!ZSRC?'
+          description: Get current Zone B source
+          msg: 'FIXME'
+        set:
+          cmd: '!ZSRC({source})'
+          description: Set zone B source
+        info:
+          cmd: '!ZSRC({source})?'
+          description: Request info about zone B source x
+          msg: 'FIXME'
+        next:
+          cmd: '!ZSRC+'
+          description: Next zone B source button
+        list:
+          cmd: '!ZSRCS?'
+          description: Get list of available Zone B sources
+          msg: 'FIXME'
+
+    zone_2_volume:
+      actions:
+        down:
+          cmd: '!ZVOL-'
+          description: Decrease zone B volume
+        down_by_x:
+          cmd: '!ZVOL-({volume_increment})'
+          description: decrease zone B volume by X
+        get:
+          cmd: '!ZVOL?'
+          description: Get current zone B volume
+          msg: 'FIXME'
+        set:
+          cmd: '!ZVOL({volume_increment})'
+          description: Set zone B volume
+        up:
+          cmd: '!ZVOL+'
+          description: Increase zone B volume
+        up_by_x:
+          cmd: '!ZVOL+({volume_increment})'
+          description: Increase zone B volume by x
