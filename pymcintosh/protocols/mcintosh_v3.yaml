@@ -64,10 +64,10 @@
       type: int
       min: 1
       max: 3
-      values:
+      names:
         1: Minimal
         2: Normal
-        4: All
+        3: All
 
   api_v2:
     verbosity:
@@ -96,6 +96,47 @@
         modes:
           cmd: '!AUDMODEL?'
           description: Get list of audio processing modes
+
+  audio_type:
+    description: Input audio type
+    api:
+      query:
+        cmd: '!AUDTYPE?'
+        description: Return string of the input audio type.
+
+  buttons:
+    description: Remote button presses
+    api:
+      back:
+        cmd: '!BACK'
+        description: Back button
+      down:
+        cmd: '!DIRD'
+        description: Direction Down button
+      left:
+        cmd: '!DIRL'
+        description: Direction Left button
+      right:
+        cmd: '!DIRR'
+        description: Direction Right button
+      up:
+        cmd: '!DIRU'
+        description: Direction Up button
+      enter:
+        cmd: '!ENTER'
+        description: Enter button
+      exit:
+        cmd: '!EXIT'
+        description: Exit button
+      info:
+        cmd: '!INFO'
+        description: Info button
+      menu:
+        cmd: !MENU'
+        description:  Menu Button
+      setup:
+        cmd: !SETUP'
+        description:  Setup button
 
 
 
