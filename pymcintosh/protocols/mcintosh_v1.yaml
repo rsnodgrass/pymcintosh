@@ -1,6 +1,8 @@
 - protocol: mcintosh_v1
-0;276;0c  name: "McIntosh v1 API (RS232-C 3.5mm)"
-  description: "RS232 for early McIntosh 3.5mm RS232-C connections (based on https://github.com/RobKikta/IntoBlue/blob/master/McIntosh_RS232ControlApplicationNote.pdf)"
+  name: McIntosh v1 API (RS232-C 3.5mm)
+  description: RS232 for early McIntosh 3.5mm RS232-C connections
+  urls:
+    - https://github.com/RobKikta/IntoBlue/blob/master/McIntosh_RS232ControlApplicationNote.pdf
 
   # default baud rate (see series yaml for overrides per model)
   connection:

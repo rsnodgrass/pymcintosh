@@ -1,6 +1,8 @@
 - protocol: mcintosh_v3
   name: McIntosh v3 API
   description: Based on MX160 Serial Control Manual v3
+  urls:
+    - https://www.mcintoshlabs.com/legacy-products/home-theater-processors/MX160
 
   # default baud rate (see series yaml for overrides per model)
   connection:
