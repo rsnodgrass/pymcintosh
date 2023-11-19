@@ -26,7 +26,7 @@
   api_settings:
     min_time_between_commands: 0.4
 
-  api_vars:
+  vars:
     zone:
       type: int
       pattern: '[1-8]'
@@ -110,10 +110,41 @@
         7: Focus 7
         8: Focus 8
         9: Global
+    input:
+      type: int
+      min: 0
+      max: 25
+      values:
+        0: HDMI 1
+        1: HDMI 2
+        2: HDMI 3
+        3: HDMI 4
+        4: HDMI 5
+        5: HDMI 6
+        6: HDMI 7
+        7: HDMI 8
+        8: Audio Return
+        9: SPDIF 1 (Optical)
+        10: SPDIF 2 (Optical)
+        11: SPDIF 3 (Optical)
+        12: SPDIF 4 (Optical)
+        13: SPDIF 5 (AES/EBU)
+        14: SPDIF 6 (Coaxial)
+        15: SPDIF 7 (Coaxial)
+        16: SPDIF 8 (Coaxial)
+        17: USB Audio
+        18: Analog 1
+        19: Analog 2
+        20: Analog 3
+        21: Analog 4
+        22: Balanced 1
+        23: Balanced 2
+        24: Phono
+        25: 8 Channel Analog
 
-  api_v2:
+  api:
     verbosity:
-      api:
+      actions: 
         set:
           description: Set verbosity level of active interface
           cmd: '!VERB({verbosity_level})'
@@ -130,7 +161,7 @@
 
     audio_mode:
       description: Audio processing mode control
-      api:
+      actions: 
         down:
           cmd: '!AUDMODE-'
           description: Audio processing mode down button
@@ -216,16 +247,15 @@
         description: Number button 9
 
     device:
-      api:
+      actions: 
         name:
-          description: Returns the name of the device. !DEVICE(MX160) for MX160.
+          description: Returns the name of the device
           cmd: '!DEVICE?'
-          msg: '!DEVICE({name})'
+          msg: '!DEVICE({name})' # e.g. !DEVICE(MX160) for MX160
 
     display_brightness:
-      #aliases: ['display']
       description: VFD display brightness (0 – 3; 0=100%, 1=75%, 2=50%, 3=25%)
-      api:
+      actions: 
         down:
           description: Reduce brightness of the VFD display
           cmd: '!DIM-'
@@ -233,8 +263,9 @@
           description: Increase the brightness of the VFD display
           cmd: '!DIM+'
         query:
-          description: Request brightness of the VFD display. (0 – 3; 0=100%, 1=75%, 2=50%, 3=25%)
+          description: Request brightness of the VFD display
           cmd: '!DIM?'
+          msg: 'FIXME'
         set:
           description: Set display brightness level
           cmd: '!DIM({display_brightness})'
@@ -260,7 +291,7 @@
 
     lipsync:
       description: Lipsync
-      api:
+      actions: 
       set:
         description: Set the lipsync value
         cmd: '!LIPSYNC({lipsync})'  
@@ -280,7 +311,7 @@
 
     loudness:
       description: Loudness
-      api:
+      actions: 
        'on':
          description: Turn loudness on
          cmd: '!LOUDNESS(1)'
@@ -293,7 +324,7 @@
          msg: '{loudness}'
 
     mute:
-      api:
+      actions: 
         toggle:
           description: Mute toggle button
           cmd: '!MUTE'
@@ -316,7 +347,7 @@
           msg: 'PONG'
 
     power_system:
-      api:
+      actions: 
         'on':
           description: Turn entire system on
           cmd: '!PON'
@@ -332,7 +363,7 @@
           msg: '{power}'
 
     power_zone_main:
-      api:
+      actions: 
         'on':
           description: Turn main zone power on
           cmd: '!POWERONMAIN'
@@ -345,7 +376,7 @@
           msg: '{power}'
 
     power_zone_2:
-      api:
+      actions: 
         'on':
           description: Turn zone 2 power on
           cmd: '!POWERONZONE2'
@@ -359,7 +390,7 @@
 
     roomperfect_focus:
       description: RoomPerfect room correction focus
-      api:
+      actions: 
         previous:
           cmd: '!RPFOC-'
           description: Previous RoomPerfect position button
@@ -378,7 +409,7 @@
 
     roomperfect_voice:
       description: RoomPerfect room correction voice
-      api:
+      actions: 
         previous:
           description:  Previous voicing button
           cmd: '!RPVOI-'
@@ -400,7 +431,7 @@
 
     source:
       description: Source selection
-      api:
+      actions: 
         previous:
           cmd: '!SRC-'
           description: Previous source button
@@ -423,7 +454,7 @@
           description: Request list of available sources
 
     volume_offset:
-      api:
+      actions: 
         down:
           description: Decrease Source volume offset
         query:
@@ -437,13 +468,13 @@
           cmd: '!SRCOFF+'
 
     software:
-      api:
+      actions: 
         info:
           description: Request SW information (prints a list of version numbers)
           cmd: '!SWINFO?'
 
     trim_bass:
-      api:
+      actions: 
         down:
           cmd: '!TRIMBASS-'
           description: Decreases bass level trim (10 = 1dB)
@@ -458,7 +489,7 @@
           description: Increases bass level trim (10 = 1dB)
           
     trim_center:
-      api:
+      actions: 
         down:
           cmd: '!TRIMCENTER-'
           description: Decreases center channel level trim (10 = 1dB)
@@ -474,7 +505,7 @@
           description: Increases center channel level trim (10 = 1dB)
 
     trim_height:
-      api:
+      actions: 
         down:
           cmd: '!TRIMHEIGHT-'
           description: Decreases height channels level trim (10 = 1dB)
@@ -490,7 +521,7 @@
           description: Increases height channels level trim (10 = 1dB)
 
     trim_lfe:
-      api:
+      actions: 
         down:
           cmd: '!TRIMLFE-'
           description: Decreases LFE channel level trim (10 = 1dB)
@@ -506,7 +537,7 @@
           description: Increases LFE channel level trim (10 = 1dB)
 
     trim_surrounds:
-      api:
+      actions: 
         down:
           cmd: '!TRIMSURRS-'
           description: Decreases surround channels level trim (10 = 1dB)
@@ -522,7 +553,7 @@
           description: Increases surround channels level trim (10 = 1dB)
 
     trim_trebble:
-      api:
+      actions: 
         down:
           cmd: '!TRIMTREB-'
           description: Decreases treble level trim (10 = 1dB)
@@ -538,7 +569,7 @@
           description: Increases treble level trim (10 = 1dB)          
 
     volume:
-      api:
+      actions: 
         down:
           cmd: '!VOL-'
           description: Decrease volume
@@ -560,7 +591,7 @@
           description: Increase volume by x
 
     zone_2_mute:
-      api:
+      actions: 
         toggle:
           cmd: '!ZMUTE'
           description: Toggle Zone B Mute
@@ -576,7 +607,7 @@
           description: Zone B Mute on
 
     zone_power:
-      api:
+      actions: 
         'off':
           cmd: '!ZPOFF'
           description: Zone Power Off
@@ -588,7 +619,7 @@
           description: Zone Power Toggle
 
     zone_source:
-      api:
+      actions: 
         previous:
           cmd: '!ZSRC-'
           description: Previous zone B source button
@@ -612,7 +643,7 @@
           msg: 'FIXME'
 
     zone_volume:
-      api:
+      actions: 
         down:
           cmd: '!ZVOL-'
           description: Decrease zone B volume
