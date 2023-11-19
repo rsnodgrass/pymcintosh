@@ -91,10 +91,10 @@ to use, as defined in [pyserial](https://pyserial.readthedocs.io/en/latest/url_h
 
 For example:
 
-| URL                      | Notes                                     |
-|--------------------------|-------------------------------------------|
-| `/dev/ttyUSB0`           | directly attached serial device (Linux)  |
-| `COM3`                   | directly attached serial device (Windows) |
+| URL                      | Notes                                                                                               |
+| ------------------------ | --------------------------------------------------------------------------------------------------- |
+| `/dev/ttyUSB0`           | directly attached serial device (Linux)                                                             |
+| `COM3`                   | directly attached serial device (Windows)                                                           |
 | `socket://<host>:<port>` | remote host that exposes RS232 over TCP (e.g. [IP2SL](https://github.com/rsnodgrass/virtual-ip2sl)) |
 
 See [pyserial](https://pyserial.readthedocs.io/en/latest/url_handlers.html) for additional formats supported.
