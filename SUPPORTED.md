@@ -1,6 +1,4 @@
-## Supported Amplifiers
-
-See *[pymcintosh](https://github.com/rsnodgrass/pymcintosh)* for a full list of supported hardware.
+## Supported Equipment
 
 | Model(s) |   Type    | Protocol | Supported | Notes |
 |----------|:---------:| :---------:|:-----:|----|

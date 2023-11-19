@@ -21,7 +21,9 @@ Based on [pyxantech](https://github.com/rsnodgrass/pyxantech).
 
 Visit the [community support discussion thread](https://community.home-assistant.io/t/mcintosh/450908) for issues with this library.
 
+# Supported Equipment
 
+See [SUPPORTED.md](SUPPORTED.md) for the complete list of supported equipment.
 
 RS232 control:
 
