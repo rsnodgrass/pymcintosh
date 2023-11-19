@@ -3,14 +3,7 @@
   description: Based on MX160 Serial Control Manual v3
   urls:
     - https://www.mcintoshlabs.com/legacy-products/home-theater-processors/MX160
-
-  # default baud rate (see series yaml for overrides per model)
-  connection:
-    rs232:
-      baud: 115200
-      data: 8
-      parity: N
-      stop: 1
+    - https://www.docdroid.net/OnipkTW/mx160-serial-control-manual-v3-pdf
 
   format:
     command:
@@ -606,7 +599,7 @@
           cmd: '!ZMUTEON'
           description: Zone B Mute on
 
-    zone_power:
+    zone_2_power:
       actions: 
         'off':
           cmd: '!ZPOFF'
@@ -618,7 +611,7 @@
           cmd: '!ZPTOGGLE'
           description: Zone Power Toggle
 
-    zone_source:
+    zone_2_source:
       actions: 
         previous:
           cmd: '!ZSRC-'
@@ -642,7 +635,7 @@
           description: Get list of available Zone B sources
           msg: 'FIXME'
 
-    zone_volume:
+    zone_2_volume:
       actions: 
         down:
           cmd: '!ZVOL-'

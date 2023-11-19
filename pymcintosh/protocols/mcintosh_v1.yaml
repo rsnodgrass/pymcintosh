@@ -5,14 +5,6 @@
     - https://github.com/RobKikta/IntoBlue/blob/master/McIntosh_RS232ControlApplicationNote.pdf
     - https://community.home-assistant.io/t/need-help-using-rs232-to-control-a-receiver/95210/4
 
-  # default baud rate (see series yaml for overrides per model)
-  connection:
-    rs232:
-      baud: 115200
-      data: 8
-      parity: N
-      stop: 1
-
   format:
     command:
       format: "{cmd}{eol}"
@@ -27,7 +19,7 @@
   api_settings:
     min_time_between_commands: 0.5
 
-  api_vars:
+  vars:
     trim:
       pattern: '\d{1,2}'
       min: 0

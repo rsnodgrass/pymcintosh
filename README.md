@@ -7,15 +7,15 @@
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 [![Build Status](https://github.com/rsnodgrass/pymcintosh/actions/workflows/ci.yml/badge.svg)](https://github.com/rsnodgrass/pymcintosh/actions/workflows/ci.yml)
 
-Library for RS232 serial communication to Xantech, Monoprice, Dayton Audio, Soundavo, and other multi-zone amps.
-This supports any serial protocol for communicating with the amps, including RS232 ports,
-USB serial ports, and possibly the RS232-over-IP interface for more recent Xantech amps. See below
-for exactly which amplifier models are supported.
+This library was created to control McIntosh and Lyngdorf A/V equipment using their
+text-based control protocols over RS232, USB serial connections, and remote IP sockets for the purpose of 
+building a [Home Assistant](https://home-assistant.io) integration as well as a command line tool.
 
-Based on [pyxantech](https://github.com/rsnodgrass/pyxantech).
+This has been derived from an earlier effort with [pyxantech](https://github.com/rsnodgrass/pyxantech) this explored a new way to define the protocol to enable
+automated or programmatic, along with support for a variety
+of amps and protocols.
 
 # THIS IS IN DEVELOPMENT - DOES NOT WORK YET!!!
-
 
 ## Support
 
@@ -24,21 +24,6 @@ Visit the [community support discussion thread](https://community.home-assistant
 # Supported Equipment
 
 See [SUPPORTED.md](SUPPORTED.md) for the complete list of supported equipment.
-
-RS232 control:
-
-- serial
-- IP
-- USB
-
-independently of the physical communication mechanism (e.g. RS232, USB, IP)
-
-## Example libraries
-
-
-
-
-
 
 
 # See Also
@@ -76,33 +61,7 @@ https://github.com/home-assistant/core/tree/dev/homeassistant/components/kaleide
 
 See also: https://drivers.control4.com/solr/drivers/browse?q=mcintosh
 
-# Example of pyserial over TCP socket
-
-```console
-import serial
-ser = serial.serial_for_url("socket://10.10.10.152:/")
-```
-
-## Later Protocol
-
-<https://www.docdroid.net/OnipkTW/mx160-serial-control-manual-v3-pdf>
-
-## Early Protocol
-
-Two different protocols it seems. The earlier one is documented here:
-
-<https://github.com/RobKikta/IntoBlue/blob/master/McIntosh_RS232ControlApplicationNote.pdf>
+# See Also
 
 Earlier McIntosh control in Home Assistant:
 <https://community.home-assistant.io/t/need-help-using-rs232-to-control-a-receiver/95210/8>
-
-Some McIntosh have a 3.5mm RS-232 connector jack (such as the MA5200). Default baudrate is 115,200, 8N1 for those units. The command set differs from later
-ones. This is
-
-E.g.
-
-```console
-VUP Z1 5
-```
-
-Increases volume in Zone 1 by 5 steps.
