@@ -53,14 +53,14 @@ class EquipmentControllerBase:
         """
         raise NotImplementedError()
 
-def _command(equipment_type: str, format_code: str, args={}):
-    cmd_eol = self._protocol_config.get(CONF_COMMAND_EOL)
-    cmd_separator = self._protocol_config.get(CONF_COMMAND_SEPARATOR)
+    def _command(self, equipment_type: str, format_code: str, args={}):
+        cmd_eol = self._protocol_config.get(CONF_COMMAND_EOL)
+        cmd_separator = self._protocol_config.get(CONF_COMMAND_SEPARATOR)
 
-    rs232_commands = self._protocol_config.get("commands")
-    command = rs232_commands.get(format_code) + cmd_separator + cmd_eol
+        rs232_commands = self._protocol_config.get("commands")
+        command = rs232_commands.get(format_code) + cmd_separator + cmd_eol
 
-    return command.format(**args).encode("ascii")
+        return command.format(**args).encode("ascii")
 
 
 
