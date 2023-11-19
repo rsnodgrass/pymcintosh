@@ -3,6 +3,7 @@
   description: RS232 for early McIntosh 3.5mm RS232-C connections
   urls:
     - https://github.com/RobKikta/IntoBlue/blob/master/McIntosh_RS232ControlApplicationNote.pdf
+    - https://community.home-assistant.io/t/need-help-using-rs232-to-control-a-receiver/95210/4
 
   # default baud rate (see series yaml for overrides per model)
   connection:

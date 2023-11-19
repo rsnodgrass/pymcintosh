@@ -184,34 +184,34 @@
       setup:
         cmd: '!SETUP'
         description: Setup button
-      '0':
+      0:
         cmd: '!NUM(0)'
         description: Number button 0        
-      '1':
+      1:
         cmd: '!NUM(1)'
         description: Number button 1        
-      '2':
+      2:
         cmd: '!NUM(2)'
         description: Number button 2
-      '3':
+      3:
         cmd: '!NUM(3)'
         description: Number button 3
-      '4':
+      4:
         cmd: '!NUM(4)'
         description: Number button 4
-      '5':
+      5:
         cmd: '!NUM(5)'
         description: Number button 5
-      '6':
+      6:
         cmd: '!NUM(6)'
         description: Number button 6
-      '7':
+      7:
         cmd: '!NUM(7)'
         description: Number button 7
-      '8':
+      8:
         cmd: '!NUM(8)'
         description: Number button 8
-      '9':
+      9:
         cmd: '!NUM(9)'
         description: Number button 9
 
@@ -472,7 +472,7 @@
         up:
           cmd: '!TRIMCENTER+'
           description: Increases center channel level trim (10 = 1dB)
-          
+
     trim_height:
       api:
         down:
