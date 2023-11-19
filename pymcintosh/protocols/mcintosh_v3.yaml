@@ -26,18 +26,18 @@
 
   api_vars:
     zone:
-      pattern: '[1-8]'
       type: int
+      pattern: '[1-8]'
       min: 1
       max: 8
     power:
-      pattern: '[01]'
       type: int
+      pattern: '[01]'
       min: 0
       max: 1
     mute:
-      pattern: '[01]'
       type: int
+      pattern: '[01]'
       min: 0
       max: 1
     volume:
@@ -84,6 +84,14 @@
         SERIAL: Serial
     lipsync:
       type: int
+    loudness:
+      type: int
+      min: 0
+      max: 1
+      pattern: '[01]'
+      values:
+        0: 'Off'
+        1: 'On'
 
   api_v2:
     verbosity:
@@ -153,6 +161,36 @@
       setup:
         cmd: '!SETUP'
         description: Setup button
+      '0':
+        cmd: '!NUM(0)'
+        description: Number button 0        
+      '1':
+        cmd: '!NUM(1)'
+        description: Number button 1        
+      '2':
+        cmd: '!NUM(2)'
+        description: Number button 2
+      '3':
+        cmd: '!NUM(3)'
+        description: Number button 3
+      '4':
+        cmd: '!NUM(4)'
+        description: Number button 4
+      '5':
+        cmd: '!NUM(5)'
+        description: Number button 5
+      '6':
+        cmd: '!NUM(6)'
+        description: Number button 6
+      '7':
+        cmd: '!NUM(7)'
+        description: Number button 7
+      '8':
+        cmd: '!NUM(8)'
+        description: Number button 8
+      '9':
+        cmd: '!NUM(9)'
+        description: Number button 9
 
     device:
       api:
@@ -216,3 +254,33 @@
       up:
         description: Increase lipsync value
         cmd: '!LIPSYNC-'
+
+    loudness:
+      description: Loudness
+      api:
+       'on':
+         description: Turn loudness on
+         cmd: '!LOUDNESS(1)'
+       'off':
+         description: Turn loudness off
+         cmd: '!LOUDNESS(0)'
+       query:
+         description: Query the loudness setting (0=off; 1=on)
+         cmd: '!LOUDNESS?'
+         msg: '{loudness}'
+
+    mute:
+      api:
+        toggle:
+          description: Mute toggle button
+          cmd: '!MUTE'
+        query:
+          description: Mute query
+          cmd: '!MUTE?'
+          msg: '!MUTE{mute}'
+        'off':
+          description: Mute off
+          cmd: '!MUTEOFF'
+        'on':
+          description: Mute on
+          cmd: '!MUTEON'
