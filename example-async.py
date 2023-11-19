@@ -10,7 +10,7 @@ import coloredlogs
 import argparse as arg
 import asyncio
 
-from pymcintosh import async_get_equipment_api
+from pymcintosh import create_equipment_controller
 from pymcintosh.const import BAUD_RATES
 
 LOG = logging.getLogger(__name__)
@@ -18,7 +18,7 @@ coloredlogs.install(level='DEBUG')
 
 p = arg.ArgumentParser(description="RS232 client example (asynchronous)")
 p.add_argument(
-    "--address", help="address of communication interface (e.g. /dev/tty.usbserial-A501SGSZ or socket://server:4999/)", required=True
+    "--url", help="pyserial supported url for communication (e.g. /dev/tty.usbserial-A501SGSZ or socket://server:4999/)", required=True
 )
 p.add_argument(
     "--equipment", default="mcintosh", help="model (e.g. mcintosh)"
@@ -34,31 +34,18 @@ config = {
 }
 
 async def main():
-    equipment = await async_get_equipment_api(
+    equipment = create_equipment_controller(
         args.equipment,
-        args.address,
-        asyncio.get_event_loop(),
-        config_overrides=config,
+        args.url,
+        serial_config_overrides=config,
+        event_loop=asyncio.get_event_loop()
     )
-    
-    print equipment.commands()
+
+    print(equipment.commands())
+
     await equipment.power.off()
-    
-    #    print(f"Xantech amp version = {await amp.sendCommand('version')}")
 
-    for zone in range(1, 8):
-
-        await asyncio.sleep(0.5)
-        await amp.set_power(zone, True)
-
-        await asyncio.sleep(0.5)
-        await amp.set_source(zone, 1)
-        await amp.set_mute(zone, False)
-
-        status = await amp.zone_status(zone)
-        print(f"Zone {zone} status: {status}")
-
-    exit()
+    #exit()
 
 
 asyncio.run(main())

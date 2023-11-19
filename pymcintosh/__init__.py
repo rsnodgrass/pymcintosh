@@ -1,11 +1,13 @@
 import logging
 import asyncio
-import time
 from functools import wraps
 from threading import RLock
 
 import serial
 
+#__all__ = ['const']
+
+from .const import *
 from .config import (
     DEVICE_CONFIG,
     PROTOCOL_CONFIG,
@@ -29,40 +31,13 @@ def get_device_config(equipment_type, key, log_missing=True):
 
 
 def get_protocol_config(equipment_type, key):
-    protocol = get_device_config(equipment_type, "protocol")
-    return PROTOCOL_CONFIG[protocol].get(key)
+    protocol_name = get_device_config(equipment_type, "protocol")
+    return PROTOCOL_CONFIG[protocol_name].get(key)
 
-
-
-class EquipmentControl:
+class EquipmentControllerInterface:
     """
-    Creates an eequipment controller object. If an event_loop argument is passed in
-    this will return the asynchronous implementation. By default this returns the
-    synchronous interface.
-
-    :param equipment_type: identifier for type of equipment (e.g. mcintosh)
-    :param url: pyserial supported url for communication (e.g. '/dev/ttyUSB0' or 'socket://remote-host:7000/')
-    :param config_overrides: dictionary of serial port configuration overrides (e.g. baudrate)
-
-    :param event_loop: to get an interface that can be used asynchronously, pass in an event loop
-
-    :return an instance of EquipmentControlBase
-    """
-    @classmethod
-    def get_equipment_controller(self, equipment_type: str, url: str, serial_config_overrides={}, event_loop=None) -> EquipmentController:
-        if equipment_type not in SUPPORTED_EQUIPMENT:
-            LOG.error("Unsupported equipment type '%s'", equipment_type)
-            return None
-
-        if event_loop:
-            return EquipmentControllerSync(equipment_type, url, serial_config_overrides)
-        else:            
-            return EquipmentControllerAsync(equipment_type, url, serial_config_overrides)
-
-
-class EquipmentController:
-    """
-    EquipmentControl interface
+    EquipmentControllerInterface base class that defines operations allowed
+    to control equipment.
     """
 
     def interface(self):
@@ -95,129 +70,110 @@ def _command(equipment_type: str, format_code: str, args={}):
 
 
 
-def get_equipment_controller(equipment_type: str, url, config_overrides={}):
-    """
-    Return synchronous version of amplifier control interface
-    :param equipment_type identifier for type of equipment (e.g. mcintosh)
-    :param url: pyserial supported url for communication (e.g. '/dev/ttyUSB0' or 'socket://remote-host:7000/')
-    :param config_overrides: dictionary of serial port configuration overrides (e.g. baudrate)
-    :return: synchronous implementation of equipment control interface
-    """
 
-    # sanity check the provided equipment type
-    if equipment_type not in SUPPORTED_EQUIPMENT:
-        LOG.error("Unsupported equipment type '%s'", equipment_type)
-        return None
+sync_lock = RLock()
+def synchronized(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        with sync_lock:
+            return func(*args, **kwargs)
+    return wrapper
 
-    lock = RLock()
+class EquipmentControllerSync(EquipmentControllerInterface):
+    def __init__(self, equipment_type, url, serial_config, protocol_name):
+        self._equipment_type = equipment_type
 
-    def synchronized(func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            with lock:
-                return func(*args, **kwargs)
-        return wrapper
+        self._url = url
+        self._serial_config = serial_config            
+        self._connection = serial.serial_for_url(url, **serial_config)
 
-    class EquipmentControllerSync(EquipmentController):
-        def __init__(self, equipment_type, url, serial_config_overrides):
-            self._equipment_type = equipment_type
+        self._protocol_name = protocol_name
 
-            # allow overriding the default serial port configuration, in case the user has changed
-            # settings on their amplifier (e.g. increased the default baudrate)
-            serial_config = get_device_config(equipment_type, CONF_SERIAL_CONFIG)
-            if serial_config_overrides:
-                LOG.debug(
-                    f"Overiding config for {url}: {serial_config_overrides}"
-                )
-                serial_config.update(serial_config_overrides)
+    def _send_request(self, request: bytes, skip=0):
+        """
+        :param request: request that is sent to the equipment
+        :param skip: number of bytes to skip for end of transmission decoding
+        :return: ascii string returned by equipment
+        """
+        # clear
+        self._connection.reset_output_buffer()
+        self._connection.reset_input_buffer()
 
-            self._port = serial.serial_for_url(url, **serial_config)
+        LOG.debug(f"Sending {self._equipment_type} @ {self._url}: {request}")
 
-        def _send_request(self, request: bytes, skip=0):
-            """
-            :param request: request that is sent to the mcintosh
-            :param skip: number of bytes to skip for end of transmission decoding
-            :return: ascii string returned by mcintosh
-            """
-            # clear
-            self._port.reset_output_buffer()
-            self._port.reset_input_buffer()
+        # send
+        self._connection.write(request)
+        self._connection.flush()
 
-            # print(f"Sending:  {request}")
-            LOG.debug(f"Sending:  {request}")
+        response_eol = get_protocol_config(equipment_type, CONF_RESPONSE_EOL)
+        len_eol = len(response_eol)
 
-            # send
-            self._port.write(request)
-            self._port.flush()
-
-            response_eol = get_protocol_config(amp_type, CONF_RESPONSE_EOL)
-            len_eol = len(response_eol)
-
-            # receive
-            result = bytearray()
-            while True:
-                c = self._port.read(1)
-                # print(c)
-                if not c:
-                    ret = bytes(result)
-                    LOG.info(result)
-                    raise serial.SerialTimeoutException(
-                        "Connection timed out! Last received bytes {}".format(
-                            [hex(a) for a in result]
-                        )
+        # receive
+        result = bytearray()
+        while True:
+            c = self._connection.read(1)
+            if not c:
+                ret = bytes(result)
+                LOG.info(result)
+                raise serial.SerialTimeoutException(
+                    "Connection timed out! Last received bytes {}".format(
+                        [hex(a) for a in result]
                     )
-                result += c
-                if len(result) > skip and result[-len_eol:] == response_eol.encode(
-                    "ascii"
-                ):
-                    break
+                )
+                
+            result += c
+            if len(result) > skip and response_eol.encode('ascii') == result[-len_eol:]:
+                break
 
-            ret = bytes(result)
-            LOG.debug('Received "%s"', ret)
-            #            print(f"Received: {ret}")
-            return ret.decode("ascii")
-
-
-        @synchronized
-        def set_volume(self, zone: int, volume: int):
-            self._send_request(_set_volume_cmd(self._amp_type, zone, volume))
-
-    return EquipmentControlSync(equipment_type, address, config_overrides)
+        ret = bytes(result)
+        LOG.debug('Received {self._equipment_type} @ {self._url}: %s', ret)
+        return ret.decode("ascii")
 
 
-async def async_get_amp_controller(
-    loop, equipment_type: str, url: str, serial_config_overrides={})
+    @synchronized
+    def set_volume(self, zone: int, volume: int):
+        self._send_request(_set_volume_cmd(self._amp_type, zone, volume))
+
+
+#-----------------------------------------------------------------------------
+
+async_lock = asyncio.Lock()
+def locked_coro(coro):
+    @wraps(coro)
+    async def wrapper(*args, **kwargs):
+        async with async_lock:
+            return await coro(*args, **kwargs)
+    return wrapper
+
+class EquipmentControllerAsync(EquipmentControllerInterface):
+    def __init__(self, loop, equipment_type, url, serial_config, protocol_name):            
+        self._loop = loop
+        self._equipment_type = equipment_type
+            
+        self._url = url
+        self._connection_ref = None
+        self._serial_config = serial_config
+            
+        self._protocol_name = protocol_name
+        self._protocol_config = PROTOCOL_CONFIG[protocol_name]
+
     """
-    Return asynchronous version of equipment control interface
-    :param loop reference to the event loop
-    :param equipment identifier for what equipment (e.g. mcintosh)
-    :param url: url for the communication mechanism (e.g. '/dev/ttyUSB0' or 'socket://remote-host:7000/')
-    :param serial_config_overrides: dictionary of serial port configuration overrides (e.g. baudrate)
-    :return: synchronous implementation of equipment control interface
+    @return the connection to the RS232 device (lazy connect if none)
     """
+    async def _connection(self): 
+        if not self._connection_ref:
+            LOG.debug(f"Connecting to {self._equipment_type}/{self._protocol_name} @ {self._url}: %s %s",
+                        self._serial_config, self._protocol_config)
+            self._connection_ref = await async_get_rs232_protocol(
+                self._url,
+                DEVICE_CONFIG[self._equipment_type], 
+                self._serial_config,
+                self._protocol_config,
+                self._loop)
+        return self._connection_ref
 
-    # sanity check the provided amplifier type
-    if equipment_type not in SUPPORTED_EQUIPMENT:
-        LOG.error("Unsupported amplifier type '%s'", equipment_type)
-        return None
-
-    lock = asyncio.Lock()
-
-    def locked_coro(coro):
-        @wraps(coro)
-        async def wrapper(*args, **kwargs):
-            async with lock:
-                return await coro(*args, **kwargs)
-        return wrapper
-
-    class EquipmentControllerAsync(EquipmentController):
-        def __init__(self, equipment_type, serial_config_overrides, protocol):
-            self._equipment_type = equipment_type
-            self._serial_config = serial_config
-            self._protocol = protocol
-
-        @locked_coro
-        async def zone_status(self, zone: int):
+    @locked_coro
+    async def zone_status(self, zone: int):
             # FIXME: this has nothing to do with amp_type?  protocol!
 
             # if there is a list of zone status commands, execute that (some don't have a single command for status)
@@ -234,23 +190,50 @@ async def async_get_amp_controller(
                 return status.dict
             return None
 
+#-----------------------------------------------------------------------------
 
-    protocol = get_device_config(equipment_type, "protocol")
-    protocol_config = PROTOCOL_CONFIG[protocol]
-
-    # allow overriding the default serial port configuration, in case the user has changed
-    # settings on their amplifier (e.g. increased the default baudrate)
-    serial_config = get_device_config(equipment_type, CONF_SERIAL_CONFIG)
-    if serial_config_overrides:
-        LOG.debug(
-            f"Overiding serial port config for {url}: {serial_config_overrides}"
-        )
-        serial_config.update(serial_config_overrides)
-
-    LOG.debug(f"Loading {equipment_type}/{protocol}: {serial_config}, {protocol_config}")
+class EquipmentController:
+    """
+    Create an instance of an EquipmentControllerInterface object given
+    details about the given equipment.
     
-    # FIXME: this is async why??? can it be a factory?
-    protocol = await async_get_rs232_protocol(
-        url, DEVICE_CONFIG[equipment_type], serial_config, protocol_config, loop
-    )
-    return EquipmentControllerAsync(equipment_type, serial_config, protocol)
+    If an event_loop argument is passed in this will return the 
+    asynchronous implementation. By default the synchronous interface 
+    is returned.
+
+    :param equipment_type: identifier for type of equipment (e.g. mcintosh)
+    :param url: pyserial supported url for communication (e.g. '/dev/ttyUSB0' or 'socket://remote-host:7000/')
+    :param config_overrides: dictionary of serial port configuration overrides (e.g. baudrate)
+
+    :param event_loop: to get an interface that can be used asynchronously, pass in an event loop
+
+    :return an instance of EquipmentControlBase
+    """
+    @classmethod
+    def create_equipment_controller(self, equipment_type: str, url: str, serial_config_overrides={}, event_loop=None) -> EquipmentControllerInterface:
+        # ensure caller has specified a valid equipment_type
+        config = DEVICE_CONFIG.get(equipment_type)
+        if not config:
+            LOG.error(f"Unsupported equipment type '{equipment_type}'")
+            return None
+
+        # caller can override the default serial port config for a given type
+        # of equipment since the user could have changed settings on their 
+        # physical equipment (e.g. increasing the baudrate)
+        serial_config = get_device_config(equipment_type, CONF_SERIAL_CONFIG)
+        if serial_config_overrides:
+            LOG.debug(
+                f"Overriding serial config for {url}: {serial_config_overrides}"
+            )
+            serial_config.update(serial_config_overrides)
+
+        # ensure the equipment has a protocol defined
+        protocol_name = get_device_config(equipment_type, CONF_PROTOCOL_NAME)
+        if not protocol_name:
+            LOG.error(f"Equipment type {equipment_type} is missing protocol config key")
+            return
+    
+        if event_loop:
+            return EquipmentControllerAsync(event_loop, equipment_type, url, serial_config, protocol_name)
+        else:
+            return EquipmentControllerSync(equipment_type, url, serial_config, protocol_name)

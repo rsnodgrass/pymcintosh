@@ -21,12 +21,27 @@ of amps and protocols.
 
 Visit the [community support discussion thread](https://community.home-assistant.io/t/mcintosh/450908) for issues with this library.
 
-# Supported Equipment
+## Supported Equipment
 
 See [SUPPORTED.md](SUPPORTED.md) for the complete list of supported equipment.
 
 
-# See Also
+## What? URL!?
+
+This interface uses URLs for specifying the communication transport
+to use, as defined in [pyserial](https://pyserial.readthedocs.io/en/latest/url_handlers.html). 
+
+Examples:
+
+| URL                      | Notes |
+|--------------------------|-------|
+| `/dev/ttyUSB0`           | Linux |
+| `COM3`                   | Windows |
+| `socket://<host>:<port>` | remote host that exposes RS232 over TCP |
+
+See pyserial for additional URLs supported.
+
+## See Also
 
 * https://github.com/miracle2k/onkyo-eiscp
 

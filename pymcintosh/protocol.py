@@ -17,7 +17,6 @@ DEFAULT_TIMEOUT = 1.0
 
 MINUTES = 300
 
-
 async def async_get_rs232_protocol(
     serial_port, config, serial_config, protocol_config, loop
 ):
@@ -163,6 +162,9 @@ async def async_get_rs232_protocol(
     factory = functools.partial(
         RS232ControlProtocol, serial_port, config, serial_config, protocol_config, loop
     )
+    
+    # FIXME: can the construction of this be delayed until first call?
+    
     LOG.info(f"Creating RS232 connection to {serial_port}: {serial_config}")
     _, protocol = await create_serial_connection(
         loop, factory, serial_port, **serial_config
