@@ -6,14 +6,9 @@ import time
 from ratelimit import limits
 from serial_asyncio import create_serial_connection
 
+from .const import *  # noqa: F403
+
 LOG = logging.getLogger(__name__)
-
-CONF_COMMAND_EOL = "command_eol"
-CONF_RESPONSE_EOL = "response_eol"
-CONF_COMMAND_SEPARATOR = "command_separator"
-
-CONF_THROTTLE_RATE = "min_time_between_commands"
-DEFAULT_TIMEOUT = 1.0
 
 MINUTES = 300
 
@@ -163,9 +158,7 @@ async def async_get_rs232_protocol(
         RS232ControlProtocol, serial_port, config, serial_config, protocol_config, loop
     )
     
-    # FIXME: can the construction of this be delayed until first call?
-    
-    LOG.info(f"Creating RS232 connection to {serial_port}: {serial_config}")
+    LOG.info(f"Connecting to {serial_port}: {serial_config}")
     _, protocol = await create_serial_connection(
         loop, factory, serial_port, **serial_config
     )
