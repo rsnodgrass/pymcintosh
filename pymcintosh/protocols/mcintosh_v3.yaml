@@ -442,53 +442,94 @@
           description: Request SW information (prints a list of version numbers)
           cmd: '!SWINFO?'
 
-
+    trim_bass:
+      api:
+        down:
           cmd: '!TRIMBASS-'
           description: Decreases bass level trim (10 = 1dB)
+        query:
           cmd: '!TRIMBASS?'
           description: Return bass level trim (10 = 1dB)
-          cmd: '!TRIMBASS(x)'
+        set:
+          cmd: '!TRIMBASS({bass_level})'
           description: Sets bass level trim (10 = 1dB)
+        up:
           cmd: '!TRIMBASS+'
           description: Increases bass level trim (10 = 1dB)
+          
+    trim_center:
+      api:
+        down:
           cmd: '!TRIMCENTER-'
           description: Decreases center channel level trim (10 = 1dB)
+        query:
           cmd: '!TRIMCENTER?'
           description: Return center channel level trim (10 = 1dB)
-          cmd: '!TRIMCENTER(x)'
+          msg: 'FIXME'
+        set:
+          cmd: '!TRIMCENTER({trim_level})'
           description: Sets center channel level trim (10 = 1dB)
+        up:
           cmd: '!TRIMCENTER+'
           description: Increases center channel level trim (10 = 1dB)
+          
+    trim_height:
+      api:
+        down:
           cmd: '!TRIMHEIGHT-'
           description: Decreases height channels level trim (10 = 1dB)
+        query:
           cmd: '!TRIMHEIGHT?'
           description: Return height channels level trim (10 = 1dB)
-          cmd: '!TRIMHEIGHT(x)'
+        set:
+          cmd: '!TRIMHEIGHT({trim_level})'
           description: Sets height channels level trim (10 = 1dB)
+        up:
           cmd: '!TRIMHEIGHT+'
           description: Increases height channels level trim (10 = 1dB)
+          
+    trim_lfe:
+      api:
+        down:
           cmd: '!TRIMLFE-'
           description: Decreases LFE channel level trim (10 = 1dB)
+        query:
           cmd: '!TRIMLFE?'
           description: Return LFE channel level trim (10 = 1dB)
-          cmd: '!TRIMLFE(x)'
+        set:
+          cmd: '!TRIMLFE({trim_level})'
           description: Sets LFE channel level trim (10 = 1dB)
+        up:
           cmd: '!TRIMLFE+'
           description: Increases LFE channel level trim (10 = 1dB)
+
+    trim_surrounds:
+      api:
+        down:
           cmd: '!TRIMSURRS-'
           description: Decreases surround channels level trim (10 = 1dB)
+        query:
           cmd: '!TRIMSURRS?'
           description: Return surround channels level trim (10 = 1dB)
-          cmd: '!TRIMSURRS(x)'
+        set:
+          cmd: '!TRIMSURRS({trim_level})'
           description: Sets surround channels level trim (10 = 1dB)
+        up:
           cmd: '!TRIMSURRS+'
           description: Increases surround channels level trim (10 = 1dB)
+
+    trim_trebble:
+      api:
+        down:
           cmd: '!TRIMTREB-'
           description: Decreases treble level trim (10 = 1dB)
+        query:
           cmd: '!TRIMTREB?'
           description: Return treble level trim (10 = 1dB)
-          cmd: '!TRIMTREB(x)'
+        set:
+          cmd: '!TRIMTREB({trim_level})'
           description: Sets treble level trim (10 = 1dB)
+        up:
           cmd: '!TRIMTREB+'
           description: Increases treble level trim (10 = 1dB)          
 
