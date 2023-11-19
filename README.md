@@ -11,7 +11,7 @@ This library was created to control McIntosh and Lyngdorf A/V equipment using th
 text-based control protocols over RS232, USB serial connections, and remote IP sockets for the purpose of 
 building a [Home Assistant](https://home-assistant.io) integration as well as a command line tool.
 
-This has been derived from an earlier effort with [pyxantech](https://github.com/rsnodgrass/pyxantech) this explored a new way to define the protocol to enable
+This has been derived from an earlier effort with [pyxantech](https://github.com/rsnodgrass/pyxantech) to explore a new way to define the protocol to enable
 automated or programmatic, along with support for a variety
 of amps and protocols.
 
