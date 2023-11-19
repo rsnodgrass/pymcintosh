@@ -94,11 +94,28 @@
       values:
         0: 'Off'
         1: 'On'
+    roomperfect_position:
+      type: int
+      min: 1
+      max: 9
+      pattern: '[1-9]'
+      values:
+        0: Bypass
+        1: Focus 1
+        2: Focus 2
+        3: Focus 3
+        4: Focus 4
+        5: Focus 5
+        6: Focus 6
+        7: Focus 7
+        8: Focus 8
+        9: Global
 
   api_v2:
     verbosity:
       api:
         set:
+          description: Set verbosity level of active interface
           cmd: '!VERB({verbosity_level})'
         minimal:
           cmd: '!VERB(1)'
@@ -106,6 +123,10 @@
           cmd: '!VERB(2)'
         all:
           cmd: '!VERB(3)'
+        query:
+          description: Request verbosity level of active interface
+          cmd: '!VERB?'
+          msg: '!VERB({verbosity_level})'
 
     audio_mode:
       description: Audio processing mode control
@@ -336,6 +357,233 @@
           cmd: '!POWERZONE2?'
           msg: '{power}'
 
-  roomperfect:
-    description: RoomPerfect room correction
-    api:
+    roomperfect_focus:
+      description: RoomPerfect room correction focus
+      api:
+        previous:
+          cmd: '!RPFOC-'
+          description: Previous RoomPerfect position button
+        position:
+          description:  Request RoomPerfect position (0=bypass, 1-8=focus1-8, 9=global)
+          cmd: '!RPFOC?'
+        set:
+          description:  Set RoomPerfect position (0=bypass, 1-8=focus1-8, 9=global)
+          cmd: '!RPFOC({roomperfect_position})'
+        next:
+          description:  Next Roomperfect position button
+          cmd: '!RPFOC+'
+        query:
+          description:  Get available RoomPerfect positions
+          cmd: '!RPFOCS?'
+
+    roomperfect_voice:
+      description: RoomPerfect room correction voice
+      api:
+        previous:
+          description:  Previous voicing button
+          cmd: '!RPVOI-'
+        request:
+          description:  Request active voicing
+          cmd: '!RPVOI?'
+          msg: 'FIXME'
+        set:
+          description: Set voicing
+          cmd: '!RPVOI({roomperfect_voicing})'
+        next:
+          description: Next voicing button
+          cmd: '!RPVOI+'
+        list:
+          cmd: '!RPVOIS?'
+          description: Request list of available voicings
+          msg: 'FIXME'
+
+
+    source:
+      description: Source selection
+      api:
+        previous:
+          cmd: '!SRC-'
+          description: Previous source button
+        request:
+          cmd: '!SRC?'
+          description: Request active source
+          msg: 'FIXME'
+        set:
+          cmd: '!SRC(x)'
+          description: Select source
+        info:
+          cmd: '!SRC({source})?'
+          description: Get info for source
+          msg: 'FIXME'
+        next:
+          cmd: '!SRC+'
+          description: Next source button
+        list:
+          cmd: '!SRCS?'
+          description: Request list of available sources
+
+    volume_offset:
+      api:
+        down:
+          description: Decrease Source volume offset
+        query:
+          description: Request source volume offset for current source
+          cmd: '!SRCOFF?'
+        set:
+          description: Set source volume offset for current source
+          cmd: '!SRCOFF(x)'
+        up:
+          description: Increase source volume offset
+          cmd: '!SRCOFF+'
+
+    software:
+      api:
+        info:
+          description: Request SW information (prints a list of version numbers)
+          cmd: '!SWINFO?'
+
+
+          cmd: '!TRIMBASS-'
+          description: Decreases bass level trim (10 = 1dB)
+          cmd: '!TRIMBASS?'
+          description: Return bass level trim (10 = 1dB)
+          cmd: '!TRIMBASS(x)'
+          description: Sets bass level trim (10 = 1dB)
+          cmd: '!TRIMBASS+'
+          description: Increases bass level trim (10 = 1dB)
+          cmd: '!TRIMCENTER-'
+          description: Decreases center channel level trim (10 = 1dB)
+          cmd: '!TRIMCENTER?'
+          description: Return center channel level trim (10 = 1dB)
+          cmd: '!TRIMCENTER(x)'
+          description: Sets center channel level trim (10 = 1dB)
+          cmd: '!TRIMCENTER+'
+          description: Increases center channel level trim (10 = 1dB)
+          cmd: '!TRIMHEIGHT-'
+          description: Decreases height channels level trim (10 = 1dB)
+          cmd: '!TRIMHEIGHT?'
+          description: Return height channels level trim (10 = 1dB)
+          cmd: '!TRIMHEIGHT(x)'
+          description: Sets height channels level trim (10 = 1dB)
+          cmd: '!TRIMHEIGHT+'
+          description: Increases height channels level trim (10 = 1dB)
+          cmd: '!TRIMLFE-'
+          description: Decreases LFE channel level trim (10 = 1dB)
+          cmd: '!TRIMLFE?'
+          description: Return LFE channel level trim (10 = 1dB)
+          cmd: '!TRIMLFE(x)'
+          description: Sets LFE channel level trim (10 = 1dB)
+          cmd: '!TRIMLFE+'
+          description: Increases LFE channel level trim (10 = 1dB)
+          cmd: '!TRIMSURRS-'
+          description: Decreases surround channels level trim (10 = 1dB)
+          cmd: '!TRIMSURRS?'
+          description: Return surround channels level trim (10 = 1dB)
+          cmd: '!TRIMSURRS(x)'
+          description: Sets surround channels level trim (10 = 1dB)
+          cmd: '!TRIMSURRS+'
+          description: Increases surround channels level trim (10 = 1dB)
+          cmd: '!TRIMTREB-'
+          description: Decreases treble level trim (10 = 1dB)
+          cmd: '!TRIMTREB?'
+          description: Return treble level trim (10 = 1dB)
+          cmd: '!TRIMTREB(x)'
+          description: Sets treble level trim (10 = 1dB)
+          cmd: '!TRIMTREB+'
+          description: Increases treble level trim (10 = 1dB)          
+
+    volume:
+      api:
+        down:
+          cmd: '!VOL-'
+          description: Decrease volume
+        down_by_x:
+          cmd: '!VOL-({volume_increment})'
+          description: Decrease volume by x
+        request:
+          cmd: '!VOL?'
+          description: Request current volume
+          msg: 'FIXME'
+        set:
+          cmd: '!VOL({volume})'
+          description: Set volume to x
+        up:
+          cmd: '!VOL+'
+          description: Increase volume
+        up_by_x:
+          cmd: '!VOL+({volume_increment})'
+          description: Increase volume by x
+
+    zone_2_mute:
+      api:
+        toggle:
+          cmd: '!ZMUTE'
+          description: Toggle Zone B Mute
+        query:
+          cmd: '!ZMUTE?'
+          description: Request Zone B Mute
+          msg: 'FIXME'
+        'off':
+          cmd: '!ZMUTEOFF'
+          description: Zone B Mute off
+        'on':
+          cmd: '!ZMUTEON'
+          description: Zone B Mute on
+
+    zone_power:
+      api:
+        'off':
+          cmd: '!ZPOFF'
+          description: Zone Power Off
+        'on':
+          cmd: '!ZPON'
+          description: Zone Power On
+        toggle:
+          cmd: '!ZPTOGGLE'
+          description: Zone Power Toggle
+
+    zone_source:
+      api:
+        previous:
+          cmd: '!ZSRC-'
+          description: Previous zone B source button
+        query:
+          cmd: '!ZSRC?'
+          description: Request current Zone B source
+          msg: 'FIXME'
+        set:
+          cmd: '!ZSRC({source})'
+          description: Set zone B source
+        info:
+          cmd: '!ZSRC({source})?'
+          description: Request info about zone B source x
+          msg: 'FIXME'
+        next:
+          cmd: '!ZSRC+'
+          description: Next zone B source button
+        list:
+          cmd: '!ZSRCS?'
+          description: Get list of available Zone B sources
+          msg: 'FIXME'
+
+    zone_volume:
+      api:
+        down:
+          cmd: '!ZVOL-'
+          description: Decrease zone B volume
+        down_by_x:
+          cmd: '!ZVOL-({volume_increment})'
+          description: decrease zone B volume by X
+        query:
+          cmd: '!ZVOL?'
+          description: Request current zone B volume
+          msg: 'FIXME'
+        set:
+          cmd: '!ZVOL({volume_increment})'
+          description: Set zone B volume
+        up:
+          cmd: '!ZVOL+'
+          description: Increase zone B volume
+        up_by_x:
+          cmd: '!ZVOL+({volume_increment})'
+          description: Increase zone B volume by x
