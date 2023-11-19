@@ -14,12 +14,12 @@ for exactly which amplifier models are supported.
 
 Based on [pyxantech](https://github.com/rsnodgrass/pyxantech).
 
+# THIS IS IN DEVELOPMENT - DOES NOT WORK YET!!!
+
 
 ## Support
 
-Visit the [community support discussion thread](https://community.home-assistant.io/t/mcintosh-dayton-audio-sonance-multi-zone-amps/450908) for issues with this library.
-
-
+Visit the [community support discussion thread](https://community.home-assistant.io/t/mcintosh/450908) for issues with this library.
 
 
 
