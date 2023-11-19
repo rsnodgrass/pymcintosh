@@ -64,28 +64,30 @@ class EquipmentControllerSync(EquipmentControllerBase):
         )
         self._connection = serial.serial_for_url(url, **serial_config)
 
-    def _send_request(self, request: bytes, skip=0):
+    @synchronized
+    def _write(self, request: bytes, skip=0):
         """
         :param request: request that is sent to the equipment
         :param skip: number of bytes to skip for end of transmission decoding
         :return: ascii string returned by equipment
         """
-        # clear
+        # clear existing buffer
         self._connection.reset_output_buffer()
         self._connection.reset_input_buffer()
 
         LOG.debug(f"Sending {self._equipment_type} @ {self._url}: {request}")
 
-        # send
+        # send the request and flush all the bytes to the connection
         self._connection.write(request)
         self._connection.flush()
 
-        response_eol = self._protocol_config.get(CONF_RESPONSE_EOL)
-        len_eol = len(response_eol)
+        eol = self._protocol_defs.get(CONF_RESPONSE_EOL).encode("ascii")
+        eol_len = len(eol)
 
-        # receive
+        # receive response (if any)
         result = bytearray()
         while True:
+            # FIXME: this is inefficient, but for now is fine
             c = self._connection.read(1)
             if not c:
                 ret = bytes(result)
@@ -96,17 +98,14 @@ class EquipmentControllerSync(EquipmentControllerBase):
                     )
                 )
 
+            # FIXME: need better name/description for skip
             result += c
-            if len(result) > skip and response_eol.encode("ascii") == result[-len_eol:]:
+            if len(result) > skip and eol == result[-eol_len:]:
                 break
 
         ret = bytes(result)
-        LOG.debug("Received {self._equipment_type} @ {self._url}: %s", ret)
+        LOG.debug("Received from {self._equipment_type} @ {self._url}: %s", ret)
         return ret.decode("ascii")
-
-    @synchronized
-    def set_volume(self, zone: int, volume: int):
-        self._send_request(_set_volume_cmd(self._amp_type, zone, volume))
 
 
 # -----------------------------------------------------------------------------
