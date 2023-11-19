@@ -29,16 +29,8 @@ class EquipmentControllerBase:
         self._protocol_name = protocol_name
         self._protocol_config = PROTOCOL_CONFIG[protocol_name]
 
-    def interface(self):
-        """
-        Return details on the interface (JSON)
-        """
-        # FIXME: convert for this equipment the protocol
-        # definition into a lightweight return of details
-        # (e.g. lots of stuff should be filtered out that
-        # is unnecessary). This does not need to be async/sync
-        # specific so can be implemented here.
-        return []
+    def _write(self, data: str):
+        raise NotImplementedError()
 
     def set_power(self, zone: int, power: bool):
         """
@@ -56,6 +48,57 @@ class EquipmentControllerBase:
         command = rs232_commands.get(format_code) + cmd_separator + cmd_eol
 
         return command.format(**args).encode("ascii")
+
+    def describe(self):
+        """
+        :returns JSON describing all commands and arguments that are available
+        for this specific instance.
+        """
+        docs = {}
+
+        vars = self._protocol_config["vars"]
+        api = self._protocol_config["api"]
+
+        for api_group, group_cfg in api.items():
+            api_docs = {}
+
+            for action, action_cfg in group_cfg["actions"]:
+                action_docs = {}
+
+                # include description, if any
+                description = action_cfg["description"]
+                if description:
+                    action_docs["description"] = description
+
+                # extract any variables that are passed into the cmd
+                # and include them
+                cmd = action_cfg["cmd"]
+                if "{" in cmd:
+                    action_docs["vars"] = {}
+
+                    # for var in cmd:
+                    #   if vars.get(var} ... include details about limits/values
+                    # FIXME
+
+                api_docs[action] = action_docs
+
+            docs[api_group] = api_docs
+        return docs
+
+    def command(self, group: str, action: str, **kwargs):
+        """
+        Call a command by the group/action and args as defined in the
+        device's protocol yaml.
+        """
+        LOG.error(f"Should be calling {group}.{action}({kwargs})")
+
+    def raw(self, raw_command: str):
+        """
+        Allows sending a raw command to the device. Generally this should not
+        be used except for testing, since all commands should be defined in
+        the yaml protocol configuration.
+        """
+        self._write(raw_command)
 
 
 class EquipmentControllerSync(EquipmentControllerBase):
@@ -121,11 +164,10 @@ class EquipmentControllerAsync(EquipmentControllerBase):
         self._loop = loop
         self._connection_ref = None
 
-    """
-    @return the connection to the RS232 device (lazy connect if none)
-    """
-
     async def _connection(self):
+        """
+        :return the connection to the RS232 device (lazy connect if none)
+        """
         if not self._connection_ref:
             LOG.debug(
                 f"Connecting to {self._equipment_type}/{self._protocol_name} @ {self._url}: %s %s",
@@ -164,27 +206,26 @@ class EquipmentControllerAsync(EquipmentControllerBase):
 
 
 class EquipmentController:
-    """
-    Create an instance of an EquipmentControllerBase object given
-    details about the given equipment.
-
-    If an event_loop argument is passed in this will return the
-    asynchronous implementation. By default the synchronous interface
-    is returned.
-
-    :param equipment_type: identifier for type of equipment (e.g. mcintosh)
-    :param url: pyserial supported url for communication (e.g. '/dev/ttyUSB0' or 'socket://remote-host:7000/')
-    :param config_overrides: dictionary of serial port configuration overrides (e.g. baudrate)
-
-    :param event_loop: to get an interface that can be used asynchronously, pass in an event loop
-
-    :return an instance of EquipmentControlBase
-    """
-
     @classmethod
     def create_equipment_controller(
         self, equipment_type: str, url: str, serial_config_overrides={}, event_loop=None
     ) -> EquipmentControllerBase:
+        """
+        Create an instance of an EquipmentControllerBase object given
+        details about the given equipment.
+
+        If an event_loop argument is passed in this will return the
+        asynchronous implementation. By default the synchronous interface
+        is returned.
+
+        :param equipment_type: identifier for type of equipment (e.g. mcintosh)
+        :param url: pyserial supported url for communication (e.g. '/dev/ttyUSB0' or 'socket://remote-host:7000/')
+        :param config_overrides: dictionary of serial port configuration overrides (e.g. baudrate)
+
+        :param event_loop: to get an interface that can be used asynchronously, pass in an event loop
+
+        :return an instance of EquipmentControlBase
+        """
         # ensure caller has specified a valid equipment_type
         config = DEVICE_CONFIG.get(equipment_type)
         if not config:

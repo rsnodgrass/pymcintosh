@@ -30,7 +30,7 @@ an
 
 This library provides both an async and a sync implementation. By default, the
 synchronous implementation is returned unless an `event_loop` is passed into
-the `create_equipment_controller` factory constructor.
+the `create_equipment_controller` factory constructor. For example:
 
 ```console
     equipment = create_equipment_controller(
@@ -51,8 +51,8 @@ Examples:
 
 | URL                      | Notes |
 |--------------------------|-------|
-| `/dev/ttyUSB0`           | Linux |
-| `COM3`                   | Windows |
+| `/dev/ttyUSB0`           | directly attached serial device on Linux |
+| `COM3`                   | directly attached serial device on Windows |
 | `socket://<host>:<port>` | remote host that exposes RS232 over TCP |
 
 See [pyserial](https://pyserial.readthedocs.io/en/latest/url_handlers.html for additional formats supported.
