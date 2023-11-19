@@ -1,5 +1,5 @@
 # Python API for McIntosh A/V Processors
-
+.
 ![McIntosh](https://raw.githubusercontent.com/rsnodgrass/pymcintosh/main/img/mcintosh-logo.png)
 
 ![beta_badge](https://img.shields.io/badge/maturity-Beta-yellow.png)

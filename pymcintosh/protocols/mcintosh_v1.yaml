@@ -30,12 +30,12 @@
       min: 0
       max: 14
       value_names:
-        '0': 'Off'
-	'1': Balance
-	'2': Bass
-	'3': Treble
-	'4': Level
-	'5': Output
+        0: 'Off'
+        1: Balance
+        2: Bass
+        3: Treble
+        4: Level
+        5: Output
     zone:
       pattern: '[1-8]'
       type: int
