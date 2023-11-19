@@ -2,10 +2,9 @@ import logging
 import asyncio
 from functools import wraps
 from threading import RLock
-
 import serial
 
-#__all__ = ['const']
+__version__ = '2023.11.18'
 
 from .const import *
 from .config import (
@@ -22,23 +21,24 @@ from .protocol import (
 
 LOG = logging.getLogger(__name__)
 
-SUPPORTED_EQUIPMENT = DEVICE_CONFIG.keys()
-
-CONF_SERIAL_CONFIG = "rs232"
+CONF_SERIAL_CONFIG = 'rs232'
+CONF_PROTOCOL_NAME = 'protocol'
 
 def get_device_config(equipment_type, key, log_missing=True):
     return get_with_log(equipment_type, DEVICE_CONFIG[equipment_type], key, log_missing=log_missing)
 
 
-def get_protocol_config(equipment_type, key):
-    protocol_name = get_device_config(equipment_type, "protocol")
-    return PROTOCOL_CONFIG[protocol_name].get(key)
-
-class EquipmentControllerInterface:
+class EquipmentControllerBase:
     """
-    EquipmentControllerInterface base class that defines operations allowed
+    EquipmentControllerBase base class that defines operations allowed
     to control equipment.
     """
+    def __init__(self, equipment_type, url, serial_config, protocol_name):
+        self._equipment_type = equipment_type
+        self._url = url
+        self._serial_config = serial_config
+        self._protocol_name = protocol_name
+        self._protocol_config = PROTOCOL_CONFIG[protocol_name]
 
     def interface(self):
         """
@@ -60,10 +60,10 @@ class EquipmentControllerInterface:
         raise NotImplementedError()
 
 def _command(equipment_type: str, format_code: str, args={}):
-    cmd_eol = get_protocol_config(equipment_type, CONF_COMMAND_EOL)
-    cmd_separator = get_protocol_config(equipment_type, CONF_COMMAND_SEPARATOR)
+    cmd_eol = self._protocol_config.get(CONF_COMMAND_EOL)
+    cmd_separator = self._protocol_config.get(CONF_COMMAND_SEPARATOR)
 
-    rs232_commands = get_protocol_config(equipment_type, "commands")
+    rs232_commands = self._protocol_config.get("commands")
     command = rs232_commands.get(format_code) + cmd_separator + cmd_eol
 
     return command.format(**args).encode("ascii")
@@ -79,15 +79,10 @@ def synchronized(func):
             return func(*args, **kwargs)
     return wrapper
 
-class EquipmentControllerSync(EquipmentControllerInterface):
+class EquipmentControllerSync(EquipmentControllerBase):
     def __init__(self, equipment_type, url, serial_config, protocol_name):
-        self._equipment_type = equipment_type
-
-        self._url = url
-        self._serial_config = serial_config            
+        EquipmentControllerBase.__init__(equipment_type, url, serial_config, protocol_name)
         self._connection = serial.serial_for_url(url, **serial_config)
-
-        self._protocol_name = protocol_name
 
     def _send_request(self, request: bytes, skip=0):
         """
@@ -105,7 +100,7 @@ class EquipmentControllerSync(EquipmentControllerInterface):
         self._connection.write(request)
         self._connection.flush()
 
-        response_eol = get_protocol_config(equipment_type, CONF_RESPONSE_EOL)
+        response_eol = self._protocol_config.get(CONF_RESPONSE_EOL)
         len_eol = len(response_eol)
 
         # receive
@@ -145,17 +140,11 @@ def locked_coro(coro):
             return await coro(*args, **kwargs)
     return wrapper
 
-class EquipmentControllerAsync(EquipmentControllerInterface):
-    def __init__(self, loop, equipment_type, url, serial_config, protocol_name):            
+class EquipmentControllerAsync(EquipmentControllerBase):
+    def __init__(self, loop, equipment_type, url, serial_config, protocol_name):
+        EquipmentControllerBase.__init__(equipment_type, url, serial_config, protocol_name)
         self._loop = loop
-        self._equipment_type = equipment_type
-            
-        self._url = url
         self._connection_ref = None
-        self._serial_config = serial_config
-            
-        self._protocol_name = protocol_name
-        self._protocol_config = PROTOCOL_CONFIG[protocol_name]
 
     """
     @return the connection to the RS232 device (lazy connect if none)
@@ -194,7 +183,7 @@ class EquipmentControllerAsync(EquipmentControllerInterface):
 
 class EquipmentController:
     """
-    Create an instance of an EquipmentControllerInterface object given
+    Create an instance of an EquipmentControllerBase object given
     details about the given equipment.
     
     If an event_loop argument is passed in this will return the 
@@ -210,7 +199,7 @@ class EquipmentController:
     :return an instance of EquipmentControlBase
     """
     @classmethod
-    def create_equipment_controller(self, equipment_type: str, url: str, serial_config_overrides={}, event_loop=None) -> EquipmentControllerInterface:
+    def create_equipment_controller(self, equipment_type: str, url: str, serial_config_overrides={}, event_loop=None) -> EquipmentControllerBase:
         # ensure caller has specified a valid equipment_type
         config = DEVICE_CONFIG.get(equipment_type)
         if not config:
@@ -230,7 +219,8 @@ class EquipmentController:
         # ensure the equipment has a protocol defined
         protocol_name = get_device_config(equipment_type, CONF_PROTOCOL_NAME)
         if not protocol_name:
-            LOG.error(f"Equipment type {equipment_type} is missing protocol config key")
+            LOG.error(f"Equipment type {equipment_type} is missing " +
+                      f"'{CONF_PROTOCOL_NAME}' config key")
             return
     
         if event_loop:

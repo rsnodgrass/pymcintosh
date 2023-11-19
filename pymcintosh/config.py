@@ -10,7 +10,6 @@ LOG = logging.getLogger(__name__)
 DEVICE_CONFIG = {}
 PROTOCOL_CONFIG = {}
 
-
 def _load_config(config_file):
     """Load the amp series configuration"""
 
