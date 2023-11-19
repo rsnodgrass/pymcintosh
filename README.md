@@ -7,20 +7,20 @@ This supports any serial protocol for communicating with the amps, including RS2
 USB serial ports, and possibly the RS232-over-IP interface for more recent Xantech amps. See below
 for exactly which amplifier models are supported.
 
-Based on [pyxantech](https://github.com/rsnodgrass/pyxantech).
+Based on [pymcintosh](https://github.com/rsnodgrass/pymcintosh).
 
 *GOAL: To eventually merge this with pymonoprice and get rid of a separate implementation.*
 
 The Monoprice version was originally created by Egor Tsinko for use with [Home-Assistant](http://home-assistant.io).
 
 ![beta_badge](https://img.shields.io/badge/maturity-Beta-yellow.png)
-[![PyPi](https://img.shields.io/pypi/v/pyxantech.svg)](https://pypi.python.org/pypi/pyxantech)
+[![PyPi](https://img.shields.io/pypi/v/pymcintosh.svg)](https://pypi.python.org/pypi/pymcintosh)
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
-[![Build Status](https://github.com/rsnodgrass/pyxantech/actions/workflows/ci.yml/badge.svg)](https://github.com/rsnodgrass/pyxantech/actions/workflows/ci.yml)
+[![Build Status](https://github.com/rsnodgrass/pymcintosh/actions/workflows/ci.yml/badge.svg)](https://github.com/rsnodgrass/pymcintosh/actions/workflows/ci.yml)
 
 ## Support
 
-Visit the [community support discussion thread](https://community.home-assistant.io/t/xantech-dayton-audio-sonance-multi-zone-amps/450908) for issues with this library.
+Visit the [community support discussion thread](https://community.home-assistant.io/t/mcintosh-dayton-audio-sonance-multi-zone-amps/450908) for issues with this library.
 
 
 
