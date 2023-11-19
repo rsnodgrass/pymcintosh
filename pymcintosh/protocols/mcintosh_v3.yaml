@@ -132,10 +132,10 @@
         cmd: '!INFO'
         description: Info button
       menu:
-        cmd: !MENU'
+        cmd: '!MENU'
         description:  Menu Button
       setup:
-        cmd: !SETUP'
+        cmd: '!SETUP'
         description:  Setup button
 
 
