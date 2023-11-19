@@ -481,13 +481,14 @@
         query:
           cmd: '!TRIMHEIGHT?'
           description: Return height channels level trim (10 = 1dB)
+          msg: 'FIXME'
         set:
           cmd: '!TRIMHEIGHT({trim_level})'
           description: Sets height channels level trim (10 = 1dB)
         up:
           cmd: '!TRIMHEIGHT+'
           description: Increases height channels level trim (10 = 1dB)
-          
+
     trim_lfe:
       api:
         down:
@@ -496,6 +497,7 @@
         query:
           cmd: '!TRIMLFE?'
           description: Return LFE channel level trim (10 = 1dB)
+          msg: 'FIXME'
         set:
           cmd: '!TRIMLFE({trim_level})'
           description: Sets LFE channel level trim (10 = 1dB)
@@ -511,6 +513,7 @@
         query:
           cmd: '!TRIMSURRS?'
           description: Return surround channels level trim (10 = 1dB)
+          msg: 'FIXME'
         set:
           cmd: '!TRIMSURRS({trim_level})'
           description: Sets surround channels level trim (10 = 1dB)
@@ -526,6 +529,7 @@
         query:
           cmd: '!TRIMTREB?'
           description: Return treble level trim (10 = 1dB)
+          msg: 'FIXME'
         set:
           cmd: '!TRIMTREB({trim_level})'
           description: Sets treble level trim (10 = 1dB)
