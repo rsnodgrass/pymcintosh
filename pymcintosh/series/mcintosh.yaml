@@ -1,16 +1,16 @@
 - series: mcintosh
-  name: "McIntosh A/V Control"
-  description: "McIntosh A/V Controls"
+  name: McIntosh A/V Control
+  description: McIntosh A/V Controls
 
   supported:
-    - manufacturer: "McIntosh"
-      model: "MX160"
+    - manufacturer: McIntosh
+      model: MX160
       
-    - manufacturer: "McIntosh"
-      model: "MX170"
-      
-    - manufacturer: "McIntosh"
-      model: "MX180"
+    - manufacturer: McIntosh
+      model: MX170
+  
+    - manufacturer: McIntosh
+      model: MX180
       overrides:
         features:
           video: true
@@ -22,9 +22,9 @@
     max_expansion_amps: 1 # 16 zones using DB15-DB15 cable
     rs232_control: true
 
-  protocol: xantech
+  protocol: mcintosh_v3
   protocol_definitions:
-    - xantech
+    - mcintosh_v3
 
   protocol_mixins:
     api_vars:
