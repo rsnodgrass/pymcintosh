@@ -16,8 +16,8 @@ coloredlogs.install(level="DEBUG")
 
 p = arg.ArgumentParser(description="RS232 client example (synchronous)")
 p.add_argument(
-    "--address",
-    help="address of communication interface (e.g. /dev/tty.usbserial-A501SGSZ or socket://server:4999/)",
+    "--url",
+    help="pyserial supported url for communication (e.g. /dev/tty.usbserial-A501SGSZ or socket://server:4999/)",
     required=True,
 )
 p.add_argument("--type", default="mcintosh", help="equipment type (e.g. mcintosh)")
