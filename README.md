@@ -1,6 +1,11 @@
 # Python API for McIntosh A/V Processors
 
-![McIntosh](https://github.com/rsnodgrass/pymcintosh/blob/master/img/mcintosh-logo.png?raw=true)
+![McIntosh](https://raw.githubusercontent.com/rsnodgrass/pymcintosh/main/img/mcintosh-logo.png)
+
+![beta_badge](https://img.shields.io/badge/maturity-Beta-yellow.png)
+[![PyPi](https://img.shields.io/pypi/v/pymcintosh.svg)](https://pypi.python.org/pypi/pymcintosh)
+[![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
+[![Build Status](https://github.com/rsnodgrass/pymcintosh/actions/workflows/ci.yml/badge.svg)](https://github.com/rsnodgrass/pymcintosh/actions/workflows/ci.yml)
 
 Library for RS232 serial communication to Xantech, Monoprice, Dayton Audio, Soundavo, and other multi-zone amps.
 This supports any serial protocol for communicating with the amps, including RS232 ports,
@@ -9,10 +14,6 @@ for exactly which amplifier models are supported.
 
 Based on [pyxantech](https://github.com/rsnodgrass/pyxantech).
 
-![beta_badge](https://img.shields.io/badge/maturity-Beta-yellow.png)
-[![PyPi](https://img.shields.io/pypi/v/pymcintosh.svg)](https://pypi.python.org/pypi/pymcintosh)
-[![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
-[![Build Status](https://github.com/rsnodgrass/pymcintosh/actions/workflows/ci.yml/badge.svg)](https://github.com/rsnodgrass/pymcintosh/actions/workflows/ci.yml)
 
 ## Support
 
