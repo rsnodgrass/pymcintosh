@@ -8,7 +8,7 @@
 [![Build Status](https://github.com/rsnodgrass/pymcintosh/actions/workflows/ci.yml/badge.svg)](https://github.com/rsnodgrass/pymcintosh/actions/workflows/ci.yml)
 
 This library was created to control McIntosh and Lyngdorf A/V equipment using their
-text-based control protocols over RS232, USB serial connections, and remote IP sockets for the purpose of 
+text-based control protocols over RS232, USB serial connections, and remote IP sockets for the purpose of
 building a [Home Assistant](https://home-assistant.io) integration as well as a command line tool.
 
 This has been derived from an earlier effort with [pyxantech](https://github.com/rsnodgrass/pyxantech) to explore a new way to define the protocol to enable
@@ -24,12 +24,28 @@ Visit the [community support discussion thread](https://community.home-assistant
 ## Supported Equipment
 
 See [SUPPORTED.md](SUPPORTED.md) for the complete list of supported equipment.
+an
 
+## Asynchronous / Synchronous
 
-## What? URL!?
+This library provides both an async and a sync implementation. By default, the
+synchronous implementation is returned unless an `event_loop` is passed into
+the `create_equipment_controller` factory constructor.
+
+```console
+    equipment = create_equipment_controller(
+        args.type,
+        args.url,
+        serial_config_overrides=config,
+        event_loop=asyncio.get_event_loop(),
+    )
+    await equipment.power.off()
+```
+
+## Connection URL
 
 This interface uses URLs for specifying the communication transport
-to use, as defined in [pyserial](https://pyserial.readthedocs.io/en/latest/url_handlers.html). 
+to use, as defined in [pyserial](https://pyserial.readthedocs.io/en/latest/url_handlers.html).
 
 Examples:
 
@@ -39,7 +55,7 @@ Examples:
 | `COM3`                   | Windows |
 | `socket://<host>:<port>` | remote host that exposes RS232 over TCP |
 
-See pyserial for additional URLs supported.
+See [pyserial](https://pyserial.readthedocs.io/en/latest/url_handlers.html for additional formats supported.
 
 ## See Also
 
