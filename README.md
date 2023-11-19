@@ -1,4 +1,4 @@
-# Python API for McIntosh A/V Processors
+# Python API for McIntosh and Lyngdorf A/V Processors
 
 ![McIntosh](https://raw.githubusercontent.com/rsnodgrass/pymcintosh/main/img/mcintosh-logo.png)
 
