@@ -11,7 +11,7 @@ import asyncio
 
 import coloredlogs
 
-from pymcintosh import create_equipment_controller
+from pymcintosh import create_device_controller
 
 LOG = logging.getLogger(__name__)
 coloredlogs.install(level="DEBUG")
@@ -22,7 +22,7 @@ p.add_argument(
     help="pyserial supported url for communication (e.g. /dev/tty.usbserial-A501SGSZ or socket://server:4999/)",
     required=True,
 )
-p.add_argument("--type", default="mcintosh", help="equipment type (e.g. mcintosh)")
+p.add_argument("--type", default="mcintosh", help="device type (e.g. mcintosh)")
 p.add_argument(
     "--baud",
     type=int,
@@ -35,7 +35,7 @@ config = {"baudrate": args.baud}
 
 
 async def main():
-    device = create_equipment_controller(
+    device = create_device_controller(
         args.type,
         args.url,
         serial_config_overrides=config,
