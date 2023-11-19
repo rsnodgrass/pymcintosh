@@ -2,9 +2,10 @@ import logging
 
 import serial
 
-from .asynchronous import async_get_rs232_protocol
+from .asynchronous import async_get_rs232_protocol, locked_coro
 from .config import DEVICE_CONFIG, PROTOCOL_CONFIG, get_with_log
 from .const import *  # noqa: F403
+from .sync import synchronized
 
 LOG = logging.getLogger(__name__)
 
@@ -110,6 +111,7 @@ class EquipmentControllerSync(EquipmentControllerBase):
 
 
 # -----------------------------------------------------------------------------
+z
 
 
 class EquipmentControllerAsync(EquipmentControllerBase):
