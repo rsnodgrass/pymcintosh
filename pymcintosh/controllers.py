@@ -3,9 +3,9 @@ import logging
 import serial
 
 from .asynchronous import async_get_rs232_protocol, locked_coro
-from .config import PROTOCOL_CONFIG
 from .const import *  # noqa: F403
 from .core import load_yaml_dir
+from .protocol import PROTOCOL_DEFS
 from .sync import synchronized
 
 LOG = logging.getLogger(__name__)
@@ -24,7 +24,7 @@ class EquipmentControllerBase:
         self._url = url
         self._serial_config = serial_config
         self._protocol_name = protocol_name
-        self._protocol_config = PROTOCOL_CONFIG[protocol_name]
+        self._protocol_def = PROTOCOL_DEFS[protocol_name]
 
     def _write(self, data: bytes, skip=0):
         """
@@ -33,10 +33,10 @@ class EquipmentControllerBase:
         raise NotImplementedError()
 
     def _command(self, equipment_type: str, format_code: str, args={}):
-        cmd_eol = self._protocol_config.get(CONF_COMMAND_EOL)
-        cmd_separator = self._protocol_config.get(CONF_COMMAND_SEPARATOR)
+        cmd_eol = self._protocol_def.get(CONF_COMMAND_EOL)
+        cmd_separator = self._protocol_def.get(CONF_COMMAND_SEPARATOR)
 
-        rs232_commands = self._protocol_config.get("commands")
+        rs232_commands = self._protocol_def.get("commands")
         command = rs232_commands.get(format_code) + cmd_separator + cmd_eol
 
         return command.format(**args).encode("ascii")
