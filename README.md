@@ -1,5 +1,7 @@
 # Python API for McIntosh A/V Processors
 
+![McIntosh](https://github.com/rsnodgrass/pymcintosh/blob/master/img/mcintosh-logo.png?raw=true)
+
 Library for RS232 serial communication to Xantech, Monoprice, Dayton Audio, Soundavo, and other multi-zone amps.
 This supports any serial protocol for communicating with the amps, including RS232 ports,
 USB serial ports, and possibly the RS232-over-IP interface for more recent Xantech amps. See below
