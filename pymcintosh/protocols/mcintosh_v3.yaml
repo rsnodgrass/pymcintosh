@@ -64,7 +64,7 @@
       type: int
       min: 1
       max: 3
-      names:
+      values:
         1: Minimal
         2: Normal
         3: All
@@ -72,11 +72,18 @@
       type: int
       min: 0
       max: 3
-      names: 
+      values: 
         0: Full (100%)
         1: Bright (75%)
         2: Low (50%)
         3: Dark (25%)
+    interface:
+      type: string
+      values:
+        IP: IP
+        SERIAL: Serial
+    lipsync:
+      type: int
 
   api_v2:
     verbosity:
@@ -182,9 +189,30 @@
         dark:
           description: Set display brightness Dark (25%)
           cmd: '!DIM(3)'
+ 
+    interface:
+      description: Active interface for this session (IP or SERIAL)
+      query:
+        description: Returns the active interface for this section
+        cmd: '!INTERFACE?'
+        msg: '!INTERFACE({interface})'
 
-
-
-
-
-
+    lipsync:
+      description: Lipsync
+      api:
+      set:
+        description: Set the lipsync value
+        cmd: '!LIPSYNC({lipsync})'  
+      query:
+        description: Query the lipsync value
+        cmd: '!LIPSYNC?'
+        msg: '!LIPSYNC({lipsync})'
+      range:
+        cmd: '!LIPSYNCRANGE?'
+        description: Query the lipsync value range
+      down:
+        description: Reduce lipsync value
+        cmd: '!LIPSYNC-'
+      up:
+        description: Increase lipsync value
+        cmd: '!LIPSYNC-'
