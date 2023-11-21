@@ -12,3 +12,12 @@ all = true
 [tool.refurb]
 quiet = true
 ignore = []
+
+[tool.pylint.format]
+max-line-length = "88"
+
+[tool.pylint.FORMAT]
+expected-line-ending-format = "LF"
+
+[tool.pylint.CODE_STYLE]
+max-line-length-suggestions = 90

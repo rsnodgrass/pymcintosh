@@ -67,14 +67,16 @@ protocol files from this repository as a basis for the interface you provide.
 The protocol and series definitions will likely be split out into separate
 definition-only package(s) in the future.
 
-## Asynchronous / Synchronous
+## Asynchronous & Synchronous APIs
 
-This library provides both an async and a sync implementation. By default, the
-synchronous implementation is returned when instantiating new controller objects
-unless an `event_loop` is passed into the `create_equipment_controller` factory
-constructor. For example:
+This library provides both an `asyncio` and a synchronoous implementation.
+By default, the synchronous implementation is returned when instantiating
+new controller objects unless an `event_loop` is passed into the
+`create_equipment_controller` factory constructor.
 
-```console
+Async example:
+
+```python
     equipment = create_equipment_controller(
         args.type,
         args.url,
@@ -95,14 +97,15 @@ For example:
 | ------------------------ | --------------------------------------------------------------------------------------------------- |
 | `/dev/ttyUSB0`           | directly attached serial device (Linux)                                                             |
 | `COM3`                   | directly attached serial device (Windows)                                                           |
-| `socket://<host>:<port>` | remote host that exposes RS232 over TCP (e.g. [IP2SL](https://github.com/rsnodgrass/virtual-ip2sl)) |
+| `socket://<host>:<port>` | remote host that exposes RS232 over TCP ``*`` |
+| `socket://mx160.local:84` | direct connection to MX160's port 84 interface |
+
+* See [IP2SL](https://github.com/rsnodgrass/virtual-ip2sl) for example RS2332 over TCP.
 
 See [pyserial](https://pyserial.readthedocs.io/en/latest/url_handlers.html) for additional formats supported.
 
 # Future Ideas
 
-- review [pykaliedescape](https://github.com/SteveEasley/pykaleidescape)
-- https://github.com/joopert/nad_receiver
 - Add programmatic override/enhancements to the base protocol where pure
   YAML configuration would not work fully. Of course, these overrides would have
   to be implemented in each language, but that surface area should be much smaller.

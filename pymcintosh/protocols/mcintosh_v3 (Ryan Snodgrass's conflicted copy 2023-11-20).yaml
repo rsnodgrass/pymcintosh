@@ -411,6 +411,7 @@
           cmd: '!RPFOCS?'
           msg: "!POWER\\((?P<power>[01])\\)" # FIXME
 
+
     roomperfect_voice:
       description: RoomPerfect room correction voice
       actions:
@@ -483,193 +484,191 @@
         info:
           description: Request SW information (prints a list of version numbers)
           cmd: '!SWINFO?'
-          msg: "!SWINFO\\((?P<version>\\s+)\\)"
 
     trim_bass:
       actions:
-        get:
-          description: Get current bass level trim (10 = 1dB)
-          cmd: '!TRIMBASS?'
-          msg: "!TRIMBASS\\((?P<trim_level>\\d+)\\)"
-        set:
-          description: Sets bass level trim (10 = 1dB)
-          cmd: '!TRIMBASS({bass_level})'
-        up:
-          description: Increases bass level trim (10 = 1dB)
-          cmd: '!TRIMBASS+'
         down:
-          description: Decreases bass level trim (10 = 1dB)
           cmd: '!TRIMBASS-'
+          description: Decreases bass level trim (10 = 1dB)
+        get:
+          cmd: '!TRIMBASS?'
+          description: Get current bass level trim (10 = 1dB)
+        set:
+          cmd: '!TRIMBASS({bass_level})'
+          description: Sets bass level trim (10 = 1dB)
+        up:
+          cmd: '!TRIMBASS+'
+          description: Increases bass level trim (10 = 1dB)
 
     trim_center:
       actions:
-        get:
-          description: get current center channel level trim (10 = 1dB)
-          cmd: '!TRIMCENTER?'
-          msg: "!TRIMCENTER\\((?P<trim_level>\\d+)\\)"
-        set:
-          description: Sets center channel level trim (10 = 1dB)
-          cmd: '!TRIMCENTER({trim_level})'
-        up:
-          description: Increases center channel level trim (10 = 1dB)
-          cmd: '!TRIMCENTER+'
         down:
-          description: Decreases center channel level trim (10 = 1dB)
           cmd: '!TRIMCENTER-'
+          description: Decreases center channel level trim (10 = 1dB)
+        get:
+          cmd: '!TRIMCENTER?'
+          description: get current center channel level trim (10 = 1dB)
+          msg: 'FIXME'
+        set:
+          cmd: '!TRIMCENTER({trim_level})'
+          description: Sets center channel level trim (10 = 1dB)
+        up:
+          cmd: '!TRIMCENTER+'
+          description: Increases center channel level trim (10 = 1dB)
 
     trim_height:
       actions:
-        get:
-          description: Gete current height channels level trim (10 = 1dB)
-          cmd: '!TRIMHEIGHT?'
-          msg: "!TRIMHEIGHT\\((?P<trim_level>\\d+)\\)"
-        set:
-          description: Sets height channels level trim (10 = 1dB)
-          cmd: '!TRIMHEIGHT({trim_level})'
-        up:
-          description: Increases height channels level trim (10 = 1dB)
-          cmd: '!TRIMHEIGHT+'
         down:
-          description: Decreases height channels level trim (10 = 1dB)
           cmd: '!TRIMHEIGHT-'
+          description: Decreases height channels level trim (10 = 1dB)
+        get:
+          cmd: '!TRIMHEIGHT?'
+          description: Gete current height channels level trim (10 = 1dB)
+          msg: 'FIXME'
+        set:
+          cmd: '!TRIMHEIGHT({trim_level})'
+          description: Sets height channels level trim (10 = 1dB)
+        up:
+          cmd: '!TRIMHEIGHT+'
+          description: Increases height channels level trim (10 = 1dB)
 
     trim_lfe:
       actions:
-        get:
-          description: Get current LFE channel level trim (10 = 1dB)
-          cmd: '!TRIMLFE?'
-          msg: "!TRIMLFE\\((?P<trim_level>\\d+)\\)"
-        set:
-          description: Sets LFE channel level trim (10 = 1dB)
-          cmd: '!TRIMLFE({trim_level})'
-        up:
-          description: Increases LFE channel level trim (10 = 1dB)
-          cmd: '!TRIMLFE+'
         down:
-          description: Decreases LFE channel level trim (10 = 1dB)
           cmd: '!TRIMLFE-'
+          description: Decreases LFE channel level trim (10 = 1dB)
+        get:
+          cmd: '!TRIMLFE?'
+          description: Get current LFE channel level trim (10 = 1dB)
+          msg: 'FIXME'
+        set:
+          cmd: '!TRIMLFE({trim_level})'
+          description: Sets LFE channel level trim (10 = 1dB)
+        up:
+          cmd: '!TRIMLFE+'
+          description: Increases LFE channel level trim (10 = 1dB)
 
     trim_surrounds:
       actions:
         down:
-          description: Decreases surround channels level trim (10 = 1dB)
           cmd: '!TRIMSURRS-'
+          description: Decreases surround channels level trim (10 = 1dB)
         get:
-          description: Get current surround channels level trim (10 = 1dB)
           cmd: '!TRIMSURRS?'
-          msg: "!TRIMSURRS\\((?P<trim_level>\\d+)\\)"
+          description: Get current surround channels level trim (10 = 1dB)
+          msg: 'FIXME'
         set:
-          description: Sets surround channels level trim (10 = 1dB)
           cmd: '!TRIMSURRS({trim_level})'
+          description: Sets surround channels level trim (10 = 1dB)
         up:
-          description: Increases surround channels level trim (10 = 1dB)
           cmd: '!TRIMSURRS+'
+          description: Increases surround channels level trim (10 = 1dB)
 
     trim_trebble:
       actions:
-        get:
-          description: Get current treble level trim (10 = 1dB)
-          cmd: '!TRIMTREB?'
-          msg: "!TRIMTREB\\(?P<treble>\\d+)\\)"
-        set:
-          description: Sets treble level trim (10 = 1dB)
-          cmd: '!TRIMTREB({trim_level})'
         down:
-          description: Decreases treble level trim (10 = 1dB)
           cmd: '!TRIMTREB-'
+          description: Decreases treble level trim (10 = 1dB)
+        get:
+          cmd: '!TRIMTREB?'
+          description: Get current treble level trim (10 = 1dB)
+          msg: 'FIXME'
+        set:
+          cmd: '!TRIMTREB({trim_level})'
+          description: Sets treble level trim (10 = 1dB)
         up:
-          description: Increases treble level trim (10 = 1dB)
           cmd: '!TRIMTREB+'
+          description: Increases treble level trim (10 = 1dB)
 
     volume:
       actions:
-        get:
-          description: Get current volume
-          cmd: '!VOL?'
-          msg: "!VOL\\(P<volume>\\d+)\\)"
-        set:
-          description: Set volume to x
-          cmd: '!VOL({volume})'
         down:
-          description: Decrease volume
           cmd: '!VOL-'
+          description: Decrease volume
         down_by_x:
-          description: Decrease volume by x
           cmd: '!VOL-({volume_increment})'
+          description: Decrease volume by x
+        get:
+          cmd: '!VOL?'
+          description: Get current volume
+          msg: 'FIXME'
+        set:
+          cmd: '!VOL({volume})'
+          description: Set volume to x
         up:
-          description: Increase volume
           cmd: '!VOL+'
+          description: Increase volume
         up_by_x:
-          description: Increase volume by x
           cmd: '!VOL+({volume_increment})'
+          description: Increase volume by x
 
     zone_2_mute:
       actions:
-        get:
-          description: get current Zone B Mute status
-          cmd: '!ZMUTE?'
-          msg: "!ZMUTE\\((?P<mute>[01)\\)"
-        'on':
-          description: Zone B Mute on
-          cmd: '!ZMUTEON'
-        'off':
-          description: Zone B Mute off
-          cmd: '!ZMUTEOFF'
         toggle:
-          description: Toggle Zone B Mute
           cmd: '!ZMUTE'
+          description: Toggle Zone B Mute
+        get:
+          cmd: '!ZMUTE?'
+          description: get current Zone B Mute status
+          msg: 'FIXME'
+        'off':
+          cmd: '!ZMUTEOFF'
+          description: Zone B Mute off
+        'on':
+          cmd: '!ZMUTEON'
+          description: Zone B Mute on
 
     zone_2_power:
       actions:
-        'on':
-          description: Zone Power On
-          cmd: '!ZPON'
         'off':
-          description: Zone Power Off
           cmd: '!ZPOFF'
+          description: Zone Power Off
+        'on':
+          cmd: '!ZPON'
+          description: Zone Power On
         toggle:
-          description: Zone Power Toggle
           cmd: '!ZPTOGGLE'
+          description: Zone Power Toggle
 
     zone_2_source:
       actions:
         previous:
-          description: Previous zone B source button
           cmd: '!ZSRC-'
+          description: Previous zone B source button
         get:
-          description: Get current Zone B source
           cmd: '!ZSRC?'
-          msg: "!ZSRC\\((?P<source>\\d+) \"(?P<name>\\s+)\"\\)"
+          description: Get current Zone B source
+          msg: 'FIXME'
         set:
-          description: Set Zone B source
           cmd: '!ZSRC({source})'
+          description: Set zone B source
         info:
-          description: Get info about a specific Zone B source
           cmd: '!ZSRC({source})?'
-          msg: "!ZSRC\\((?P<source>\\d+) \"(?P<name>\\s+)\"\\)"
+          description: Request info about zone B source x
+          msg: 'FIXME'
         next:
-          description: Next Zone B source button
           cmd: '!ZSRC+'
+          description: Next zone B source button
         list:
-          description: Get list of available Zone B sources
           cmd: '!ZSRCS?'
+          description: Get list of available Zone B sources
           msg: 'FIXME'
 
     zone_2_volume:
       actions:
         down:
-          description: Decrease zone B volume
           cmd: '!ZVOL-'
+          description: Decrease zone B volume
         down_by_x:
-          description: decrease zone B volume by X
           cmd: '!ZVOL-({volume_increment})'
+          description: decrease zone B volume by X
         get:
-          description: Get current zone B volume
           cmd: '!ZVOL?'
-          msg: "!ZVOL\\((?P<volume>\\d+)\\)"
+          description: Get current zone B volume
+          msg: 'FIXME'
         set:
-          description: Set zone B volume
           cmd: '!ZVOL({volume_increment})'
+          description: Set zone B volume
         up:
           cmd: '!ZVOL+'
           description: Increase zone B volume
@@ -696,7 +695,9 @@
           - active
           - src
 
+
 # NOTE: MX180 only has HDMIOUT1 to 2
 # NOTE: MX160 has HDMIOUT1 to 5
 # MX160 has!MVIEW(X) and MULTIVIEW (MX180 does not) and MVIEWACTIVE plus !MVIEW?, !MVIEWACTIVE?, !MVIEWSRC?
 # MX180 has SRCBUTTON (MX180 does not)
+#
