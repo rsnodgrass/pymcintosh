@@ -7,18 +7,18 @@
     - mcintosh_v3
 
   supported:
-    - manufacturer: McIntosh
-      model: MX160
+    - name: McIntosh MX160
+      model: mx160
       type: processor
       tested: false
-      
-    - manufacturer: McIntosh
-      model: MX170
+
+    - name: McIntosh MX170
+      model: mx170
       type: processor
       tested: false
-  
-    - manufacturer: McIntosh
-      model: MX180
+
+    - name: McIntosh MX180
+      model: mx180
       type: processor
       tested: false
 
@@ -26,7 +26,6 @@
     zones: 8
     sources: 8
     rs232_control: true
-
 
   protocol_mixins:
     api_vars:

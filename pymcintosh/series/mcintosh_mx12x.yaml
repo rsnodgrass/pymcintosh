@@ -1,0 +1,57 @@
+- series: mcintosh_mx12x
+  name: "McIntosh A/V Control for Early RS232-C Models"
+  description: "McIntosh A/V Controls for early models which used the RS232-C 3.5mm jack"
+
+  supported:
+    - manufacturer: McIntosh
+      model: C47
+      type: preamp
+      tested: false
+
+    - manufacturer: McIntosh
+      model: C48
+      type: preamp
+      tested: false
+
+    - manufacturer: McIntosh
+      model: MA5200
+      type: amp
+      tested: false
+
+    - name: McIntosh MX121
+      model: mx121
+      type: preamp
+      tested: false
+
+    - name: McIntosh MX122
+      model: mx121
+      type: preamp
+      tested: false
+
+    - name: McIntosh MX123
+      model: mx121
+      type: preamp
+      tested: false
+
+  features:
+    zones: 8
+    sources: 8
+    rs232_control: true
+
+  protocol: mcintosh_mx12x
+
+  protocol_mixins:
+    api_vars:
+      sources:
+        1: "Source 1"
+        2: "Source 2"
+        3: "Source 3"
+        4: "Source 4"
+
+  rs232:
+    baudrate: 9600
+    bytesize: 8
+    parity: 'N'
+    stopbits: 1
+    timeout: 2.0
+    write_timeout: 2.0
