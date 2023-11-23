@@ -11,16 +11,19 @@
       model: mx160
       type: processor
       tested: false
+      released: 2015
 
     - name: McIntosh MX170
       model: mx170
       type: processor
       tested: false
+      released: 2019
 
     - name: McIntosh MX180
       model: mx180
       type: processor
       tested: false
+      released: 2023
 
   features:
     zones: 8

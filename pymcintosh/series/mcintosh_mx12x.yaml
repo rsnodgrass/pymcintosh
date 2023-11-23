@@ -33,6 +33,10 @@
       type: preamp
       tested: false
 
+    - name: McIntosh MX151
+      model: mx151
+      released: 2012
+
   features:
     zones: 8
     sources: 8

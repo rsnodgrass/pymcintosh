@@ -303,6 +303,46 @@
         'on':
             description: Zone 2 mute on
             cmd: 'Z2MUON'
+        get:
+          description: Get Zone 2 mute status
+          cmd: 'Z2MU?'
+
+    zone_2_channel:
+        description: Zone 2 channel setting
+        actions:
+          stereo:
+            cmd: Z2CSST
+          mono:
+            cmd: Z2CSMONO
+          set:
+            description: Zone 2 channel setting
+            cmd: "Z2CS{setting}"
+            values:
+              MONO: "Mono"
+              ST: "Stereo"
+          get:
+            cmd: "Z2CS?"
+            msg: "STEREO" # FIME  (ST|MONO)
+            example: "STEREO"
+
+   # Z2CV skipped for now
+   # Z2HP skipped for now
+   # rest of Zone 2 commands skipped
+
+   # FIXME: Zone 3 command sskipped
+  # FIXME: Zone 4 commands skipped
+
+  #  Tunr control skipped
+   tuner:frequency;
+   actions:
+      up:
+          descripotion: Tuner frequency up
+          cmd: 'TFANUP'
+
+
+
+
+
 
 
 
