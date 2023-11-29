@@ -9,15 +9,16 @@
     command:
       format: "{cmd}{eol}"
       eol: "\r"  # CR Carriage Return
-      separator: '#'   # FIXME: is this old?
 
     message:
       format: "{msg}{eol}"
       eol: "\r"
-      separator: '#'
 
-  api_settings:
+  settings:
     min_time_between_commands: 0.4
+
+    # upon connection, initialize device with these commands
+    connection_init: "!VERB(2)"
 
   vars:
     zone:
@@ -172,6 +173,10 @@
           description: Get list of audio processing modes
           cmd: '!AUDMODEL?'
           msg: "!AUDMODECOUNT\\((?P<count>\\d+)\\)\r"  # FIXME
+          tests:
+            msg:
+              "!AUDMODECOUNT(2)\r!AUDMODE(0)\"Source 1\"\r!AUDMODE(1)\"Source 2\"":
+                count: 2
 
   audio_type:
     description: Input audio type
@@ -251,7 +256,7 @@
     device:
       actions:
         name:
-          description: Returns the name of the device (r.g. MX160)
+          description: Returns the name of the device (e.g. MX160)
           cmd: '!DEVICE?'
           msg: "!DEVICE\\((?P<name>)\\)"
 
@@ -285,14 +290,14 @@
           cmd: '!DIM(3)'
 
     interface:
-      description: Active interface for this session (IP or SERIAL)
+      description: Interface type for this session (IP or SERIAL)
       get:
         description: Returns the active interface for this section
         cmd: '!INTERFACE?'
         msg: "!INTERFACE\\((?P<interface>\\s+)\\)"
 
     lipsync:
-      description: Lipsync
+      description: Lipsync adjustments
       actions:
         set:
           description: Set the lipsync value
@@ -305,6 +310,11 @@
           description: Get the lipsync value range
           cmd: '!LIPSYNCRANGE?'
           msg: "!LIPSYNCRANGE\\((?P<min>\\d+),(?P<max>\\d+)\\)\r" # FIXME:multiline
+          tests:
+            msg:
+              "!LIPSYNCRANGE(1,3)":
+                min: 1
+                max: 3
         down:
           description: Reduce lipsync value
           cmd: '!LIPSYNC-'
@@ -409,7 +419,11 @@
         get:
           description: Get available RoomPerfect positions
           cmd: '!RPFOCS?'
-          msg: "!POWER\\((?P<power>[01])\\)" # FIXME
+          msg: "!PPFOCOUNT\\((?P<power>[01])\\)" # FIXME
+          tests:
+            msg:
+              "FIXME":
+                positions: 3
 
     roomperfect_voice:
       description: RoomPerfect room correction voice
@@ -431,6 +445,10 @@
           description: Request list of available voicings
           cmd: '!RPVOIS?'
           msg: "!RPVOICOUNT\\((?P<voice_count>\\d+)\\)\r" # FIXME:multiline
+          tests:
+            msg:
+              "!RPIVOICOUNT(2)":
+                voice_count: 2
 
     source:
       description: Source selection
@@ -456,6 +474,10 @@
           description: Get list of available sources
           cmd: '!SRCS?'
           msg: "!SRCOUNT\\((?P<count>\\d+)\\)\r" # FIXME: multi-line!
+          tests:
+            msg:
+              "FIXME":
+                "count": 2
 
 #!SRCCOUNT({src})<CR>
 #!SRC(0)"DVD player"<CR>
@@ -484,6 +506,10 @@
           description: Request SW information (prints a list of version numbers)
           cmd: '!SWINFO?'
           msg: "!SWINFO\\((?P<version>\\s+)\\)"
+          tests:
+            msg:
+              "!SWINFO(1)":
+                version: "1"
 
     trim_bass:
       actions:
@@ -491,6 +517,11 @@
           description: Get current bass level trim (10 = 1dB)
           cmd: '!TRIMBASS?'
           msg: "!TRIMBASS\\((?P<trim_level>\\d+)\\)"
+          tests:
+            msg:
+              "!TRIMBASS(10)":
+                "trim_level": 10
+
         set:
           description: Sets bass level trim (10 = 1dB)
           cmd: '!TRIMBASS({bass_level})'
@@ -570,7 +601,9 @@
         get:
           description: Get current treble level trim (10 = 1dB)
           cmd: '!TRIMTREB?'
-          msg: "!TRIMTREB\\(?P<treble>\\d+)\\)"
+          msg:
+            - "!TRIMTREB\\(?P<treble>\\d+)\\)" # MX160
+            - "!TRIMTREBLE\\(?P<treble>\\d+)\\)" # MX170/MX180
         set:
           description: Sets treble level trim (10 = 1dB)
           cmd: '!TRIMTREB({trim_level})'
@@ -653,7 +686,7 @@
         list:
           description: Get list of available Zone B sources
           cmd: '!ZSRCS?'
-          msg: 'FIXME'
+          msg: 'FIXME' # !ZSRCCOUNT(N) !ZSRC(X)”Name”
 
     zone_2_volume:
       actions:
@@ -679,24 +712,23 @@
 
   model_overrides:
     mx160:
-      ref: Based on MX160 Serial Control V7 (2017-09-18)
+      ref: Based on MX160 Serial Control Manual V7 (2017-09-18)
+
     mx170:
-      ref: Based on MX170 Serial Control V?
+      ref: Based on MX170 Serial Control Manual V2 (2019-11-27)
+
     mx180:
-      ref: Based on MX180 Serial Control V1 (2022-03-29)
+      ref: Based on MX180 Serial Control Manual V1 (2022-03-29)
       delete:
         buttons:
           - source
+        # MX180 only has HDMIOUT 1-2
         hdmi:
           - out3
           - out4
           - out5
-        mview: # remote all MVIEW options
+        # MX180 has no MULTIVIEW
+        mview:
           - set
           - active
           - src
-
-# NOTE: MX180 only has HDMIOUT1 to 2
-# NOTE: MX160 has HDMIOUT1 to 5
-# MX160 has!MVIEW(X) and MULTIVIEW (MX180 does not) and MVIEWACTIVE plus !MVIEW?, !MVIEWACTIVE?, !MVIEWSRC?
-# MX180 has SRCBUTTON (MX180 does not)
