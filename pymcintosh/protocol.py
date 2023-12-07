@@ -7,6 +7,7 @@ from .core import load_yaml_dir
 LOG = logging.getLogger(__name__)
 
 # FIXME: protocols are really DEFINITIONS, not "config"
+# FIXME: consider moving protocol.py to protocols/__init__.py
 
 PROTOCOL_DEFS = load_yaml_dir(f"{CONFIG_DIR}/protocols")
 
@@ -71,7 +72,6 @@ def _precompile_response_patterns():
 
             for action_name, action_def in actions.items():
                 name = f"{group_name}.{action_name}"
-                print(name)
 
                 # check if there is a message response, if so precompile
                 msg_pattern = action_def.get("msg")

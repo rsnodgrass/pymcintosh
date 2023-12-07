@@ -186,7 +186,7 @@
               get:
                 description: Get info for currently active source
                 cmd: 'SI?'
-                msg: "\\(\\(?P<source>\\d+\\)\\)\s+\"\\(?P<name>\\s+\\)\""
+                msg: "\\(\\(?P<source>\\d+\\)\\)\\s+\"\\(?P<name>\\s+\\)\""
               set:
                 description: Select source
                 cmd: 'SI{source}'

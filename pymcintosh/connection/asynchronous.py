@@ -1,16 +1,17 @@
 import logging
 import asyncio
+import functools
 import time
 from functools import wraps
 
 from ratelimit import limits
 from serial_asyncio import create_serial_connection
 
-from .const import *  # noqa: F403
+from ..const import *  # noqa: F403
 
 LOG = logging.getLogger(__name__)
 
-MINUTES = 300
+FIVE_MINUTES = 5 * 60
 
 # FIXME: for a specific instance we do not want communication to happen
 # simultaneously...for now just lock ALL accesses to ANY device.
@@ -26,12 +27,16 @@ def locked_coro(coro):
     return wrapper
 
 
-async def async_get_rs232_protocol(
+def get_connection_config(config, serial_config):
+    return {}
+
+
+async def async_get_rs232_connection(
     serial_port, config, serial_config, protocol_config, loop
 ):
     # ensure only a single, ordered command is sent to RS232 at a time (non-reentrant lock)
     def locked_method(method):
-        @functools.wraps(method)
+        @wraps(method)
         async def wrapper(self, *method_args, **method_kwargs):
             async with self._lock:
                 return await method(self, *method_args, **method_kwargs)
@@ -40,7 +45,7 @@ async def async_get_rs232_protocol(
 
     # check if connected, and abort calling provided method if no connection before timeout
     def ensure_connected(method):
-        @functools.wraps(method)
+        @wraps(method)
         async def wrapper(self, *method_args, **method_kwargs):
             try:
                 await asyncio.wait_for(self._connected.wait(), self._timeout)
@@ -60,8 +65,13 @@ async def async_get_rs232_protocol(
             self._serial_port = serial_port
             self._config = config
             self._serial_config = serial_config
-            self._protocol_config = protocol_config
             self._loop = loop
+
+            self._encoding = "ascii"
+            self._response_eol = protocol_config[CONF_RESPONSE_EOL].encode(
+                self._encoding
+            )
+            self._response_callback = None
 
             self._last_send = time.time() - 1
             self._timeout = self._config.get("timeout", DEFAULT_TIMEOUT)
@@ -73,6 +83,10 @@ async def async_get_rs232_protocol(
 
             # ensure only a single, ordered command is sent to RS232 at a time (non-reentrant lock)
             self._lock = asyncio.Lock()
+
+        def register_response_callback(self, callback):
+            """Register a callback that is called for each response line"""
+            self._response_callback = callback
 
         def connection_made(self, transport):
             self._transport = transport
@@ -105,7 +119,7 @@ async def async_get_rs232_protocol(
 
         @locked_method
         @ensure_connected
-        async def send(self, request: bytes, wait_for_reply=True, skip=0):
+        async def send(self, request: bytes, wait_for_reply=True, skip_initial_bytes=0):
             await self._throttle_requests()
 
             # clear all buffers of any data waiting to be read before sending the request
@@ -124,43 +138,49 @@ async def async_get_rs232_protocol(
 
             # read the response
             data = bytearray()
-            response_eol = self._protocol_config[CONF_RESPONSE_EOL].encode("ascii")
             try:
                 while True:
-                    data += await asyncio.wait_for(
-                        self._q.get(), self._timeout
-                    )  # , loop=self._loop)
-                    if response_eol in data[skip:]:
+                    data += await asyncio.wait_for(self._q.get(), self._timeout)
+
+                    # FIXME: investigate more robust reading data with prefixes (vs just skipping some bytes)
+                    if self._response_eol in data[skip_initial_bytes:]:
                         # only return the first line
                         LOG.debug(
-                            f"Received: %s (len=%d, eol={response_eol})",
-                            bytes(data).decode("ascii", errors="ignore"),
+                            f"Received: %s (len=%d, eol={self._response_eol})",
+                            bytes(data).decode(self._encoding, errors="ignore"),
                             len(data),
                         )
-                        result_lines = data.split(response_eol)
+                        result_lines = data.split(self._response_eol)
 
                         # strip out any blank lines
                         result_lines = [value for value in result_lines if value != b""]
 
-                        if not result_lines:
-                            return ""
-
                         if len(result_lines) > 1:
                             LOG.debug(
-                                "Multiple response lines, ignore all but first: %s",
+                                "Multiple response lines passed to callbacks, but only returning first: %s",
                                 result_lines,
                             )
 
-                        # NOTE: May want to catch decode failures to figure out when non-ASCII chars are returned (for instance DAX88)
-                        result = result_lines[0].decode("ascii", errors="ignore")
-                        return result
+                        # pass all lines to any registered callback
+                        first_result = None
+                        for line in result_lines:
+                            # NOTE: May want to catch decode failures to figure out when
+                            # characters are returned that do not match the encoding type
+                            # e.g. DAX88 can return non-ASCII chars
+                            result = line.decode(self._encoding, errors="ignore")
+                            self._response_callback(result)
+
+                            if not first_result:
+                                first_result = result
+
+                        return first_result
 
             except asyncio.TimeoutError:
                 # log up to two times within a time period to avoid saturating the logs
-                @limits(calls=2, period=5 * MINUTES)
+                @limits(calls=2, period=FIVE_MINUTES)
                 def log_timeout():
                     LOG.info(
-                        f"Timeout for request '%s': received='%s' ({self._timeout} s; eol={response_eol})",
+                        f"Timeout for request '%s': received='%s' ({self._timeout} sec)",
                         request,
                         data,
                     )

@@ -1,3 +1,3 @@
-__version__ = "2023.11.18"
+__version__ = "2023.12.07"
 
-from .controllers import DeviceController
+from .controller import DeviceController

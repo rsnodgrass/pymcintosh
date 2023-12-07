@@ -1,50 +1,48 @@
 - series: mcintosh
   name: McIntosh A/V Control
-  description: McIntosh A/V Controls
+  description: "Definitions for more modern McIntosh A/V equipment using the modern RS232 serial protocol."
 
-  protocol: mcintosh_v3
-  protocol_definitions:
-    - mcintosh_v3
-
-  supported:
+  models:
     - name: McIntosh MX160
       model: mx160
       type: processor
-      tested: false
+      tested: true
       released: 2015
 
     - name: McIntosh MX170
       model: mx170
       type: processor
-      tested: false
       released: 2019
 
     - name: McIntosh MX180
       model: mx180
       type: processor
-      tested: false
       released: 2023
+      config:
+        rs232:
+          baudrate: 115200
 
-  features:
-    zones: 8
-    sources: 8
-    rs232_control: true
+  default_config:
+    protocol: mcintosh
 
-  protocol_mixins:
-    api_vars:
-      sources:
+    features:
+      zones: 8
+      sources: 8
+
+    rs232:
+      baudrate: 115200
+      bytesize: 8
+      parity: 'N'
+      stopbits: 1
+      timeout: 2.0
+      write_timeout: 2.0
+
+  default_vars:
+    sources:
         1: "Source 1"
         2: "Source 2"
         3: "Source 3"
         4: "Source 4"
-
-  rs232:
-    baudrate: 115200
-    bytesize: 8
-    parity: 'N'
-    stopbits: 1
-    timeout: 2.0
-    write_timeout: 2.0
 
   # these really map from the hardware protocol to user visible names...should they be in the protocol?
   bass_level:

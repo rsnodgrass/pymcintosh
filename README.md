@@ -77,7 +77,7 @@ new controller objects unless an `event_loop` is passed into the
 Async example:
 
 ```python
-    equipment = create_equipment_controller(
+    equipment = DeviceController.create(
         args.type,
         args.url,
         serial_config_overrides=config,
