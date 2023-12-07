@@ -2,6 +2,7 @@ import logging
 import re
 
 from .const import *  # noqa: F403
+from .core import load_yaml_dir
 
 LOG = logging.getLogger(__name__)
 
@@ -51,14 +52,34 @@ def describe_protocol(self):
 def _precompile_response_patterns():
     """Precompile all response patterns"""
     precompiled = {}
-    for protocol_type, config in PROTOCOL_CONFIG.items():
+    for protocol_type, config in PROTOCOL_DEFS.items():
         patterns = {}
 
-        LOG.debug(f"Precompile patterns for {protocol_type}")
-        for name, pattern in config["responses"].items():
-            # LOG.debug(f"Precompiling pattern {name}: {pattern}")
-            patterns[name] = re.compile(pattern)
-        precompiled[protocol_type] = patterns
+        api = config.get("api")
+        if not api:
+            LOG.error(f"Missing 'api' in protocol {protocol_type}")
+            continue
+
+        LOG.debug(f"Precompiling patterns for protocol {protocol_type}")
+
+        for group_name, group_def in api.items():
+            print(f"Processing protocol {protocol_type} group {group_name}")
+
+            actions = group_def.get("actions")
+            if not actions:
+                LOG.error(f"Missing 'actions' in {protocol_type}.{group_name}")
+                continue
+
+            for action_name, action_def in actions.items():
+                name = f"{group_name}.{action_name}"
+                print(name)
+                print(action_def)
+
+                msg_pattern = action_def.get("msg")
+                if msg_pattern:
+                    LOG.debug(f"Precompiling pattern {name}: {msg_pattern}")
+                    patterns[name] = re.compile(msg_pattern)
+
     return precompiled
 
 
