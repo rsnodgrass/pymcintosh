@@ -48,22 +48,21 @@ def describe_protocol(self):
     return docs
 
 
+# FIXME: rewrite this
 # cached dictionary pattern matches for all responses for each protocol
 def _precompile_response_patterns():
     """Precompile all response patterns"""
     precompiled = {}
     for protocol_type, config in PROTOCOL_DEFS.items():
-        patterns = {}
+        LOG.debug(f"Precompiling patterns for protocol {protocol_type}")
 
         api = config.get("api")
         if not api:
             LOG.error(f"Missing 'api' in protocol {protocol_type}")
             continue
 
-        LOG.debug(f"Precompiling patterns for protocol {protocol_type}")
-
         for group_name, group_def in api.items():
-            print(f"Processing protocol {protocol_type} group {group_name}")
+            LOG.debug(f"Processing protocol {protocol_type} group {group_name}")
 
             actions = group_def.get("actions")
             if not actions:
@@ -72,13 +71,12 @@ def _precompile_response_patterns():
 
             for action_name, action_def in actions.items():
                 name = f"{group_name}.{action_name}"
-                print(name)
-                print(action_def)
 
+                # check if there is a message response, if so precompile
                 msg_pattern = action_def.get("msg")
                 if msg_pattern:
                     LOG.debug(f"Precompiling pattern {name}: {msg_pattern}")
-                    patterns[name] = re.compile(msg_pattern)
+                    precompiled[name] = re.compile(msg_pattern)
 
     return precompiled
 
