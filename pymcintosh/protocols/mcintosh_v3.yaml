@@ -1,3 +1,7 @@
+# NOTES:
+#  - cmd commands are in substitution variable format (e.g. {var})
+#  - msg messagesss are in regex format to decode
+
 - protocol: mcintosh_v3
   name: McIntosh v3 API
   description: Based on MX160 Serial Control Manual V7 (2017-09-18)
@@ -162,7 +166,7 @@
         down:
           description: Audio processing mode down button
           cmd: '!AUDMODE-'
-        'up':
+        up:
           description: Audio processing mode up button
           cmd: '!AUDMODE+'
         get:
@@ -302,12 +306,10 @@
         set:
           description: Set the lipsync value
           cmd: '!LIPSYNC({lipsync})'
-
         get:
           description: Get the lipsync value
           cmd: '!LIPSYNC?'
           msg: "!LIPSYNC\\((?P<lipsync>\\d)\\)"
-
         range:
           description: Get the lipsync value range
           cmd: '!LIPSYNCRANGE?'
@@ -332,11 +334,9 @@
        'on':
          description: Turn loudness on
          cmd: '!LOUDNESS(1)'
-
        'off':
          description: Turn loudness off
          cmd: '!LOUDNESS(0)'
-
        get:
          description: Get the loudness setting (0=off; 1=on)
          cmd: '!LOUDNESS?'
@@ -695,7 +695,11 @@
         list:
           description: Get list of available Zone B sources
           cmd: '!ZSRCS?'
-          msg: 'FIXME' # !ZSRCCOUNT(N) !ZSRC(X)”Name”
+          msg: '!ZSRCCOUNT\\((?P<count>\\d+)\r!ZSRC\\((?P<source_id>)\\)\s*"(?P<name>)"'
+          tests:
+            msg:
+              '!ZSRCCOUNT(1)\r!ZSRC(1) "Source 1"':
+                count: 1
 
     zone_2_volume:
       actions:
