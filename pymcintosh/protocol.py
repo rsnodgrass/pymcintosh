@@ -71,6 +71,7 @@ def _precompile_response_patterns():
 
             for action_name, action_def in actions.items():
                 name = f"{group_name}.{action_name}"
+                print(name)
 
                 # check if there is a message response, if so precompile
                 msg_pattern = action_def.get("msg")

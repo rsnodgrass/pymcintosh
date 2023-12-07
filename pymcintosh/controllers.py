@@ -158,7 +158,7 @@ class DeviceControllerAsync(DeviceControllerBase):
 
 class DeviceController:
     @classmethod
-    def create_device_controller(
+    def create(
         self, device_type: str, url: str, serial_config_overrides={}, event_loop=None
     ) -> DeviceControllerBase:
         """

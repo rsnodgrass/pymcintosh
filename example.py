@@ -9,7 +9,7 @@ import argparse as arg
 
 import coloredlogs
 
-from pymcintosh import create_device_controller
+from pymcintosh import DeviceController
 
 LOG = logging.getLogger(__name__)
 coloredlogs.install(level="DEBUG")
@@ -27,13 +27,17 @@ p.add_argument(
     default=115200,
     help="baud rate if local tty used (default=115200)",
 )
+p.add_argument("-d", "--debug", action="store_true", help="verbose logging")
 args = p.parse_args()
+
+if args.debug:
+    logging.getLogger().setLevel(level=logging.DEBUG)
 
 config = {"baudrate": args.baud}
 
 
 def main():
-    device = create_device_controller(
+    device = DeviceController.create(
         args.type, args.url, serial_config_overrides=config
     )
 
