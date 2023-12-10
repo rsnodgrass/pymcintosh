@@ -6,6 +6,7 @@
 
 import logging
 import argparse as arg
+from pprint import pprint
 
 import coloredlogs
 
@@ -18,7 +19,7 @@ p = arg.ArgumentParser(description="RS232 client example (synchronous)")
 p.add_argument(
     "--url",
     help="pyserial supported url for communication (e.g. /dev/tty.usbserial-A501SGSZ or socket://server:4999/)",
-    default="/dev/tty.usbserial",
+    default="socket://server:4999/",
 )
 p.add_argument("--model", default="mx160", help="device model (e.g. mx160)")
 p.add_argument(
@@ -42,7 +43,7 @@ def main():
     )
 
     pprint(device.describe())
-    device.send_raw("PING?")
+    device.send_raw(b"PING?")
 
 
 main()

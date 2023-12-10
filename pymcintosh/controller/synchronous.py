@@ -20,7 +20,7 @@ class DeviceControllerSync(DeviceControllerBase):
         Send raw data to the device's connection
         """
         if LOG.isEnabledFor(logging.DEBUG):
-            LOG.debug(f"Sending {self._device_type} @ {self._url}: %s", bytes.decode())
+            LOG.debug(f"Sending {self._model} @ {self._url}: %s", data.decode())
 
         # send the data and flush all the bytes to the connection
         self._connection.write(data)

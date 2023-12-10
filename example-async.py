@@ -21,7 +21,7 @@ p = arg.ArgumentParser(description="RS232 client example (asynchronous)")
 p.add_argument(
     "--url",
     help="pyserial supported url for communication (e.g. /dev/tty.usbserial-A501SGSZ or socket://server:4999/)",
-    default="/dev/tty.usbserial",
+    default="socket://server:4999/",
 )
 p.add_argument("--model", default="mx160", help="device model (e.g. mx160)")
 p.add_argument(
@@ -49,7 +49,7 @@ async def main():
 
     # pprint(DeviceModels.get_supported_models())
     pprint(device.describe())
-    await device.send_raw("PING?")
+    await device.send_raw(b"PING?")
 
 
 asyncio.run(main())

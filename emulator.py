@@ -10,8 +10,10 @@ import threading
 from functools import wraps
 from threading import RLock
 
-LOG = logging.getLogger(__name__)
+import coloredlogs
 
+LOG = logging.getLogger(__name__)
+coloredlogs.install(level="DEBUG")
 
 clients = []
 
@@ -87,7 +89,7 @@ def main():
         logging.getLogger().setLevel(level=logging.DEBUG)
 
     # listen on the specified port
-    LOG.warning(f"Listener emulating model {args.model} on {args.host}:{args.port}")
+    LOG.info(f"Listener emulating model {args.model} on {args.host}:{args.port}")
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind((args.host, args.port))
     s.listen(4)
