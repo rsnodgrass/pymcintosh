@@ -10,7 +10,7 @@ LOG = logging.getLogger(__name__)
 class DeviceController:
     @staticmethod
     def create(
-        model: str, url: str, serial_config_overrides=dict, event_loop=None
+        model: str, url: str, serial_config_overrides={}, event_loop=None
     ) -> DeviceControllerBase:
         """
         Create an instance of an DeviceControllerBase object given
@@ -38,7 +38,7 @@ class DeviceController:
         # caller can override the default serial port config for a given type
         # of device since the user could have changed settings on their
         # physical device (e.g. increasing the baud rate)
-        serial_config = config.get(CONF_SERIAL_CONFIG)
+        serial_config = config.get(CONF_SERIAL_CONFIG, {})
         if serial_config_overrides:
             LOG.info(
                 f"Overriding {model} serial config: {serial_config_overrides}; url={url}"

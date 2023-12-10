@@ -367,6 +367,9 @@
           description: Ping for a pong (returns PONG)
           cmd: '!PING'
           msg: '!PONG'
+          tests:
+            msg:
+              "!PONG":
 
     power_system:
       actions:

@@ -1,4 +1,5 @@
 import logging
+from collections.abc import Callable
 
 import serial
 
@@ -16,15 +17,25 @@ class DeviceControllerSync(DeviceControllerBase):
 
     @synchronized
     def send_raw(self, data: bytes) -> None:
-        """
-        Send raw data to the device's connection
-        """
         if LOG.isEnabledFor(logging.DEBUG):
             LOG.debug(f"Sending {self._model} @ {self._url}: %s", data.decode())
 
         # send the data and flush all the bytes to the connection
         self._connection.write(data)
         self._connection.flush()
+
+    @synchronized
+    def send_command(self, data: str) -> None:
+        self.send_raw(data.bytes())
+
+    @synchronized
+    def register_callback(self, callback: Callable[[str], None]) -> None:
+        self._callbacks.append(callback)
+
+    @synchronized
+    async def received_message(self):
+        for cb in self._callbacks:
+            self._loop.call_soon(cb)
 
     @synchronized
     def _write(self, request: bytes, skip=0):

@@ -1,8 +1,9 @@
 import logging
+from collections.abc import Callable
 
 from ..const import *  # noqa: F403
 from ..models import DeviceModels
-from ..protocol import PROTOCOL_DEFS
+from ..protocols import protocol_definitions
 
 LOG = logging.getLogger(__name__)
 
@@ -21,20 +22,30 @@ class DeviceControllerBase:
         self._serial_config = serial_config
 
         self._protocol_name = protocol_name
-        self._protocol_def = PROTOCOL_DEFS[protocol_name]
+        self._protocol_def = protocol_definitions()[protocol_name]
 
-    def describe(self) -> dict:
-        return self._model_def
+        self._callbacks = []
+
+    def send_command(self, group: str, action: str, **kwargs):
+        """
+        Call a command by the group/action and args as defined in the
+        device's protocol yaml.
+        """
+        LOG.error(f"Should be calling {group}.{action}({kwargs})")
+        raise NotImplementedError()
 
     def send_raw(self, data: bytes) -> None:
         """
-        Send raw data to the device's connection (not a message)
+        Allows sending a raw data to the device. Generally this should not
+        be used except for testing, since all commands should be defined in
+        the yaml protocol configuration. No response messages are supported.
         """
         raise NotImplementedError()
 
-    def _write(self, data: bytes, skip=0):
+    def register_callback(self, callback: Callable[[str], None]) -> None:
         """
-        Write the provided data to the connected device.
+        Register a callback that is called when a message is received
+        from the device.
         """
         raise NotImplementedError()
 
@@ -47,17 +58,8 @@ class DeviceControllerBase:
 
         return command.format(**args).encode("ascii")
 
-    def command(self, group: str, action: str, **kwargs):
-        """
-        Call a command by the group/action and args as defined in the
-        device's protocol yaml.
-        """
-        LOG.error(f"Should be calling {group}.{action}({kwargs})")
+    def describe(self) -> dict:
+        return self._model_def
 
-    def raw_command(self, command: str):
-        """
-        Allows sending a raw command to the device. Generally this should not
-        be used except for testing, since all commands should be defined in
-        the yaml protocol configuration. No response messages are supported.
-        """
-        self._write(command)
+    def protocol(self):
+        return self._protocol_def

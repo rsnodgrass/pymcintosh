@@ -1,8 +1,8 @@
 import logging
 import re
 
-from .const import *  # noqa: F403
-from .core import load_yaml_dir
+from ..const import *  # noqa: F403
+from ..core import load_yaml_dir
 
 LOG = logging.getLogger(__name__)
 
@@ -10,6 +10,10 @@ LOG = logging.getLogger(__name__)
 # FIXME: consider moving protocol.py to protocols/__init__.py
 
 PROTOCOL_DEFS = load_yaml_dir(f"{CONFIG_DIR}/protocols")
+
+
+def protocol_definitions():
+    return PROTOCOL_DEFS
 
 
 def describe_protocol(self):

@@ -12,6 +12,8 @@ from threading import RLock
 
 import coloredlogs
 
+from pymcintosh import DeviceController
+
 LOG = logging.getLogger(__name__)
 coloredlogs.install(level="DEBUG")
 
@@ -95,7 +97,10 @@ def main():
         logging.getLogger().setLevel(level=logging.DEBUG)
 
     # listen on the specified port
-    LOG.info(f"Listener emulating model {args.model} on {args.host}:{args.port}")
+    url = f"socket://{args.host}:{args.port}/"
+    LOG.info(f"Listener emulating model {args.model} on {url}")
+
+    device = DeviceController.create(args.model, url)
 
     s = None
     try:
