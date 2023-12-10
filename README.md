@@ -1,4 +1,4 @@
-# Python API for McIntosh and Lyngdorf A/V Equipment
+# Python API for McIntosh and Lyngdorf A/V Equipment (pyavcontrol)
 
 ![McIntosh](https://raw.githubusercontent.com/rsnodgrass/pymcintosh/main/img/mcintosh-logo.png)
 

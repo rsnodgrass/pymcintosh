@@ -20,7 +20,7 @@ p.add_argument(
     help="pyserial supported url for communication (e.g. /dev/tty.usbserial-A501SGSZ or socket://server:4999/)",
     required=True,
 )
-p.add_argument("--type", default="mcintosh", help="device type (e.g. mcintosh)")
+p.add_argument("--model", default="mx160", help="device model (e.g. mx160)")
 p.add_argument(
     "--baud",
     type=int,
@@ -38,7 +38,7 @@ config = {"baudrate": args.baud}
 
 def main():
     device = DeviceController.create(
-        args.type, args.url, serial_config_overrides=config
+        args.model, args.url, serial_config_overrides=config
     )
 
     # save the status for all zones before modifying

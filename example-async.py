@@ -22,7 +22,7 @@ p.add_argument(
     help="pyserial supported url for communication (e.g. /dev/tty.usbserial-A501SGSZ or socket://server:4999/)",
     required=True,
 )
-p.add_argument("--type", default="mcintosh", help="device type (e.g. mcintosh)")
+p.add_argument("--model", default="mx160", help="device model (e.g. mx160)")
 p.add_argument(
     "--baud",
     type=int,
@@ -40,7 +40,7 @@ config = {"baudrate": args.baud}
 
 async def main():
     device = DeviceController.create(
-        args.type,
+        args.model,
         args.url,
         serial_config_overrides=config,
         event_loop=asyncio.get_event_loop(),

@@ -1,17 +1,16 @@
 import logging
 
 from ..const import *  # noqa: F403
-from ..core import load_yaml_dir
-from ..models import get_model_config
+from ..models import Models
 from .base import DeviceControllerBase
 
 LOG = logging.getLogger(__name__)
 
 
 class DeviceController:
-    @classmethod
+    @staticmethod
     def create(
-        self, model: str, url: str, serial_config_overrides=dict, event_loop=None
+        model: str, url: str, serial_config_overrides=dict, event_loop=None
     ) -> DeviceControllerBase:
         """
         Create an instance of an DeviceControllerBase object given
@@ -29,7 +28,7 @@ class DeviceController:
 
         :return an instance of DeviceControllerBase
         """
-        config = get_model_config(model)
+        config = Models.get_config(model)
         if not config:
             LOG.error(f"Model '{model}' has no definitions found in models/*.yaml")
             return None
@@ -37,15 +36,15 @@ class DeviceController:
         # caller can override the default serial port config for a given type
         # of device since the user could have changed settings on their
         # physical device (e.g. increasing the baud rate)
-        serial_config = get_model_config(model, CONF_SERIAL_CONFIG)
+        serial_config = config.get(CONF_SERIAL_CONFIG)
         if serial_config_overrides:
             LOG.info(
-                f"Overriding {model} serial config for {url}: {serial_config_overrides}"
+                f"Overriding {model} serial config: {serial_config_overrides}; url={url}"
             )
             serial_config.update(serial_config_overrides)
 
         # ensure the device has a protocol defined
-        protocol_name = get_model_config(model, CONF_PROTOCOL_NAME)
+        protocol_name = config.get(CONF_PROTOCOL_NAME)
         if not protocol_name:
             LOG.error(f"Model {model} missing '{CONF_PROTOCOL_NAME}' config key")
             return

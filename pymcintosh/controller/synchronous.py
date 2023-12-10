@@ -11,8 +11,20 @@ LOG = logging.getLogger(__name__)
 
 class DeviceControllerSync(DeviceControllerBase):
     def __init__(self, model: str, url: str, serial_config: dict, protocol_name: str):
-        DeviceControllerBase.__init__(model, url, serial_config, protocol_name)
+        DeviceControllerBase.__init__(self, model, url, serial_config, protocol_name)
         self._connection = serial.serial_for_url(url, **serial_config)
+
+    @synchronized
+    def send_raw(self, data: bytes) -> None:
+        """
+        Send raw data to the device's connection
+        """
+        if LOG.isEnabledFor(logging.DEBUG):
+            LOG.debug(f"Sending {self._device_type} @ {self._url}: %s", bytes.decode())
+
+        # send the data and flush all the bytes to the connection
+        self._connection.write(data)
+        self._connection.flush()
 
     @synchronized
     def _write(self, request: bytes, skip=0):
@@ -25,11 +37,7 @@ class DeviceControllerSync(DeviceControllerBase):
         self._connection.reset_output_buffer()
         self._connection.reset_input_buffer()
 
-        LOG.debug(f"Sending {self._device_type} @ {self._url}: {request}")
-
-        # send the request and flush all the bytes to the connection
-        self._connection.write(request)
-        self._connection.flush()
+        self.send_raw(bytes)
 
         eol = self._protocol_defs.get(CONF_RESPONSE_EOL).encode("ascii")
         eol_len = len(eol)

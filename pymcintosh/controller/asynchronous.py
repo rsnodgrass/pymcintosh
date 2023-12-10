@@ -11,9 +11,21 @@ class DeviceControllerAsync(DeviceControllerBase):
     def __init__(
         self, model: str, url: str, serial_config: dict, protocol_name: str, loop
     ):
-        DeviceControllerBase.__init__(model, url, serial_config, protocol_name)
+        DeviceControllerBase.__init__(self, model, url, serial_config, protocol_name)
         self._loop = loop
         self._connection_ref = None
+
+    @locked_coro
+    async def send_raw(self, data: bytes) -> None:
+        """
+        Send raw data to the device's connection (not a message)
+        """
+        if LOG.isEnabledFor(logging.DEBUG):
+            LOG.debug(f"Sending {self._device_type} @ {self._url}: %s", bytes.decode())
+
+        # send the data and flush all the bytes to the connection
+        self._connection().write(data)
+        self._connection.flush()
 
     async def _connection(self):
         """
@@ -34,21 +46,3 @@ class DeviceControllerAsync(DeviceControllerBase):
                 self._loop,
             )
         return self._connection_ref
-
-    @locked_coro
-    async def zone_status(self, zone: int):
-        # FIXME: this has nothing to do with amp_type?  protocol!
-
-        # if there is a list of zone status commands, execute that (some don't have a single command for status)
-        # if get_protocol_config(amp_type, 'zone_status_commands'):
-        #    return await self._zone_status_manual(zone)
-
-        cmd = _zone_status_cmd(self._amp_type, zone)
-        skip = get_device_config(amp_type, "zone_status_skip") or 0
-        status_string = await self._protocol.send(cmd, skip=skip)
-
-        status = ZoneStatus.from_string(self._amp_type, status_string)
-        LOG.debug("Status: %s (string: %s)", status, status_string)
-        if status:
-            return status.dict
-        return None

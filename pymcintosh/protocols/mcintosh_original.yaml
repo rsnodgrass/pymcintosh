@@ -1,6 +1,6 @@
-- protocol: mcintosh_mx12x
-  name: McIntosh MX12x API
-  description: RS232 for McIntosh MX121/MX122/MX123
+- protocol: mcintosh_original
+  name: Original McIntosh RS232 Protocol
+  description: Original RS232 protocol for McIntosh MX121/MX122/MX123 and compatible models
   urls:
     - https://github.com/RobKikta/IntoBlue/blob/master/McIntosh_RS232ControlApplicationNote.pdf
     - https://community.home-assistant.io/t/need-help-using-rs232-to-control-a-receiver/95210/4

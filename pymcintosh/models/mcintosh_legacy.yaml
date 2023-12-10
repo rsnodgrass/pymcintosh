@@ -20,11 +20,11 @@
       type: preamp
 
     - name: McIntosh MX122
-      model: mx121
+      model: mx122
       type: preamp
 
     - name: McIntosh MX123
-      model: mx121
+      model: mx123
       type: preamp
 
     - name: McIntosh MX151
@@ -33,7 +33,7 @@
 
 
   default_config:
-    protocol: mcintosh_legacy
+    protocol: mcintosh_original
 
     features:
       zones: 8

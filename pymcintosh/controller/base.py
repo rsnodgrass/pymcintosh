@@ -1,6 +1,7 @@
 import logging
 
 from ..const import *  # noqa: F403
+from ..models import Models
 from ..protocol import PROTOCOL_DEFS
 
 LOG = logging.getLogger(__name__)
@@ -14,13 +15,22 @@ class DeviceControllerBase:
 
     def __init__(self, model: str, url: str, serial_config: dict, protocol_name: str):
         self._model = model
-        self._model_def = get_model_config(self._model)
+        self._model_def = Models.get_config(self._model)
 
         self._url = url
         self._serial_config = serial_config
 
         self._protocol_name = protocol_name
         self._protocol_def = PROTOCOL_DEFS[protocol_name]
+
+    def describe(self) -> dict:
+        return self._model_def
+
+    def send_raw(self, data: bytes) -> None:
+        """
+        Send raw data to the device's connection (not a message)
+        """
+        raise NotImplementedError()
 
     def _write(self, data: bytes, skip=0):
         """

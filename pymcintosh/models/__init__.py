@@ -12,33 +12,46 @@ RAW_CONFIG = None
 MODELS_CONFIG = {}
 
 
-def load_model_config():
-    # lazy load configuration on first call
-    global RAW_CONFIG
-    if not RAW_CONFIG:
-        RAW_CONFIG = load_yaml_dir(f"{CONFIG_DIR}/models")
-        pprint(RAW_CONFIG)
+class Models:
+    _config = {}
 
-        for series, config in RAW_CONFIG.items():
-            # the default config that applies to all models (can be overridden)
-            default_config = config.get("default_config", {})
-            default_config["tested"] = False
+    @classmethod
+    def _load_config(cls):
+        # lazy load configuration on first call
+        global RAW_CONFIG
+        if not RAW_CONFIG:
+            RAW_CONFIG = load_yaml_dir(f"{CONFIG_DIR}/models")
+            pprint(RAW_CONFIG)
 
-            for model in config.models:
-                # detect accident duplicate models in the configuration
-                if model in MODELS_CONFIG:
-                    name = config.get("name")
-                    old_model_name = MODELS_CONFIG.get("name")
-                    LOG.warning(
-                        f"Duplicate model '{model}' defined in models/*.yaml ({old_model_name} -> {name})"
-                    )
+            for series, series_info in RAW_CONFIG.items():
+                # the default config that applies to all models (can be overridden)
+                default_config = series_info.get("default_config", {})
+                default_config["series"] = series
+                default_config["tested"] = False
 
-                # merge any global settings from the model series into the model config
-                blended_config = {**default_config, **config}
-                MODELS_CONFIG[model] = blended_config
-    return MODELS_CONFIG
+                for model_config in series_info.get("models"):
+                    model = model_config.get("model")
 
+                    # detect accident duplicate models in the configuration
+                    if model in MODELS_CONFIG:
+                        name = model_config.get("name")
+                        old_model_name = MODELS_CONFIG.get("name")
+                        LOG.warning(
+                            f"Duplicate model '{model}' defined in models/*.yaml ({old_model_name} -> {series}/{name})"
+                        )
 
-def get_model_config(model: str) -> dict:
-    model_config = load_model_config()
-    return model_config.get(model)
+                    # merge any global settings from the model series into the model config
+                    blended_config = {**default_config, **model_config}
+                    MODELS_CONFIG[model] = blended_config
+
+        return MODELS_CONFIG
+
+    @classmethod
+    def get_config(cls, model: str) -> dict:
+        model_config = cls._load_config()
+        return model_config.get(model)
+
+    @classmethod
+    def get_supported_models() -> dict:
+        """@return dictionary of all supported models and associated config"""
+        return MODELS_CONFIG  # FIXME: consider copy.deepcopy(MODELS_CONFIG)
