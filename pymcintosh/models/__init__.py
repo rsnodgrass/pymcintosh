@@ -12,7 +12,7 @@ RAW_CONFIG = None
 MODELS_CONFIG = {}
 
 
-class Models:
+class DeviceModels:
     _config = {}
 
     @classmethod
@@ -52,6 +52,6 @@ class Models:
         return model_config.get(model)
 
     @classmethod
-    def get_supported_models() -> dict:
+    def get_supported_models(cls) -> dict:
         """@return dictionary of all supported models and associated config"""
         return MODELS_CONFIG  # FIXME: consider copy.deepcopy(MODELS_CONFIG)

@@ -28,6 +28,8 @@ class DeviceController:
 
         :return an instance of DeviceControllerBase
         """
+        LOG.debug(f"Connecting to model {model} at {url}")
+
         config = Models.get_config(model)
         if not config:
             LOG.error(f"Model '{model}' has no definitions found in models/*.yaml")

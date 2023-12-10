@@ -8,6 +8,7 @@
 import logging
 import argparse as arg
 import asyncio
+from pprint import pprint
 
 import coloredlogs
 
@@ -20,7 +21,7 @@ p = arg.ArgumentParser(description="RS232 client example (asynchronous)")
 p.add_argument(
     "--url",
     help="pyserial supported url for communication (e.g. /dev/tty.usbserial-A501SGSZ or socket://server:4999/)",
-    required=True,
+    default="/dev/tty.usbserial",
 )
 p.add_argument("--model", default="mx160", help="device model (e.g. mx160)")
 p.add_argument(
@@ -46,11 +47,9 @@ async def main():
         event_loop=asyncio.get_event_loop(),
     )
 
-    print(device.describe())
-
-    await device.raw("PING?")
-
-    # exit()
+    # pprint(DeviceModels.get_supported_models())
+    pprint(device.describe())
+    await device.send_raw("PING?")
 
 
 asyncio.run(main())
