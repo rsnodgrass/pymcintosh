@@ -57,8 +57,14 @@ class Server(threading.Thread):
                 data = self._socket.recv(1024)
                 if not data:
                     break
-                for c in clients:
-                    c.socket.send(data)
+
+                text = data.decode()
+                text = text.replace("\r", "").replace("\n", "")
+
+                LOG.info(f"Received {text}")
+
+                # for c in clients:
+                #    c.socket.send(data)
 
         finally:
             self._socket.close()
@@ -90,13 +96,21 @@ def main():
 
     # listen on the specified port
     LOG.info(f"Listener emulating model {args.model} on {args.host}:{args.port}")
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind((args.host, args.port))
-    s.listen(4)
 
-    while True:
-        (sock, address) = s.accept()
-        Server(sock, address).start()
+    s = None
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.bind((args.host, args.port))
+        s.listen(2)
+
+        # accept connections
+        while True:
+            (sock, address) = s.accept()
+            Server(sock, address).start()
+
+    finally:
+        if s:
+            s.close()
 
 
 main()
