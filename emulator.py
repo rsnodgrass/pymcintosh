@@ -1,7 +1,7 @@
+#!/usr/bin/env python3
+#
 # read all the protocol messages and respond to any "cmds" with one of the tests msgs
 # also echo to console the parsed cmd and msg
-# could give an alternative file of message responses
-# take command line args: protocol, message_file
 
 import logging
 import argparse as arg
@@ -9,6 +9,9 @@ import socket
 import threading
 from functools import wraps
 from threading import RLock
+
+LOG = logging.getLogger(__name__)
+
 
 clients = []
 
@@ -41,6 +44,9 @@ class Server(threading.Thread):
         LOG.info("%s:%s disconnected." % self._address)
         clients.remove(self)
 
+    def handle_command(self):
+        return
+
     def run(self):
         self.register_client()
 
@@ -58,12 +64,18 @@ class Server(threading.Thread):
 
 
 def main():
-    p = arg.ArgumentParser(description="RS232 client example (asynchronous)")
+    p = arg.ArgumentParser(
+        description="Test server that partially emulates the protocol for a specific model"
+    )
     p.add_argument(
         "--port",
-        help="port to listen on (default=4999, same as the ip2serial port)",
+        help="port to listen on (default=4999, same as an IP2SL device)",
         type=int,
         default=4999,
+    )
+    p.add_argument("--model", default="mx160", help="device model (e.g. mx160)")
+    p.add_argument(
+        "--messages", help="alternative file of message responses (instead of model)"
     )
     p.add_argument(
         "--host", help="listener host (default=127.0.0.1)", default="127.0.0.1"
@@ -75,6 +87,7 @@ def main():
         logging.getLogger().setLevel(level=logging.DEBUG)
 
     # listen on the specified port
+    LOG.warning(f"Listener emulating model {args.model} on {args.host}:{args.port}")
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind((args.host, args.port))
     s.listen(4)
