@@ -1,5 +1,6 @@
 mx180:
-  protocol: mcintosh
+  import_protocols:
+    - mx160
 
   ref: Based on MX180 Serial Control Manual V1 (2022-03-29)
   delete:
