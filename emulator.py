@@ -52,9 +52,9 @@ class Server(threading.Thread):
         return
 
     def run(self):
-        self.register_client()
-
         try:
+            self.register_client()
+
             while True:  # continously read data
                 data = self._socket.recv(1024)
                 if not data:
@@ -71,6 +71,22 @@ class Server(threading.Thread):
         finally:
             self._socket.close()
             self.deregister_client()
+
+
+VALID_COMMANDS = []
+
+
+def build_responses(protocol_def: dict):
+    api = protocol_def.get("api")
+    for group, group_def in api.items():
+        LOG.debug(f"Building responses for group {group}")
+        actions = group_def.get("actions")
+        for action, action_def in actions.items():
+            LOG.debug(f"... action {action}")
+            cmd = action.get("cmd")
+
+
+# FIXME: based on model, apply any overrides to the protocol to get final protocol
 
 
 def main():
@@ -100,13 +116,14 @@ def main():
     url = f"socket://{args.host}:{args.port}/"
     LOG.info(f"Listener emulating model {args.model} on {url}")
 
-    device = DeviceController.create(args.model, url)
-
     s = None
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.bind((args.host, args.port))
         s.listen(2)
+
+        device = DeviceController.create(args.model, url)
+        build_responses(device.protocol())
 
         # accept connections
         while True:

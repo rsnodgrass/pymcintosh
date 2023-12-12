@@ -159,6 +159,10 @@
           description: Request verbosity level of active interface
           cmd: '!VERB?'
           msg: "!VERB\\((?P<verbosity_level>[123])\\)"
+          tests:
+            msg:
+              '!VERB(2)':
+                verbosity_level: 2
 
     audio_mode:
       description: Audio processing mode control
@@ -172,90 +176,102 @@
         get:
           description: Request audio processing mode
           cmd: '!AUDMODE?'
-          msg: "!AUDMODE\\((?P<type>\\d+)\\) \"(?P<name>\\s+)\""
+          msg: '!AUDMODE\((?P<type>\d+)\)\s*"(?P<name>\s+)"'
+          tests:
+            msg:
+              '!AUDMODE(1) "Test"':
+                type: 1
+                name: Test
         modes:
           description: Get list of audio processing modes
           cmd: '!AUDMODEL?'
-          msg: "!AUDMODECOUNT\\((?P<count>\\d+)\\)\r"  # FIXME
+          msg: '!AUDMODECOUNT\((?P<count>\d+)\)\r'  # FIXME
           tests:
             msg:
               "!AUDMODECOUNT(2)\r!AUDMODE(0)\"Source 1\"\r!AUDMODE(1)\"Source 2\"":
                 count: 2
 
-  audio_type:
-    description: Input audio type
-    api:
-      get:
-        description: Return string of the input audio type.
-        cmd: '!AUDTYPE?'
-        msg: "!AUDTYPE\\((?P<type>\\s+)\\)"
+    audio_type:
+      description: Input audio type
+      actions:
+        get:
+          description: Return string of the input audio type.
+          cmd: '!AUDTYPE?'
+          msg: '!AUDTYPE\((?P<type>\s+)\)'
+          tests:
+            msg:
+              '!AUDTYPE(Unknown)':
+                type: Unknown
 
-  buttons:
-    description: Remote button presses
-    api:
-      back:
-        description: Back button
-        cmd: '!BACK'
-      down:
-        description: Direction Down button
-        cmd: '!DIRD'
-      left:
-        description: Direction Left button
-        cmd: '!DIRL'
-      right:
-        description: Direction Right button
-        cmd: '!DIRR'
-      up:
-        description: Direction Up button
-        cmd: '!DIRU'
-      enter:
-        description: Enter button
-        cmd: '!ENTER'
-      exit:
-        description: Exit button
-        cmd: '!EXIT'
-      info:
-        description: Info button
-        cmd: '!INFO'
-      menu:
-        description: Menu Button
-        cmd: '!MENU'
-      setup:
-        description: Setup button
-        cmd: '!SETUP'
-      source:
-        description: Source button
-        cmd: '!SRCBTN'
-      0:
-        description: Number button 0
-        cmd: '!NUM(0)'
-      1:
-        description: Number button 1
-        cmd: '!NUM(1)'
-      2:
-        description: Number button 2
-        cmd: '!NUM(2)'
-      3:
-        description: Number button 3
-        cmd: '!NUM(3)'
-      4:
-        description: Number button 4
-        cmd: '!NUM(4)'
-      5:
-        description: Number button 5
-        cmd: '!NUM(5)'
-      6:
-        description: Number button 6
-        cmd: '!NUM(6)'
-      7:
-        description: Number button 7
-        cmd: '!NUM(7)'
-      8:
-        description: Number button 8
-        cmd: '!NUM(8)'
-      9:
-        description: Number button 9
-        cmd: '!NUM(9)'
+    buttons:
+      description: Remote button presses
+      actions:
+        back:
+          description: Back button
+          cmd: '!BACK'
+        down:
+          description: Direction Down button
+          cmd: '!DIRD'
+        left:
+          description: Direction Left button
+          cmd: '!DIRL'
+        right:
+          description: Direction Right button
+          cmd: '!DIRR'
+        up:
+          description: Direction Up button
+          cmd: '!DIRU'
+        enter:
+          description: Enter button
+          cmd: '!ENTER'
+        exit:
+          description: Exit button
+          cmd: '!EXIT'
+        info:
+          description: Info button
+          cmd: '!INFO'
+        menu:
+          description: Menu Button
+          cmd: '!MENU'
+        setup:
+          description: Setup button
+          cmd: '!SETUP'
+        source:
+          description: Source button
+          cmd: '!SRCBTN'
+        number:
+          description: Number button
+          cmd: '!NUM({num})'
+        num0:
+          description: Number button 0
+          cmd: '!NUM(0)'
+        num1:
+          description: Number button 1
+          cmd: '!NUM(1)'
+        num2:
+          description: Number button 2
+          cmd: '!NUM(2)'
+        num3:
+          description: Number button 3
+          cmd: '!NUM(3)'
+        num4:
+          description: Number button 4
+          cmd: '!NUM(4)'
+        num5:
+          description: Number button 5
+          cmd: '!NUM(5)'
+        num6:
+          description: Number button 6
+          cmd: '!NUM(6)'
+        num7:
+          description: Number button 7
+          cmd: '!NUM(7)'
+        num8:
+          description: Number button 8
+          cmd: '!NUM(8)'
+        num9:
+          description: Number button 9
+          cmd: '!NUM(9)'
 
     device:
       actions:
@@ -295,10 +311,11 @@
 
     interface:
       description: Interface type for this session (IP or SERIAL)
-      get:
-        description: Returns the active interface for this section
-        cmd: '!INTERFACE?'
-        msg: "!INTERFACE\\((?P<interface>\\s+)\\)"
+      actions:
+        get:
+          description: Returns the active interface for this section
+          cmd: '!INTERFACE?'
+          msg: '!INTERFACE\((?P<interface>\s+)\)'
 
     lipsync:
       description: Lipsync adjustments
@@ -306,17 +323,18 @@
         set:
           description: Set the lipsync value
           cmd: '!LIPSYNC({lipsync})'
+          cmd_pattern: '!LIPSYNC(\(?P<lipsync>\d+)))'
         get:
           description: Get the lipsync value
           cmd: '!LIPSYNC?'
-          msg: "!LIPSYNC\\((?P<lipsync>\\d)\\)"
+          msg: '!LIPSYNC\((?P<lipsync>\d)\)'
         range:
           description: Get the lipsync value range
           cmd: '!LIPSYNCRANGE?'
           msg: "!LIPSYNCRANGE\\((?P<min>\\d+),(?P<max>\\d+)\\)\r" # FIXME:multiline
           tests:
             msg:
-              "!LIPSYNCRANGE(1,3)":
+              '!LIPSYNCRANGE(1,3)':
                 min: 1
                 max: 3
 
@@ -343,6 +361,7 @@
          msg: "!LOUDNESS\\((?P<loudness>[01])\\)"
 
     mute:
+      description: Mute
       actions:
         toggle:
           description: Mute toggle button
@@ -362,7 +381,8 @@
           cmd: '!MUTEON'
 
     ping:
-     api:
+      description: Ping test
+      actions:
         ping:
           description: Ping for a pong (returns PONG)
           cmd: '!PING'
@@ -372,6 +392,7 @@
               "!PONG":
 
     power_system:
+      description: Entire system power
       actions:
         'on':
           description: Turn entire system on
@@ -388,6 +409,7 @@
           msg: "!POWER\\((?P<power>[01])\\)"
 
     power_zone_main:
+      description: Main zone power
       actions:
         'on':
           description: Turn main zone power on
@@ -396,11 +418,16 @@
           description: Turn main zone power off
           cmd: '!POWEROFFMAIN'
         get:
-          description: get main zone power status (0=off; 1=on)
+          description: get main zone power status (0=standby; 1=on)
           cmd: '!POWERMAIN?'
-          msg: "!POWER\\((?P<power>[01])\\)"
+          msg: '!POWER\((?P<power>[01])\)'
+          tests:
+            msg:
+              '!POWER(1)':
+                power: 1
 
     power_zone_2:
+      description: Zone 2 power
       actions:
         'on':
           description: Turn zone 2 power on
@@ -411,7 +438,11 @@
         get:
           description: Get zone 2 power status (0=off; 1=on)
           cmd: '!POWERZONE2?'
-          msg: "!POWER\\((?P<power>[01])\\)"
+          msg: '!POWER\((?P<power>[01])\)'
+          tests:
+            msg:
+              '!POWERZONE2(1)':
+                power: 1
 
     roomperfect_focus:
       description: RoomPerfect room correction focus
@@ -463,7 +494,7 @@
                 voice_count: 2
 
     source:
-      description: Source selection
+      description: Input source selection
       actions:
         previous:
           description: Previous source button
@@ -499,6 +530,7 @@
 
 
     volume_offset:
+      description: Volume offset
       actions:
         down:
           description: Decrease Source volume offset
@@ -513,30 +545,32 @@
           cmd: '!SRCOFF+'
 
     software:
+      description: Software/firmware info
       actions:
         info:
           description: Request SW information (prints a list of version numbers)
           cmd: '!SWINFO?'
-          msg: "!SWINFO\\((?P<version>\\s+)\\)"
+          msg: '!SWINFO\((?P<version>\s+)\)'
           tests:
             msg:
-              "!SWINFO(1)":
-                version: "1"
+              '!SWINFO(1)':
+                version: '1'
 
     trim_bass:
+      description: Bass trim controls
       actions:
         get:
           description: Get current bass level trim (10 = 1dB)
           cmd: '!TRIMBASS?'
-          msg: "!TRIMBASS\\((?P<trim_level>\\d+)\\)"
+          msg: '!TRIMBASS\((?P<trim_level>-?[0-9]{1,3})\)'
           tests:
             msg:
-              "!TRIMBASS(10)":
-                "trim_level": 10
-
+              '!TRIMBASS(10)':
+                trim_level: 10
         set:
           description: Sets bass level trim (10 = 1dB)
           cmd: '!TRIMBASS({bass_level})'
+          cmd_pattern: '!TRIMBASS(\(?P<bass_level>-?[0-9]{1,3}\))'
         up:
           description: Increases bass level trim (10 = 1dB)
           cmd: '!TRIMBASS+'
@@ -545,14 +579,20 @@
           cmd: '!TRIMBASS-'
 
     trim_center:
+      description: Center channel trim controls
       actions:
         get:
           description: get current center channel level trim (10 = 1dB)
           cmd: '!TRIMCENTER?'
-          msg: "!TRIMCENTER\\((?P<trim_level>\\d+)\\)"
+          msg: '!TRIMCENTER\((?P<trim_level>-?[0-9]{1,3})\)'
+          tests:
+            msg:
+              '!TRIMCENTER(10)':
+                trim_level: 10
         set:
           description: Sets center channel level trim (10 = 1dB)
           cmd: '!TRIMCENTER({trim_level})'
+          cmd_pattern: '!TRIMCENTER(\(?P<bass_level>-?[0-9]{1,3}\))'
         up:
           description: Increases center channel level trim (10 = 1dB)
           cmd: '!TRIMCENTER+'
@@ -561,14 +601,20 @@
           cmd: '!TRIMCENTER-'
 
     trim_height:
+      description: Height channels trim controls
       actions:
         get:
           description: Gete current height channels level trim (10 = 1dB)
           cmd: '!TRIMHEIGHT?'
-          msg: "!TRIMHEIGHT\\((?P<trim_level>\\d+)\\)"
+          msg: '!TRIMHEIGHT\((?P<trim_level>-?[0-9]{1,3})\)'
+          tests:
+            msg:
+              '!TRIMHEIGHT(9)':
+                trim_level: 9
         set:
           description: Sets height channels level trim (10 = 1dB)
           cmd: '!TRIMHEIGHT({trim_level})'
+          cmd_pattern: '!TRIMHEIGHT(\(?P<trim_level>-?[0-9]{1,3}\))'
         up:
           description: Increases height channels level trim (10 = 1dB)
           cmd: '!TRIMHEIGHT+'
@@ -577,14 +623,20 @@
           cmd: '!TRIMHEIGHT-'
 
     trim_lfe:
+      description: LFE channel trim controls
       actions:
         get:
           description: Get current LFE channel level trim (10 = 1dB)
           cmd: '!TRIMLFE?'
-          msg: "!TRIMLFE\\((?P<trim_level>\\d+)\\)"
+          msg: '!TRIMLFE\((?P<trim_level>-?[0-9]{1,3})\)'
+          tests:
+            msg:
+              '!TRIMLFE(2)':
+                trim_level: 2
         set:
           description: Sets LFE channel level trim (10 = 1dB)
           cmd: '!TRIMLFE({trim_level})'
+          cmd_pattern: '!TRIMLFE(\(?P<trim_level>-?[0-9]{1,3}\))'
         up:
           description: Increases LFE channel level trim (10 = 1dB)
           cmd: '!TRIMLFE+'
@@ -593,6 +645,7 @@
           cmd: '!TRIMLFE-'
 
     trim_surrounds:
+      description: Surround channels trim controls
       actions:
         down:
           description: Decreases surround channels level trim (10 = 1dB)
@@ -600,25 +653,38 @@
         get:
           description: Get current surround channels level trim (10 = 1dB)
           cmd: '!TRIMSURRS?'
-          msg: "!TRIMSURRS\\((?P<trim_level>\\d+)\\)"
+          msg: '!TRIMSURRS\((?P<trim_level>-?[0-9]{1,3})\)'
+          tests:
+            msg:
+              '!TRIMSURRS(1)':
+                trim_level: 1
         set:
           description: Sets surround channels level trim (10 = 1dB)
           cmd: '!TRIMSURRS({trim_level})'
+          cmd_pattern: '!TRIMSURRS(\(?P<trim_level>-?[0-9]{1,3}\))'
         up:
           description: Increases surround channels level trim (10 = 1dB)
           cmd: '!TRIMSURRS+'
 
-    trim_trebble:
+    trim_treble:
+      description: Treble trim controls
       actions:
         get:
-          description: Get current treble level trim (10 = 1dB)
+          description: Get current treble level trim (10 = 1dB; -120=-10 dB to 120=+10 dB)
           cmd: '!TRIMTREB?'
           msg:
-            - "!TRIMTREB\\(?P<treble>\\d+)\\)" # MX160
-            - "!TRIMTREBLE\\(?P<treble>\\d+)\\)" # MX170/MX180
+            - '!TRIMTREB\(?P<trim_level>-?[0-9]{1,3})\)'   # MX160
+            - '!TRIMTREBLE\(?P<trim_level>-?[0-9]{1,3})\)' # MX170/MX180
+          tests:
+            msg:
+              '!TRIMTREB(100)':
+                trim_level: 100
+              '!TRIMTREBLE(-120)':
+                trim_level: -120
         set:
           description: Sets treble level trim (10 = 1dB)
           cmd: '!TRIMTREB({trim_level})'
+          cmd_pattern: '!TRIMTREB(\(?P<trim_level>-?[0-9]{1,3}\))'
         down:
           description: Decreases treble level trim (10 = 1dB)
           cmd: '!TRIMTREB-'
@@ -627,33 +693,55 @@
           cmd: '!TRIMTREB+'
 
     volume:
+      description: Volume controls
       actions:
         get:
           description: Get current volume
           cmd: '!VOL?'
-          msg: "!VOL\\(P<volume>\\d+)\\)"
+          msg: '!VOL\(?P<volume>[0-9]{1,2})\)'
+          tests:
+            msg:
+              '!VOL(1)':
+                volume: 1
         set:
           description: Set volume to x
           cmd: '!VOL({volume})'
+          cmd_pattern: '!VOL(\(?P<volume>[0-9]{1,2}\))'
         down:
           description: Decrease volume
           cmd: '!VOL-'
         down_by_x:
           description: Decrease volume by x
-          cmd: '!VOL-({volume_increment})'
+          cmd: '!VOL-({volume_amount})'
+          cmd_pattern: '!VOL-(\(?P<volume_amount>[0-9]{1,2}\))'
         up:
           description: Increase volume
           cmd: '!VOL+'
         up_by_x:
           description: Increase volume by x
-          cmd: '!VOL+({volume_increment})'
+          cmd: '!VOL+({volume_amount})'
+          cmd_pattern: '!VOL+(\(?P<volume_amount>[0-9]{1,2}\))'
+
+        max_vol:
+          description: Requests the maximum volume setting (12-99) [MX170+]
+          cmd: '!MAXVOL?'
+          msg: '!MAXVOL(\(?P<volume>[0-9]{1,2}\))'
+          tests:
+            msg:
+              '!MAXVOL(99)':
+                volume: 99
 
     zone_2_mute:
+      description: Zone 2 mute
       actions:
         get:
           description: get current Zone B Mute status
           cmd: '!ZMUTE?'
-          msg: "!ZMUTE\\((?P<mute>[01)\\)"
+          msg: '!ZMUTE\((?P<mute>[01)\)'
+          tests:
+            msg:
+              '!ZMUTE(1)':
+                mute: 1
         'on':
           description: Zone B Mute on
           cmd: '!ZMUTEON'
@@ -665,6 +753,7 @@
           cmd: '!ZMUTE'
 
     zone_2_power:
+      description: Zone 2 power
       actions:
         'on':
           description: Zone Power On
@@ -677,6 +766,7 @@
           cmd: '!ZPTOGGLE'
 
     zone_2_source:
+      description: Zone 2 input source selection
       actions:
         previous:
           description: Previous zone B source button
@@ -684,14 +774,20 @@
         get:
           description: Get current Zone B source
           cmd: '!ZSRC?'
-          msg: "!ZSRC\\((?P<source>\\d+) \"(?P<name>\\s+)\"\\)"
+          msg: '!ZSRC\((?P<source>\d+)\s*"(?P<name>\s+)"\)'
+          tests:
+            msg:
+              '!ZSRC(1) "Source 1"':
+                source: 1
+                name: Source 1
         set:
           description: Set Zone B source
           cmd: '!ZSRC({source})'
-        info:
-          description: Get info about a specific Zone B source
-          cmd: '!ZSRC({source})?'
-          msg: "!ZSRC\\((?P<source>\\d+) \"(?P<name>\\s+)\"\\)"
+          cmd_pattern: '!ZSRC(\(?P<source>\d+\))'
+#        info:
+#          description: Get info about a specific Zone B source
+#          cmd: '!ZSRC({source})?'
+#          msg: '!ZSRC\((?P<source>\d+)\s*"(?P<name>\\s+)"\)'
         next:
           description: Next Zone B source button
           cmd: '!ZSRC+'
@@ -705,26 +801,34 @@
                 count: 1
 
     zone_2_volume:
+      description: Zone 2 volume control
       actions:
         down:
           description: Decrease zone B volume
           cmd: '!ZVOL-'
         down_by_x:
           description: decrease zone B volume by X
-          cmd: '!ZVOL-({volume_increment})'
+          cmd: '!ZVOL-({volume_amount})'
+          cmd_pattern: '!ZVOL-\((?P<volume_amount>[0-9]{1,2})\)'
         get:
           description: Get current zone B volume
           cmd: '!ZVOL?'
-          msg: "!ZVOL\\((?P<volume>\\d+)\\)"
+          msg: '!ZVOL\((?P<volume>[0-9]{1,2})\)'
+          tests:
+            msg:
+              "!ZVOL(2)":
+                volume: 2
         set:
           description: Set zone B volume
-          cmd: '!ZVOL({volume_increment})'
+          cmd: '!ZVOL({volume})'
+          cmd_pattern: '!ZVOL\((?P<volume>[0-9]{1,2})\)'
         up:
           cmd: '!ZVOL+'
           description: Increase zone B volume
         up_by_x:
-          cmd: '!ZVOL+({volume_increment})'
+          cmd: '!ZVOL+({volume_amount})'
           description: Increase zone B volume by x
+          cmd_pattern: '!ZVOL+\((?P<volume_amount>[0-9]{1,2})\)'
 
   model_overrides:
     mx160:
