@@ -39,6 +39,7 @@ class Server(threading.Thread):
         self._socket = sock
         self._address = address
         self._model = model
+        self._encoding = 'ascii'
         self.register_client()
 
     @synchronized
@@ -60,7 +61,7 @@ class Server(threading.Thread):
                 if not data:
                     break
 
-                text = data.decode()
+                text = data.decode(self._encoding)
                 
                 # remove any termination/separators
                 text = text.replace("\r", "").replace("\n", "")
@@ -70,7 +71,8 @@ class Server(threading.Thread):
                 
                 if response:
                     response += "\r" # FIXME: add EOL/command separator
-                    self._socket.send(response)
+                    data = response.encode(self._encoding)
+                    self._socket.send(data)
 
         finally:
             self._socket.close()
@@ -84,6 +86,8 @@ COMMAND_PATTERNS = {}
 COMMAND_RESPONSES = {}
 
 def handle_command(model: DeviceModel, text: str):
+    values = {}
+    
     action_id = COMMAND_LOOKUPS.get(text)
     if action_id:
         LOG.info(f"Received VALID {model.id} {action_id} command: {text}")
@@ -106,7 +110,6 @@ def handle_command(model: DeviceModel, text: str):
     return msg
 
 
-
 def build_responses(model: DeviceModel):
     api = model.config.get("api", {})
     for group, group_def in api.items():
@@ -119,6 +122,15 @@ def build_responses(model: DeviceModel):
             # register any response messages
             msg = action_def.get("msg")
             if msg:
+                # if the msg is based on a regexp, use a canned response
+                if '?P<' in msg:
+                    tests = action_def.get("tests", {}).get("msg")
+                    print(tests)
+                    if tests:
+                        LOG.info(f"Message {model.id} {action_id} is templated, returning canned test message: {msg}")
+                        msg = next(iter(tests)) # first key                
+                    else:
+                        LOG.warning(f"Message {model.id} {action_id} is templated, but there are no canned test messages defined.")
                 COMMAND_RESPONSES[action_id] = msg
 
             # register command regexp patterns (if any)
