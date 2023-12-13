@@ -20,7 +20,7 @@ if sys.argv[-1] == "publish":
 
 setup(
     version=VERSION,
-    download_url="https://github.com/rsnodgrass/pymcintosh/archive/{}.tar.gz".format(
+    download_url="https://github.com/rsnodgrass/pyavcontrol/archive/{}.tar.gz".format(
         VERSION
     ),
     include_package_data=True,

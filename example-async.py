@@ -12,7 +12,7 @@ from pprint import pprint
 
 import coloredlogs
 
-from pymcintosh import DeviceController
+from pyavcontrol import DeviceController
 
 LOG = logging.getLogger(__name__)
 coloredlogs.install(level="DEBUG")
@@ -36,7 +36,8 @@ args = p.parse_args()
 if args.debug:
     logging.getLogger().setLevel(level=logging.DEBUG)
 
-async def main():    
+
+async def main():
     try:
         device = DeviceController.create(
             args.model,
@@ -46,11 +47,11 @@ async def main():
         )
 
         await device.send_raw(b"PING?")
-        
-        #group, action
-        #await device.send(ping, ping)
-        
-    except Exception e:
+
+        # group, action
+        # await device.send(ping, ping)
+
+    except Exception as e:
         LOG.error(f"Failed for {args.model}", e)
         return
 

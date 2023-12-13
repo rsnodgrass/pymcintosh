@@ -13,12 +13,15 @@ from threading import RLock
 
 import coloredlogs
 
-from pymcintosh import DeviceController, DeviceModel
+from pyavcontrol import DeviceController, DeviceModel
 
 LOG = logging.getLogger(__name__)
 coloredlogs.install(level="DEBUG")
 
 CLIENTS = []
+COMMANDS = {}
+COMMAND_PATTERNS = {}
+COMMAND_RESPONSES = {}
 
 # special locked wrapper
 sync_lock = RLock()
@@ -79,17 +82,10 @@ class Server(threading.Thread):
             self.deregister_client()
 
 
-VALID_COMMANDS = []
-
-COMMAND_LOOKUPS = {}
-COMMAND_PATTERNS = {}
-COMMAND_RESPONSES = {}
-
-
 def handle_command(model: DeviceModel, text: str):
     values = {}
 
-    action_id = COMMAND_LOOKUPS.get(text)
+    action_id = COMMANDS.get(text)
     if action_id:
         LOG.info(f"Received {model.id} {action_id} cmd: {text}")
 
@@ -156,7 +152,7 @@ def build_responses(model: DeviceModel):
 
             # register basic lookups
             cmd = action_def.get("cmd")
-            COMMAND_LOOKUPS[cmd] = action_id
+            COMMANDS[cmd] = action_id
 
 
 def main():

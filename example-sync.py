@@ -10,7 +10,7 @@ from pprint import pprint
 
 import coloredlogs
 
-from pymcintosh import DeviceController
+from pyavcontrol import DeviceController
 
 LOG = logging.getLogger(__name__)
 coloredlogs.install(level="DEBUG")
@@ -37,13 +37,12 @@ if args.debug:
 
 def main():
     device = DeviceController.create(
-        args.model, args.url,
-        serial_config_overrides={"baudrate": args.baud}
+        args.model, args.url, serial_config_overrides={"baudrate": args.baud}
     )
     device.send_raw(b"PING?")
-        
-    #group, action
-    #device.send(ping, ping)
+
+    # group, action
+    # device.send(ping, ping)
 
 
 main()

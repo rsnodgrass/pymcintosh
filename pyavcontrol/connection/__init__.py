@@ -2,11 +2,13 @@ import logging
 
 LOG = logging.getLogger(__name__)
 
+
 class ConnectionBase:
 
     """
     Connection base class that defines communication APIs.
     """
+
     def __init__(self):
         LOG.error(f"Use factory method create(url, config_overrides")
         raise NotImplementedError()
@@ -23,9 +25,7 @@ class ConnectionBase:
 
 class Connection:
     @staticmethod
-    def create(
-        url: str, config={}, event_loop=None
-    ) -> ConnectionBase:
+    def create(url: str, config={}, event_loop=None) -> ConnectionBase:
         """
         Create an Connection instance given details about the given device.
 
@@ -40,9 +40,9 @@ class Connection:
         """
         LOG.debug(f"Connecting to {url}: %s", config)
         return None
-    
-        #if event_loop:
-            # lazy import the async controller to avoid loading both sync/async
+
+        # if event_loop:
+        # lazy import the async controller to avoid loading both sync/async
         #    from asynchronous import DeviceControllerAsync
 
         #    return DeviceControllerAsync(
@@ -50,8 +50,6 @@ class Connection:
         #    )
 
         # lazy import the sync controller to avoid loading both sync/async
-        #from sync import DeviceControllerSync
+        # from sync import DeviceControllerSync
 
-        #return DeviceControllerSync(model, url, connection_config)
-
-    
+        # return DeviceControllerSync(model, url, connection_config)

@@ -1,11 +1,11 @@
-# Python API for McIntosh and Lyngdorf A/V Equipment (pyavcontrol)
+# Python API for Controlling RS232/Text Based A/V Equipment (pyavcontrol)
 
-![McIntosh](https://raw.githubusercontent.com/rsnodgrass/pymcintosh/main/img/mcintosh-logo.png)
+![McIntosh](https://raw.githubusercontent.com/rsnodgrass/pyavcontrol/main/img/mcintosh-logo.png)
 
 ![beta_badge](https://img.shields.io/badge/maturity-Beta-yellow.png)
-[![PyPi](https://img.shields.io/pypi/v/pymcintosh.svg)](https://pypi.python.org/pypi/pymcintosh)
+[![PyPi](https://img.shields.io/pypi/v/pyavcontrol.svg)](https://pypi.python.org/pypi/pyavcontrol)
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
-[![Build Status](https://github.com/rsnodgrass/pymcintosh/actions/workflows/ci.yml/badge.svg)](https://github.com/rsnodgrass/pymcintosh/actions/workflows/ci.yml)
+[![Build Status](https://github.com/rsnodgrass/pyavcontrol/actions/workflows/ci.yml/badge.svg)](https://github.com/rsnodgrass/pyavcontrol/actions/workflows/ci.yml)
 
 This library was created to control McIntosh and Lyngdorf A/V equipment using their
 text-based control protocols over RS232, USB serial connections, and remote IP sockets for the purpose of
@@ -40,10 +40,6 @@ Example starting the McIntosh MX160 emulator:
 ## Supported Equipment
 
 See [SUPPORTED.md](SUPPORTED.md) for the complete list of supported equipment.
-Brands supported:
-
-- McIntosh
-- Lyngdorf
 
 ## Background
 
@@ -67,7 +63,7 @@ time (with varying semantics and degrees of testing/clarity/documentation).
 Additionally, these definitions make it possible to create similar libraries in
 a variety of languages, all sharing the same protocol definitions.
 
-The evolution found in this `pymcintosh` library takes these ideas further by
+The evolution found in this `pyavcontrol` library takes these ideas further by
 having a much more cohesive definition of protocols. Additional ideas were
 discovered in [onkyo-eiscp](https://github.com/miracle2k/onkyo-eiscp) around
 providing a simple CLI to use the library and grouping commands together

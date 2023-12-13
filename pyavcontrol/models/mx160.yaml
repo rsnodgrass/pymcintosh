@@ -2,12 +2,16 @@
 #  - cmd commands are in substitution variable format (e.g. {var})
 #  - msg messages/responses are in regex format to decode
 
-- protocol: mx160
+- model: mx160
   name: McIntosh MX160
   description: McIntosh MX160 Protocol [2017-09-18 MX160 Serial Control Manual V7]
   urls:
     - https://www.mcintoshlabs.com/legacy-products/home-theater-processors/MX160
     - https://www.docdroid.net/OnipkTW/mx160-serial-control-manual-v3-pdf
+
+  branding:
+    manufacturer: McIntosh
+    model: MX160
 
   tested: true
 

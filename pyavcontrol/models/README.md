@@ -7,9 +7,9 @@ similar functionality.
 
 NOTE: Other matrix multi-zone amplifier brands/models can be added, though ones that are HEX-based protocols are probably
 not ideal for this type of regexp remapping. That includes Parasound, HTL, Russound, Knox, B&K, AudioControl and others.
-With some tweaks, pymcintosh may be able to start supporting HEX-based protocols, which would be great to open the door
+With some tweaks, pyavcontrol may be able to start supporting HEX-based protocols, which would be great to open the door
 to a wide variety of legacy/current matrix amps.
 
-Proprietary amps like Crestron and RTi are probably outside the realm of a mapping solution like what is provided by pymcintosh.
+Proprietary amps like Crestron and RTi are probably outside the realm of a mapping solution like what is provided by pyavcontrol.
 
-This metadata format and pymcintosh could possibly be extended to support VIDEO matrix as well as audio.
+This metadata format and pyavcontrol could possibly be extended to support VIDEO matrix as well as audio.
