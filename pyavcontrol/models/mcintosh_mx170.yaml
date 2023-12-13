@@ -1,9 +1,13 @@
-mx170:
+mcintosh_mx170:
   name: McIntosh MX170 Protocol
   description: McIntosh MX170 Protocol [2019-11-27 MX170 Serial Control Manual V2]
 
-  import_protocols:
-    - mx160
+  import_models:
+    - mcintosh_mx160
+
+  manufacturer:
+    name: McIntosh
+    model: MX170
 
   delete:
     api:
