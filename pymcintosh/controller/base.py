@@ -2,7 +2,7 @@ import logging
 from collections.abc import Callable
 
 from ..const import *  # noqa: F403
-from ..models import DeviceModels
+from ..models import DeviceModel
 
 LOG = logging.getLogger(__name__)
 
@@ -15,7 +15,7 @@ class DeviceControllerBase:
 
     def __init__(self, model: str, url: str, serial_config: dict):
         self._model = model
-        self._model_def = DeviceModels.get_config(model)
+        self._model_def = DeviceModel.get_config(model)
 
         self._url = url
         self._serial_config = serial_config

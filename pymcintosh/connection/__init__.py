@@ -15,7 +15,9 @@ class ConnectionBase:
         raise NotImplementedError()
 
     def register_response_callback(self, callback):
-        """Register a callback that is called for each response line"""
+        """
+        Register a callback that is called for each response line
+        """
         self._response_callback = callback
 
 
@@ -38,3 +40,18 @@ class Connection:
         """
         LOG.debug(f"Connecting to {url}: %s", config)
         return None
+    
+        #if event_loop:
+            # lazy import the async controller to avoid loading both sync/async
+        #    from asynchronous import DeviceControllerAsync
+
+        #    return DeviceControllerAsync(
+        #        model, url, connection_config, event_loop
+        #    )
+
+        # lazy import the sync controller to avoid loading both sync/async
+        #from sync import DeviceControllerSync
+
+        #return DeviceControllerSync(model, url, connection_config)
+
+    

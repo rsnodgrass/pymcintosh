@@ -17,10 +17,10 @@ from pymcintosh import DeviceController
 LOG = logging.getLogger(__name__)
 coloredlogs.install(level="DEBUG")
 
-p = arg.ArgumentParser(description="RS232 client example (asynchronous)")
+p = arg.ArgumentParser(description="pyavcontrol client example (asynchronous)")
 p.add_argument(
     "--url",
-    help="pyserial supported url for communication (e.g. /dev/tty.usbserial-A501SGSZ or socket://server:4999/)",
+    help="pyserial supported url for communication (e.g. /dev/tty.usbserial-A501SGSZ or socket://host:4999/)",
     default="socket://localhost:4999/",
 )
 p.add_argument("--model", default="mx160", help="device model (e.g. mx160)")
@@ -36,20 +36,23 @@ args = p.parse_args()
 if args.debug:
     logging.getLogger().setLevel(level=logging.DEBUG)
 
-config = {"baudrate": args.baud}
+async def main():    
+    try:
+        device = DeviceController.create(
+            args.model,
+            args.url,
+            serial_config_overrides={"baudrate": args.baud},
+            event_loop=asyncio.get_event_loop(),
+        )
 
-
-async def main():
-    device = DeviceController.create(
-        args.model,
-        args.url,
-        serial_config_overrides=config,
-        event_loop=asyncio.get_event_loop(),
-    )
-
-    # pprint(DeviceModels.get_supported_models())
-    pprint(device.describe())
-    await device.send_raw(b"PING?")
+        await device.send_raw(b"PING?")
+        
+        #group, action
+        #await device.send(ping, ping)
+        
+    except Exception e:
+        LOG.error(f"Failed for {args.model}", e)
+        return
 
 
 asyncio.run(main())

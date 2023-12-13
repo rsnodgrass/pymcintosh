@@ -11,11 +11,7 @@
 
   tested: true
 
-  hardware:
-    type: processor
-    features:
-      zones: 8
-      sources: 8
+  connection:
     rs232:
       baudrate: 115200
       bytesize: 8
@@ -23,6 +19,12 @@
       stopbits: 1
       timeout: 2.0
       write_timeout: 2.0
+
+  hardware:
+    type: processor
+    features:
+      zones: 8
+      sources: 8
 
   format:
     command:

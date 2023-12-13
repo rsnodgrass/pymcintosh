@@ -12,7 +12,7 @@ from threading import RLock
 
 import coloredlogs
 
-from pymcintosh import DeviceController
+from pymcintosh import DeviceController, DeviceModel
 
 LOG = logging.getLogger(__name__)
 coloredlogs.install(level="DEBUG")
@@ -114,7 +114,7 @@ def main():
 
     # listen on the specified port
     url = f"socket://{args.host}:{args.port}/"
-    LOG.info(f"Listener emulating model {args.model} on {url}")
+    LOG.info(f"Emulating model {args.model} on {url}")
 
     s = None
     try:
@@ -122,7 +122,8 @@ def main():
         s.bind((args.host, args.port))
         s.listen(2)
 
-        device = DeviceController.create(args.model, url)
+        device = DeviceModel(args.model)
+        
         #build_responses(device.protocol())
 
         # accept connections

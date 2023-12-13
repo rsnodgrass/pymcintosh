@@ -15,10 +15,10 @@ from pymcintosh import DeviceController
 LOG = logging.getLogger(__name__)
 coloredlogs.install(level="DEBUG")
 
-p = arg.ArgumentParser(description="RS232 client example (synchronous)")
+p = arg.ArgumentParser(description="pyavcontrol client example (synchronous)")
 p.add_argument(
     "--url",
-    help="pyserial supported url for communication (e.g. /dev/tty.usbserial-A501SGSZ or socket://server:4999/)",
+    help="pyserial supported url for communication (e.g. /dev/tty.usbserial-A501SGSZ or socket://host:4999/)",
     default="socket://localhost:4999/",
 )
 p.add_argument("--model", default="mx160", help="device model (e.g. mx160)")
@@ -34,16 +34,16 @@ args = p.parse_args()
 if args.debug:
     logging.getLogger().setLevel(level=logging.DEBUG)
 
-config = {"baudrate": args.baud}
-
 
 def main():
     device = DeviceController.create(
-        args.model, args.url, serial_config_overrides=config
+        args.model, args.url,
+        serial_config_overrides={"baudrate": args.baud}
     )
-
-    pprint(device.describe())
     device.send_raw(b"PING?")
+        
+    #group, action
+    #device.send(ping, ping)
 
 
 main()
