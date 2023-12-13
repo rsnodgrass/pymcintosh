@@ -18,7 +18,7 @@ from pymcintosh import DeviceController, DeviceModel
 LOG = logging.getLogger(__name__)
 coloredlogs.install(level="DEBUG")
 
-clients = []
+CLIENTS = []
 
 # special locked wrapper
 sync_lock = RLock()
@@ -34,23 +34,22 @@ def synchronized(func):
 
 
 class Server(threading.Thread):
-    def __init__(self, sock, address):
+    def __init__(self, sock, address, model):
         threading.Thread.__init__(self)
         self._socket = sock
         self._address = address
+        self._model = model
+        self.register_client()
 
     @synchronized
     def register_client(self):
         LOG.info("%s:%s connected." % self._address)
-        clients.append(self)
+        CLIENTS.append(self)
 
     @synchronized
     def deregister_client(self):
         LOG.info("%s:%s disconnected." % self._address)
-        clients.remove(self)
-
-    def handle_command(self):
-        return
+        CLIENTS.remove(self)
 
     def run(self):
         try:
@@ -62,13 +61,16 @@ class Server(threading.Thread):
                     break
 
                 text = data.decode()
+                
+                # remove any termination/separators
                 text = text.replace("\r", "").replace("\n", "")
 
-                LOG.info(f"Received {text}")
-                handle_command(text)
-
-                # for c in clients:
-                #    c.socket.send(data)
+                LOG.debug(f"Received: {text}")
+                response = handle_command(self._model, text)
+                
+                if response:
+                    response += "\r" # FIXME: add EOL/command separator
+                    self._socket.send(response)
 
         finally:
             self._socket.close()
@@ -81,20 +83,34 @@ COMMAND_LOOKUPS = {}
 COMMAND_PATTERNS = {}
 COMMAND_RESPONSES = {}
 
-def handle_command(model: DeviceModel, command: str):
-    if command in COMMAND_LOOKUPS:
-        LOG.info(f"Received VALID {model.id} command: {command}")
+def handle_command(model: DeviceModel, text: str):
+    action_id = COMMAND_LOOKUPS.get(text)
+    if action_id:
+        LOG.info(f"Received VALID {model.id} {action_id} command: {text}")
 
     for pattern, regexp in COMMAND_PATTERNS.items():
-        m = regexp.finditer(command)
+        m = re.match(regexp, text)
         if m:
+            action_id = 'Unknown'
             values = m.groupdict()
-            LOG.info(f"Received VALID {model.id} command: {command} -> {pattern} -> {values}")            
+            LOG.info(f"Received VALID {model.id} {action_id} command: {text} -> {pattern} -> {values}")
+
+    if not action_id:
+        LOG.warning(f"No command found for: {text}")
+        return None
+
+    # just return a stock response, if response messages expected.
+    # NOTE: The returned data will NOT match the actual input, but will be a valid
+    # formatted response.
+    msg = COMMAND_RESPONSES.get(action_id)
+    return msg
+
+
 
 def build_responses(model: DeviceModel):
     api = model.config.get("api", {})
     for group, group_def in api.items():
-        LOG.debug(f"Building responses for group {group}")
+        #LOG.debug(f"Building responses for group {group}")
         
         actions = group_def.get("actions", {})
         for action, action_def in actions.items():
@@ -108,7 +124,7 @@ def build_responses(model: DeviceModel):
             # register command regexp patterns (if any)
             cmd_pattern = action_def.get("cmd_pattern")
             if cmd_pattern:
-                cmd_pattern += "$"
+                cmd_pattern = f"^{cmd_pattern}$"
                 try:
                     COMMAND_PATTERNS[cmd_pattern] = re.compile(cmd_pattern)
                 except Exception as e:
@@ -159,7 +175,7 @@ def main():
         # accept connections
         while True:
             (sock, address) = s.accept()
-            Server(sock, address).start()
+            Server(sock, address, model).start()
 
     finally:
         if s:
