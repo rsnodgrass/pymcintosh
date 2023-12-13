@@ -19,13 +19,16 @@ class DeviceModel:
             raise NotImplementedError()
 
     @property
-    def config(self):
+    def id (self) -> str:
+        return self._model_id
+
+    @property
+    def config(self) -> dict:
         """
-        @return the complete config associated with this device
+        :return the complete config associated with this device
         """
         return self._config
 
-    
     @classmethod
     def apply_import_config(model: str, config: dict, previously_loaded=[]):
         """

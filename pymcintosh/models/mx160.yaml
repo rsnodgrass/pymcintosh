@@ -340,7 +340,7 @@
         set:
           description: Set the lipsync value
           cmd: '!LIPSYNC({lipsync})'
-          cmd_pattern: '!LIPSYNC(\(?P<lipsync>\d+)))'
+          cmd_pattern: '!LIPSYNC\((?P<lipsync>\d+)\)'
         get:
           description: Get the lipsync value
           cmd: '!LIPSYNC?'

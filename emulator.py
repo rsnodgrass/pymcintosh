@@ -5,6 +5,7 @@
 
 import logging
 import argparse as arg
+import re
 import socket
 import threading
 from functools import wraps
@@ -64,6 +65,7 @@ class Server(threading.Thread):
                 text = text.replace("\r", "").replace("\n", "")
 
                 LOG.info(f"Received {text}")
+                handle_command(text)
 
                 # for c in clients:
                 #    c.socket.send(data)
@@ -75,27 +77,56 @@ class Server(threading.Thread):
 
 VALID_COMMANDS = []
 
+COMMAND_LOOKUPS = {}
+COMMAND_PATTERNS = {}
+COMMAND_RESPONSES = {}
 
-def build_responses(protocol_def: dict):
-    api = protocol_def.get("api")
+def handle_command(model: DeviceModel, command: str):
+    if command in COMMAND_LOOKUPS:
+        LOG.info(f"Received VALID {model.id} command: {command}")
+
+    for pattern, regexp in COMMAND_PATTERNS.items():
+        m = regexp.finditer(command)
+        if m:
+            values = m.groupdict()
+            LOG.info(f"Received VALID {model.id} command: {command} -> {pattern} -> {values}")            
+
+def build_responses(model: DeviceModel):
+    api = model.config.get("api", {})
     for group, group_def in api.items():
         LOG.debug(f"Building responses for group {group}")
-        actions = group_def.get("actions")
+        
+        actions = group_def.get("actions", {})
         for action, action_def in actions.items():
-            LOG.debug(f"... action {action}")
-            cmd = action.get("cmd")
+            action_id = f"{group}.{action}"
+            
+            # register any response messages
+            msg = action_def.get("msg")
+            if msg:
+                COMMAND_RESPONSES[action_id] = msg
 
-
-# FIXME: based on model, apply any overrides to the protocol to get final protocol
+            # register command regexp patterns (if any)
+            cmd_pattern = action_def.get("cmd_pattern")
+            if cmd_pattern:
+                cmd_pattern += "$"
+                try:
+                    COMMAND_PATTERNS[cmd_pattern] = re.compile(cmd_pattern)
+                except Exception as e:
+                    LOG.error(f"Skipping {action_id} failed regexp compilation: {cmd_pattern} {e}")
+                continue
+        
+            # register basic lookups
+            cmd = action_def.get("cmd")
+            COMMAND_LOOKUPS[cmd] = action_id
 
 
 def main():
     p = arg.ArgumentParser(
-        description="Test server that partially emulates the protocol for a specific model"
+        description="Test server that partially emulates a specific device model"
     )
     p.add_argument(
         "--port",
-        help="port to listen on (default=4999, same as an IP2SL device)",
+        help="port to listen on (default=4999, typical port used by an IP2SL device)",
         type=int,
         default=4999,
     )
@@ -122,9 +153,8 @@ def main():
         s.bind((args.host, args.port))
         s.listen(2)
 
-        device = DeviceModel(args.model)
-        
-        #build_responses(device.protocol())
+        model = DeviceModel(args.model)
+        build_responses(model)
 
         # accept connections
         while True:
