@@ -1,0 +1,8 @@
+#!/bin/bash
+#
+# 1. Generate the SUPPORTED.md based on what is defined in the models/*.yaml files.
+# 2. (Ideally) generate a complete API reference for EACH model under docs/<model>
+#    using popular API documentation format.
+#
+# This should be executed in a .github/workflow so that it is always kept up
+# to date with the latest commits.
