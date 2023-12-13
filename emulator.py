@@ -28,7 +28,7 @@ def synchronized(func):
     def wrapper(*args, **kwargs):
         with sync_lock:
             return func(*args, **kwargs)
-
+    
     return wrapper
 
 

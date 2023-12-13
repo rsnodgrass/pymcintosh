@@ -1,3 +1,7 @@
+# FIXME: now with protocol imports can we just get rid of a separate file
+# that defines models? Move everything in to one file per "model" supported?
+# Renaming protocols to models?
+
 - series: mcintosh
   name: McIntosh A/V Control
   description: "Definitions for more modern McIntosh A/V equipment using the modern RS232 serial protocol."
@@ -5,17 +9,20 @@
   models:
     - name: McIntosh MX160
       model: mx160
+      protocol: mx160
       type: processor
       tested: true
       released: 2015
 
     - name: McIntosh MX170
       model: mx170
+      protocol: mx170
       type: processor
       released: 2019
 
     - name: McIntosh MX180
       model: mx180
+      protocol: mx180
       type: processor
       released: 2023
       config:
@@ -23,7 +30,7 @@
           baudrate: 115200
 
   default_config:
-    protocol: mcintosh
+    protocol: mx160
 
     features:
       zones: 8
@@ -44,68 +51,21 @@
         3: "Source 3"
         4: "Source 4"
 
-  # these really map from the hardware protocol to user visible names...should they be in the protocol?
-  bass_level:
-    unit: "dB"
-    steps:
-      14: "+14"
-      13: "+12"
-      12: "+10"
-      11: "+8"
-      10: "+6"
-      9: "+4"
-      8: "+2"
-      7: "0"
-      6: "-2"
-      5: "-4"
-      4: "-6"
-      3: "-8"
-      2: "-10"
-      1: "-12"
-      0: "-14"
+  variable_descriptions:
+    # these really map from the hardware protocol to user visible names...should they be in the protocol?
+    bass_level:
+      steps:
+        -120: "-12 dB"
+        -119: -11.5
+        -118: -11
+        0: 0
+        119: 11.5
+        120: 12
 
-  treble_level:
-    unit: "dB"
-    steps:
-      14: "+14"
-      13: "+12"
-      12: "+10"
-      11: "+8"
-      10: "+6"
-      9: "+4"
-      8: "+2"
-      7:  "0"
-      6: "-2"
-      5: "-4"
-      4: "-6"
-      3: "-8"
-      2: "-10"
-      1: "-12"
-      0: "-14"
-
-  balance_attenuation:
-    unit: "dB"
-    steps:
-      63: { "left": None,  "right": 0      }  # None = Mute
-      62: { "left": -37.5, "right": 0      }
-      #...
-      34: { "left": -2.5,  "right": 0      }
-      33: { "left": -1.25, "right": 0      }
-      32: { "left": 0,     "right": 0      }
-      31: { "left": 0,     "right": 0      }
-      30: { "left": 0,     "right": -1.25  }
-      29: { "left": 0,     "right": -2.5   }
-      #...
-      2:  { "left": 0,     "right": -36.25 }
-      1:  { "left": 0,     "right": -37.5  }
-      0:  { "left": 0,     "right": None   }  # None = Mute
-
-  volume_level:
-    units: "dB"
-    steps:
-      38: 0
-      37: -1.25
-      #...
-      2:  -71.25
-      1:  -75.00
-      0:  -78.75
+    volume_level:
+      units: "dB"
+      steps:
+        99: 0
+        #...
+        1:  0.5
+        0:  0.0

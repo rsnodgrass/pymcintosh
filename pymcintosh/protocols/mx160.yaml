@@ -1,13 +1,28 @@
 # NOTES:
 #  - cmd commands are in substitution variable format (e.g. {var})
-#  - msg messagesss are in regex format to decode
+#  - msg messages/responses are in regex format to decode
 
-- protocol: mcintosh_v3
-  name: McIntosh v3 API
-  description: Based on MX160 Serial Control Manual V7 (2017-09-18)
+- protocol: mx160
+  name: McIntosh MX160
+  description: McIntosh MX160 Protocol [2017-09-18 MX160 Serial Control Manual V7]
   urls:
     - https://www.mcintoshlabs.com/legacy-products/home-theater-processors/MX160
     - https://www.docdroid.net/OnipkTW/mx160-serial-control-manual-v3-pdf
+
+  tested: true
+
+  hardware:
+    type: processor
+    features:
+      zones: 8
+      sources: 8
+    rs232:
+      baudrate: 115200
+      bytesize: 8
+      parity: 'N'
+      stopbits: 1
+      timeout: 2.0
+      write_timeout: 2.0
 
   format:
     command:
@@ -358,7 +373,7 @@
        get:
          description: Get the loudness setting (0=off; 1=on)
          cmd: '!LOUDNESS?'
-         msg: "!LOUDNESS\\((?P<loudness>[01])\\)"
+         msg: '!LOUDNESS\((?P<loudness>[01])\)'
 
     mute:
       description: Mute
@@ -366,16 +381,17 @@
         toggle:
           description: Mute toggle button
           cmd: '!MUTE'
-
         get:
           description: get current Mute status
           cmd: '!MUTE?'
-          msg: "!MUTE\\((?P<mute>[01])\\)"
-
+          msg: '!MUTE\\((?P<mute>[01])\)'
+          tests:
+            msg:
+              '!MUTE(1)':
+                mute: 1
         'off':
           description: Mute off
           cmd: '!MUTEOFF'
-
         'on':
           description: Mute on
           cmd: '!MUTEON'
@@ -387,9 +403,6 @@
           description: Ping for a pong (returns PONG)
           cmd: '!PING'
           msg: '!PONG'
-          tests:
-            msg:
-              "!PONG":
 
     power_system:
       description: Entire system power
@@ -477,7 +490,12 @@
         get:
           description: Get active voicing
           cmd: '!RPVOI?'
-          msg: "!RPVOI\\((?P<active_voice>[01])\\)\"(?P<name>)\""
+          msg: '!RPVOI\((?P<active_voice>[01])\)\s*"(?P<name>)"'
+          tests:
+            msg:
+             '!RPVOI(1) "Test"':
+               active_voice: 1
+               name: Test
         set:
           description: Set voicing
           cmd: '!RPVOI({roomperfect_voicing})'
@@ -502,14 +520,14 @@
         get:
           description: Get info for currently active source
           cmd: '!SRC?'
-          msg: "!SRC\\((?P<source>\\d+)\\) \"(?P<name>\\s+)\""
+          msg: '!SRC\((?P<source>\d+)\)\s*"(?P<name>\s+)"'
         set:
           description: Select source
           cmd: '!SRC({source})'
         info:
           description: Get info for a specific source
           cmd: '!SRC({source})?'
-          msg: "!SRC\\((?P<source>\\d+)\\) \"(?P<name>\\s+)\""
+          msg: '!SRC\((?P<source>\d+)\)\s*"(?P<name>\s+)"'
         next:
           description: Next source button
           cmd: '!SRC+'
@@ -562,11 +580,11 @@
         get:
           description: Get current bass level trim (10 = 1dB)
           cmd: '!TRIMBASS?'
-          msg: '!TRIMBASS\((?P<trim_level>-?[0-9]{1,3})\)'
+          msg: '!TRIMBASS\((?P<bass_level>-?[0-9]{1,3})\)'
           tests:
             msg:
               '!TRIMBASS(10)':
-                trim_level: 10
+                bass_level: 10
         set:
           description: Sets bass level trim (10 = 1dB)
           cmd: '!TRIMBASS({bass_level})'
@@ -584,15 +602,15 @@
         get:
           description: get current center channel level trim (10 = 1dB)
           cmd: '!TRIMCENTER?'
-          msg: '!TRIMCENTER\((?P<trim_level>-?[0-9]{1,3})\)'
+          msg: '!TRIMCENTER\((?P<center_level>-?[0-9]{1,3})\)'
           tests:
             msg:
               '!TRIMCENTER(10)':
-                trim_level: 10
+                center_level: 10
         set:
           description: Sets center channel level trim (10 = 1dB)
-          cmd: '!TRIMCENTER({trim_level})'
-          cmd_pattern: '!TRIMCENTER(\(?P<bass_level>-?[0-9]{1,3}\))'
+          cmd: '!TRIMCENTER({center_level})'
+          cmd_pattern: '!TRIMCENTER(\(?P<center_level>-?[0-9]{1,3}\))'
         up:
           description: Increases center channel level trim (10 = 1dB)
           cmd: '!TRIMCENTER+'
@@ -606,15 +624,15 @@
         get:
           description: Gete current height channels level trim (10 = 1dB)
           cmd: '!TRIMHEIGHT?'
-          msg: '!TRIMHEIGHT\((?P<trim_level>-?[0-9]{1,3})\)'
+          msg: '!TRIMHEIGHT\((?P<height_level>-?[0-9]{1,3})\)'
           tests:
             msg:
               '!TRIMHEIGHT(9)':
-                trim_level: 9
+                height_level: 9
         set:
           description: Sets height channels level trim (10 = 1dB)
-          cmd: '!TRIMHEIGHT({trim_level})'
-          cmd_pattern: '!TRIMHEIGHT(\(?P<trim_level>-?[0-9]{1,3}\))'
+          cmd: '!TRIMHEIGHT({height_level})'
+          cmd_pattern: '!TRIMHEIGHT(\(?P<height_level>-?[0-9]{1,3}\))'
         up:
           description: Increases height channels level trim (10 = 1dB)
           cmd: '!TRIMHEIGHT+'
@@ -628,15 +646,15 @@
         get:
           description: Get current LFE channel level trim (10 = 1dB)
           cmd: '!TRIMLFE?'
-          msg: '!TRIMLFE\((?P<trim_level>-?[0-9]{1,3})\)'
+          msg: '!TRIMLFE\((?P<lfe_level>-?[0-9]{1,3})\)'
           tests:
             msg:
               '!TRIMLFE(2)':
-                trim_level: 2
+                lfe_level: 2
         set:
           description: Sets LFE channel level trim (10 = 1dB)
-          cmd: '!TRIMLFE({trim_level})'
-          cmd_pattern: '!TRIMLFE(\(?P<trim_level>-?[0-9]{1,3}\))'
+          cmd: '!TRIMLFE({lfe_level})'
+          cmd_pattern: '!TRIMLFE(\(?P<lfe_level>-?[0-9]{1,3}\))'
         up:
           description: Increases LFE channel level trim (10 = 1dB)
           cmd: '!TRIMLFE+'
@@ -653,15 +671,15 @@
         get:
           description: Get current surround channels level trim (10 = 1dB)
           cmd: '!TRIMSURRS?'
-          msg: '!TRIMSURRS\((?P<trim_level>-?[0-9]{1,3})\)'
+          msg: '!TRIMSURRS\((?P<surround_level>-?[0-9]{1,3})\)'
           tests:
             msg:
               '!TRIMSURRS(1)':
-                trim_level: 1
+                surround_level: 1
         set:
           description: Sets surround channels level trim (10 = 1dB)
-          cmd: '!TRIMSURRS({trim_level})'
-          cmd_pattern: '!TRIMSURRS(\(?P<trim_level>-?[0-9]{1,3}\))'
+          cmd: '!TRIMSURRS({surround_level})'
+          cmd_pattern: '!TRIMSURRS(\(?P<surround_level>-?[0-9]{1,3}\))'
         up:
           description: Increases surround channels level trim (10 = 1dB)
           cmd: '!TRIMSURRS+'
@@ -672,19 +690,15 @@
         get:
           description: Get current treble level trim (10 = 1dB; -120=-10 dB to 120=+10 dB)
           cmd: '!TRIMTREB?'
-          msg:
-            - '!TRIMTREB\(?P<trim_level>-?[0-9]{1,3})\)'   # MX160
-            - '!TRIMTREBLE\(?P<trim_level>-?[0-9]{1,3})\)' # MX170/MX180
+          msg: '!TRIMTREB\(?P<trebble_level>-?[0-9]{1,3})\)'   # MX160
           tests:
             msg:
               '!TRIMTREB(100)':
-                trim_level: 100
-              '!TRIMTREBLE(-120)':
-                trim_level: -120
+                trebble_level: 100
         set:
           description: Sets treble level trim (10 = 1dB)
-          cmd: '!TRIMTREB({trim_level})'
-          cmd_pattern: '!TRIMTREB(\(?P<trim_level>-?[0-9]{1,3}\))'
+          cmd: '!TRIMTREB({trebble_level})'
+          cmd_pattern: '!TRIMTREB(\(?P<trebble_level>-?[0-9]{1,3}\))'
         down:
           description: Decreases treble level trim (10 = 1dB)
           cmd: '!TRIMTREB-'
@@ -722,22 +736,13 @@
           cmd: '!VOL+({volume_amount})'
           cmd_pattern: '!VOL+(\(?P<volume_amount>[0-9]{1,2}\))'
 
-        max_vol:
-          description: Requests the maximum volume setting (12-99) [MX170+]
-          cmd: '!MAXVOL?'
-          msg: '!MAXVOL(\(?P<volume>[0-9]{1,2}\))'
-          tests:
-            msg:
-              '!MAXVOL(99)':
-                volume: 99
-
     zone_2_mute:
       description: Zone 2 mute
       actions:
         get:
           description: get current Zone B Mute status
           cmd: '!ZMUTE?'
-          msg: '!ZMUTE\((?P<mute>[01)\)'
+          msg: '!ZMUTE\((?P<mute>[01)\)' # MX160
           tests:
             msg:
               '!ZMUTE(1)':
@@ -829,26 +834,3 @@
           cmd: '!ZVOL+({volume_amount})'
           description: Increase zone B volume by x
           cmd_pattern: '!ZVOL+\((?P<volume_amount>[0-9]{1,2})\)'
-
-  model_overrides:
-    mx160:
-      ref: Based on MX160 Serial Control Manual V7 (2017-09-18)
-
-    mx170:
-      ref: Based on MX170 Serial Control Manual V2 (2019-11-27)
-
-    mx180:
-      ref: Based on MX180 Serial Control Manual V1 (2022-03-29)
-      delete:
-        buttons:
-          - source
-        # MX180 only has HDMIOUT 1-2
-        hdmi:
-          - out3
-          - out4
-          - out5
-        # MX180 has no MULTIVIEW
-        mview:
-          - set
-          - active
-          - src

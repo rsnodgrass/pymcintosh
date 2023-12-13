@@ -1,4 +1,4 @@
-"""Handle all configuration and data structures around device models"""
+"""Configuration and data structures around device models"""
 
 import logging
 from pprint import pprint

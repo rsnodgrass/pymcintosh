@@ -1,18 +1,19 @@
 mx180:
+  name: McIntosh MX180 Protocol
   import_protocols:
-    - mx160
+    - mx170
 
   ref: Based on MX180 Serial Control Manual V1 (2022-03-29)
   delete:
-        buttons:
+    buttons:
           - source
         # MX180 only has HDMIOUT 1-2
-        hdmi:
+    hdmi:
           - out3
           - out4
           - out5
         # MX180 has no MULTIVIEW
-        mview:
+    mview:
           - set
           - active
           - src
