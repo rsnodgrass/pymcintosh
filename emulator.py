@@ -39,7 +39,7 @@ class Server(threading.Thread):
         self._socket = sock
         self._address = address
         self._model = model
-        self._encoding = 'ascii'
+        self._encoding = "ascii"
         self.register_client()
 
     @synchronized
@@ -62,15 +62,15 @@ class Server(threading.Thread):
                     break
 
                 text = data.decode(self._encoding)
-                
+
                 # remove any termination/separators
                 text = text.replace("\r", "").replace("\n", "")
 
                 LOG.debug(f"Received: {text}")
                 response = handle_command(self._model, text)
-                
+
                 if response:
-                    response += "\r" # FIXME: add EOL/command separator
+                    response += "\r"  # FIXME: add EOL/command separator
                     data = response.encode(self._encoding)
                     self._socket.send(data)
 
@@ -85,19 +85,22 @@ COMMAND_LOOKUPS = {}
 COMMAND_PATTERNS = {}
 COMMAND_RESPONSES = {}
 
+
 def handle_command(model: DeviceModel, text: str):
     values = {}
-    
+
     action_id = COMMAND_LOOKUPS.get(text)
     if action_id:
-        LOG.info(f"Received VALID {model.id} {action_id} command: {text}")
+        LOG.info(f"Received {model.id} {action_id} cmd: {text}")
 
     for pattern, regexp in COMMAND_PATTERNS.items():
         m = re.match(regexp, text)
         if m:
-            action_id = 'Unknown'
+            action_id = "Unknown"
             values = m.groupdict()
-            LOG.info(f"Received VALID {model.id} {action_id} command: {text} -> {pattern} -> {values}")
+            LOG.info(
+                f"Received {model.id} {action_id} cmd: {text} -> {pattern} -> {values}"
+            )
 
     if not action_id:
         LOG.warning(f"No command found for: {text}")
@@ -107,30 +110,36 @@ def handle_command(model: DeviceModel, text: str):
     # NOTE: The returned data will NOT match the actual input, but will be a valid
     # formatted response.
     msg = COMMAND_RESPONSES.get(action_id)
+    if msg:
+        LOG.debug(f"Replying to {action_id} {text}: {msg}")
     return msg
 
 
 def build_responses(model: DeviceModel):
     api = model.config.get("api", {})
     for group, group_def in api.items():
-        #LOG.debug(f"Building responses for group {group}")
-        
+        # LOG.debug(f"Building responses for group {group}")
+
         actions = group_def.get("actions", {})
         for action, action_def in actions.items():
             action_id = f"{group}.{action}"
-            
+
             # register any response messages
             msg = action_def.get("msg")
             if msg:
                 # if the msg is based on a regexp, use a canned response
-                if '?P<' in msg:
+                if "?P<" in msg:
                     tests = action_def.get("tests", {}).get("msg")
                     print(tests)
                     if tests:
-                        LOG.info(f"Message {model.id} {action_id} is templated, returning canned test message: {msg}")
-                        msg = next(iter(tests)) # first key                
+                        msg = next(iter(tests))  # first key
+                        LOG.debug(
+                            f"Message {model.id} {action_id} is templated, returning canned test message: {msg}"
+                        )
                     else:
-                        LOG.warning(f"Message {model.id} {action_id} is templated, but there are no canned test messages defined.")
+                        LOG.warning(
+                            f"Message {model.id} {action_id} is templated, but there are no canned test messages defined."
+                        )
                 COMMAND_RESPONSES[action_id] = msg
 
             # register command regexp patterns (if any)
@@ -140,9 +149,11 @@ def build_responses(model: DeviceModel):
                 try:
                     COMMAND_PATTERNS[cmd_pattern] = re.compile(cmd_pattern)
                 except Exception as e:
-                    LOG.error(f"Skipping {action_id} failed regexp compilation: {cmd_pattern} {e}")
+                    LOG.error(
+                        f"Skipping {action_id} failed regexp compilation: {cmd_pattern} {e}"
+                    )
                 continue
-        
+
             # register basic lookups
             cmd = action_def.get("cmd")
             COMMAND_LOOKUPS[cmd] = action_id
