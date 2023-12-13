@@ -20,7 +20,7 @@ class DeviceController:
         asynchronous implementation. By default the synchronous interface
         is returned.
 
-        :param model: identifier for the device model (e.g. mx160) as found in series/
+        :param model: identifier for the device model (e.g. mx160)
         :param url: pyserial supported url for communication (e.g. '/dev/ttyUSB0' or 'socket://remote-host:7000/')
         :param serial_config_overrides: dictionary of serial port configuration overrides (e.g. baudrate)
 
@@ -56,10 +56,10 @@ class DeviceController:
             from .asynchronous import DeviceControllerAsync
 
             return DeviceControllerAsync(
-                model, url, serial_config, protocol_name, event_loop
+                model, url, serial_config, event_loop
             )
 
         # lazy import the sync controller to avoid loading both sync/async
         from .synchronous import DeviceControllerSync
 
-        return DeviceControllerSync(model, url, serial_config, protocol_name)
+        return DeviceControllerSync(model, url, serial_config)

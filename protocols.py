@@ -9,7 +9,7 @@ LOG = logging.getLogger(__name__)
 # FIXME: protocols are really DEFINITIONS, not "config"
 # FIXME: consider moving protocol.py to protocols/__init__.py
 
-PROTOCOL_DEFS = load_yaml_dir(f"{CONFIG_DIR}/protocols")
+PROTOCOL_DEFS = {} # load_yaml_dir(f"{CONFIG_DIR}/protocols")
 
 
 def protocol_definitions():

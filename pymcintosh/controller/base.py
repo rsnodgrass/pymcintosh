@@ -3,7 +3,6 @@ from collections.abc import Callable
 
 from ..const import *  # noqa: F403
 from ..models import DeviceModels
-from ..protocols import protocol_definitions
 
 LOG = logging.getLogger(__name__)
 
@@ -14,15 +13,12 @@ class DeviceControllerBase:
     to control a device.
     """
 
-    def __init__(self, model: str, url: str, serial_config: dict, protocol_name: str):
+    def __init__(self, model: str, url: str, serial_config: dict):
         self._model = model
         self._model_def = DeviceModels.get_config(model)
 
         self._url = url
         self._serial_config = serial_config
-
-        self._protocol_name = protocol_name
-        self._protocol_def = protocol_definitions()[protocol_name]
 
         self._callbacks = []
 
@@ -60,6 +56,3 @@ class DeviceControllerBase:
 
     def describe(self) -> dict:
         return self._model_def
-
-    def protocol(self):
-        return self._protocol_def

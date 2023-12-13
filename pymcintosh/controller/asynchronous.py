@@ -10,9 +10,9 @@ LOG = logging.getLogger(__name__)
 
 class DeviceControllerAsync(DeviceControllerBase):
     def __init__(
-        self, model: str, url: str, serial_config: dict, protocol_name: str, loop
+        self, model: str, url: str, serial_config: dict, loop
     ):
-        DeviceControllerBase.__init__(self, model, url, serial_config, protocol_name)
+        DeviceControllerBase.__init__(self, model, url, serial_config)
         self._loop = loop
         self._connection_ref = None
 

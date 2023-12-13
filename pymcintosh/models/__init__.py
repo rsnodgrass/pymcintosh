@@ -4,7 +4,7 @@ import logging
 from pprint import pprint
 
 from ..const import CONFIG_DIR
-from ..core import load_yaml_dir
+from ..core import load_yaml_file
 
 LOG = logging.getLogger(__name__)
 
@@ -16,7 +16,7 @@ class DeviceModels:
     _config = {}
 
     @classmethod
-    def _load_config(cls):
+    def _load_config_old(cls, model="mx160"):
         # lazy load configuration on first call
         global RAW_CONFIG
         if not RAW_CONFIG:
@@ -47,9 +47,45 @@ class DeviceModels:
         return MODELS_CONFIG
 
     @classmethod
+    def apply_import_config(model: str, config: dict, previously_loaded=[]):
+        """
+        Recursively apply model configuration from importing other models.
+        """
+        
+        # FIXME: this could accidentally create loops...detect and abort!
+        # load all the imported_models...and apply before copying over yaml
+        combined_config = {}
+        for imported_model in config.get('import_protocols', []):
+            # FIXME: but multiple imports of the same base.yaml should be allowed
+            # as long as there is not a loop!
+            if imported_model in previously_loaded:
+                LOG.error(f"Cyclical imports detected with {imported_model} for {model}; skipping!")
+                continue
+            
+            imported = get_config(imported_model)
+            if not imported:
+                LOG.error(f"Failed to import {imported_model} for {model}; skipping!")
+                continue
+            
+            # FIXME: since it is a deeply nested structure, we need to probably
+            # iterate through and modify to avoid blowing away complex nested
+            # dictionaries (or at least patch the final version with just the nested
+            # dicts).
+            combined_config = combined_config | imported
+            
+        # FIXME: process all deletes for the outer layer before merging!!
+
+        merged_config = config | combined_config # FIXME: order of precedence?
+        return merged_config
+   
+    def apply_imported_config(previous: dict, new: dict):
+        return        
+
+    @classmethod
     def get_config(cls, model: str) -> dict:
-        model_config = cls._load_config()
-        return model_config.get(model)
+        model_file = f"{CONFIG_DIR}/models/{model}.yaml"
+        config = load_yaml_file(model_file)
+        return config 
 
     @classmethod
     def get_supported_models(cls) -> dict:

@@ -28,7 +28,7 @@ def synchronized(func):
     def wrapper(*args, **kwargs):
         with sync_lock:
             return func(*args, **kwargs)
-    
+
     return wrapper
 
 
@@ -123,7 +123,7 @@ def main():
         s.listen(2)
 
         device = DeviceController.create(args.model, url)
-        build_responses(device.protocol())
+        #build_responses(device.protocol())
 
         # accept connections
         while True:
