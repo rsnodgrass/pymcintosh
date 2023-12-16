@@ -54,6 +54,39 @@
       auto: Auto
       native: Native
       legacy: Legacy
+    profile:
+      hdmi1: 
+      hdmi2:
+      hdmi3:
+      hdmi4:
+      hdmi5:
+      hdmi6:
+      hdmi7:
+      hdmi8:
+      network:
+      spdif1:
+      spdif2:
+      spdif3:
+      spdif4:
+      spdif71Pcm:
+      optinal5:
+      optinal6:
+      optinal7:
+      optinal8:
+      optinal71PCM:
+      dcimchaes:
+      aes1:
+      aes2:
+      analogBalanced1:
+      analogBalanced2:
+      analogBalanced1And2:
+      microphone:
+      analogSingleEnded1:
+      analogSingleEnded2:
+      analogSingleEnded3:
+      analogSingleEnded4:
+      roon:
+
 
   api:
     buttons:
