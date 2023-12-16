@@ -128,7 +128,7 @@
       description: Volume controls
       actions:
         get:
-          description: get current Mute status
+          description: get current volume status
           cmd: 'send_volume'  # FIXME: also 'send volume' for JBL 1.0
           msg: 'VOLUME (?P<volume>[0-9]{1,2})'
           tests:
@@ -136,7 +136,7 @@
               'VOLUME 10':
                 volume: 10
         set:
-          description: Set volume to x (in dB)
+          description: Set volume to x (in dB) Volume attenuation in dB. Range -100 to 20.
           cmd: 'volume {volume}'
           cmd_pattern: 'volume (?P<volume>[0-9]{1,2}\)'
         down:
@@ -153,3 +153,7 @@
           description: Increase volume by x
           cmd: 'dvolume {volume_amount}'
           cmd_pattern: 'dvolume \(?P<volume_amount>[0-9]{1,2}\)'
+
+  # FIXME: input source = profile
+  # FIXME: preset selection
+  
