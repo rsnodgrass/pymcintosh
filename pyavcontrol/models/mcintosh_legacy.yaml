@@ -1,9 +1,28 @@
-- protocol: mcintosh_original
+- protocol: mcintosh_legacy
   name: Original McIntosh RS232 Protocol
   description: Original RS232 protocol for McIntosh MX121/MX122/MX123 and compatible models
   urls:
     - https://github.com/RobKikta/IntoBlue/blob/master/McIntosh_RS232ControlApplicationNote.pdf
     - https://community.home-assistant.io/t/need-help-using-rs232-to-control-a-receiver/95210/4
+
+  manufacturer:
+    name: McIntosh
+    models:
+      MX118:
+      MX119:
+      MX120:
+      MX121:
+      MX122:
+      MX123:
+      MX130:
+      MX132:
+      MX134:
+      MX135:
+      MX136:
+      MX150:
+      MX151:
+      MHT100:
+      MHT200:
 
   format:
     command:

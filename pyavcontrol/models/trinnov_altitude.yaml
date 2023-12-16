@@ -1,0 +1,121 @@
+- model: trinnov_altitude
+  description: Trinnov Altitude and JBL Synthesis Processor Automation Protocol over RS232 and IP [2016-11-22 v1.13]
+  urls:
+    - https://docplayer.net/176487263-Trinnov-altitude-processor-automation-protocol.html
+    - https://www.jblsynthesis.com/on/demandware.static/-/Sites-masterCatalog_Harman/default/dw45d0257f/pdfs/JBL%20Synthesis%20SDP-75_Automation%20Protocol%20Guide.pdf
+
+  contacts:
+    - remy.bruno@trinnov.com
+
+  settings:
+    min_time_between_commands: 0.4
+
+    # upon connection, initialize device with these commands
+    connection_init: "id pyavcontrol_api"
+
+  manufacturer:
+    name: Trinnov
+    model: Altitude
+    
+    name2: JBL Synthesis
+    model2: SDP-75
+
+  tested: false
+  
+  connection:
+    ip:
+      port: 44100
+    rs232:
+      baudrate: 19200
+      bytesize: 8
+      parity: 'N'
+      stopbits: 1
+      timeout: 2.0
+      write_timeout: 2.0
+
+  hardware:
+    type: processor
+
+  format:
+    command:
+      format: "{cmd}{eol}"
+      eol: "\r"  # CR Carriage Return
+
+    message:
+      format: "{msg}{eol}"
+      eol: "\r"
+
+  vars:
+    upmixer:
+      auro3d: Auro 3D
+      dts: DTS
+      dolby: Dolby
+      auto: Auto
+      native: Native
+      legacy: Legacy
+
+  api:
+    buttons:
+      description: Remote button presses
+      actions:
+        light:
+          description: Light button
+          cmd: 'fav_light'
+	  
+    mute:
+      description: Mute
+      actions:
+        toggle:
+          description: Mute toggle button
+          cmd: 'mute 2'
+        get:
+          description: get current Mute status
+          cmd: 'send_volume'
+          msg: 'MUTE (?P<power>[01])'
+          tests:
+            msg:
+              'MUTE 1':
+                mute: 1
+        'off':
+          description: Mute off
+          cmd: 'mute 0'
+        'on':
+          description: Mute on
+          cmd: 'mute 1'
+
+    power_system:
+      description: Entire system power
+      actions:
+        'off':
+          description: Turn entire system off
+          cmd: 'power_off_SECURED_FHZMCH48FE'
+
+    volume:
+      description: Volume controls
+      actions:
+        get:
+          description: get current Mute status
+          cmd: 'send_volume'  # FIXME: also 'send volume' for JBL 1.0
+          msg: 'VOLUME (?P<volume>[0-9]{1,2})'
+          tests:
+            msg:
+              'VOLUME 10':
+                volume: 10
+        set:
+          description: Set volume to x (in dB)
+          cmd: 'volume {volume}'
+          cmd_pattern: 'volume (?P<volume>[0-9]{1,2}\)'
+        down:
+          description: Decrease volume
+          cmd: 'dvolume -1'
+        down_by_x:
+          description: Decrease volume by x
+          cmd: 'dvolume -{volume_amount}'
+          cmd_pattern: 'dvolume -\(?P<volume_amount>[0-9]{1,2}\)'
+        up:
+          description: Increase volume
+          cmd: 'dvolume 1'
+        up_by_x:
+          description: Increase volume by x
+          cmd: 'dvolume {volume_amount}'
+          cmd_pattern: 'dvolume \(?P<volume_amount>[0-9]{1,2}\)'

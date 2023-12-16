@@ -1,0 +1,79 @@
+- model: acurus_m8
+  name: Acurus M8
+  description: "Acurus Amplifier Control Protocol 1.0"
+  urls:
+    - https://app.box.com/s/bp7h228vihe92nmjlo6o8w6e66tvj58o
+
+  manufacturer:
+    name: Acurus
+    model: M8
+
+  tested: false
+
+  connection:
+    rs232:
+      baudrate: 9600
+      bytesize: 8
+      parity: 'N'
+      stopbits: 1
+      timeout: 2.0
+      write_timeout: 2.0
+
+  format:
+    command:
+      format: "{cmd}{eol}"
+      eol: "\r"  # CR Carriage Return
+
+    message:
+      format: "{msg}{eol}"
+      eol: "\r\n"
+
+  api:
+    power:
+      actions:
+        status:
+          cmd: 'STSPOW'
+        toggle:
+          cmd: 'PWRTGL'
+          msg: '!OK POWER O(?P<power>[NF])[F]*'
+        'on':
+          cmd: 'PWRONN'
+        'off':
+          cmd: 'PWROFF'
+
+    mute:
+      description: Mute
+      actions:
+        toggle:
+          description: Mute toggle button
+          cmd: 'MUTTGL'
+          msg: '!OK MUTE O(?P<power>[NF])[F]*'
+        get:
+          description: get current Mute status
+          cmd: 'STSMUT'
+          msg: '!OK MUTE O(?P<power>[NF])[F]*'
+        'off':
+          description: Mute off
+          cmd: 'MUTOFF'
+        'on':
+          description: Mute on
+          cmd: 'MUTONN'
+        channel_on:
+          cmd: 'MONCH{zone}'
+          cmd_pattern: 'MONCH\d'
+        channel_off:
+          cmd: 'MOFCH{zone}'
+          cmd_pattern: 'MOFCH\d'
+        channel_toggle:
+          cmd: 'MOTCH{zone}'
+          cmd_pattern: 'MOTCH\d'
+
+    volume:
+      description: Volume controls
+      actions:
+        down:
+          description: Decrease volume
+          cmd: 'VOLDWN'
+        up:
+          description: Increase volume
+          cmd: 'VOLUPP'

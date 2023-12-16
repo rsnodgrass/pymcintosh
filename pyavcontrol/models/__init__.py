@@ -12,11 +12,11 @@ LOG = logging.getLogger(__name__)
 class DeviceModel:
     def __init__(self, model_id: str):
         self._model_id = model_id
-        self._config = DeviceModel.get_config(model_id)
 
+        self._config = DeviceModel.get_config(model_id)
         if not self._config:
             LOG.error(
-                f"No such model {model_id} found, please check the list of supported models."
+                f"Model '{model_id}' not found! Check the list of supported models."
             )
             raise NotImplementedError()
 
@@ -72,11 +72,21 @@ class DeviceModel:
     def get_config(cls, model_id: str) -> dict:
         model_file = f"{CONFIG_DIR}/models/{model_id}.yaml"
         config = load_yaml_file(model_file)
-        # pprint(config)
 
+        # FIXME: recursively apply imports
+
+        # pprint(config)
         return config
 
     @classmethod
-    def get_supported_models(cls) -> dict:
-        """@return dictionary of all supported models and associated config"""
-        return MODELS_CONFIG  # FIXME: consider copy.deepcopy(MODELS_CONFIG)
+    def get_supported_models(cls, tested_models_only=False) -> dict:
+        """@return dictionary of all supported models"""
+        # FIXME: read all yaml files
+        supported_models = {}
+        supported_models["mcintosh_mx160"] = {
+            "manufacturer": "McIntosh",
+            "model": "MX160",
+            "tested": True,
+        }
+
+        return supported_models

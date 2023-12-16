@@ -21,7 +21,9 @@ p.add_argument(
     help="pyserial supported url for communication (e.g. /dev/tty.usbserial-A501SGSZ or socket://host:4999/)",
     default="socket://localhost:4999/",
 )
-p.add_argument("--model", default="mx160", help="device model (e.g. mx160)")
+p.add_argument(
+    "--model", default="mcintosh_mx160", help="device model (e.g. mcintosh_mx160)"
+)
 p.add_argument(
     "--baud",
     type=int,
