@@ -1,9 +1,34 @@
+[project]
+name = "pyavcontrol"
+version = "0.0.1"
+description = "Python Control of RS232/IP Audio/Visual Equipment"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {file = "LICENSE"}
+authors = []
+
+dependencies = [
+    "pyserial >= 3.5",
+    "pyserial-asyncio >= 0.6",
+    "ratelimit >= 2.2.1"
+]
+
+
+[project.optional-dependencies]
+test = [    # pip install .[test]
+    "coloredlogs",
+    "pre-commit"
+]
+doc = [
+    "sphinx",
+]   
+
 [tool.isort]
 profile = "black"
 force_to_top = [ "logging" ]
 balanced_wrapping = true
 
-[black]
+[tool.black]
 line-length = 90
 
 [tool.pycln]
