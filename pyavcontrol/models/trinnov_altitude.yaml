@@ -3,6 +3,7 @@
   urls:
     - https://docplayer.net/176487263-Trinnov-altitude-processor-automation-protocol.html
     - https://www.jblsynthesis.com/on/demandware.static/-/Sites-masterCatalog_Harman/default/dw45d0257f/pdfs/JBL%20Synthesis%20SDP-75_Automation%20Protocol%20Guide.pdf
+    - https://github.com/bjorg/RadiantPi.Trinnov.Altitude
 
   contacts:
     - remy.bruno@trinnov.com
