@@ -191,7 +191,8 @@
         get:
           description: get current Mute status
           cmd: 'MU?'
-          msg: "(?P<mute>[01])" # FIXME
+          msg:
+            regex: "(?P<mute>[01])" # FIXME
         'off':
           description: Mute off
           cmd: 'MUOFF'
@@ -274,7 +275,8 @@
           get:
               description: Get remaining Main zone sleep time (in minutes)
               cmd: 'SLP?'
-              msg: "(?P<power>[01])" # FIXME
+              msg:
+                regex: "(?P<power>[01])" # FIXME
 
     main_zone_standby:
                 actions:
@@ -291,7 +293,8 @@
                   get:
                       description: Get remaining Main zone sleep time (in minutes)
                       cmd: 'STBY?'
-                      msg: '' # FIXME
+                      msg:
+                        regex: '' # FIXME
 
     main_zone_eco_mode:
                         actions:
@@ -306,7 +309,8 @@
                           get:
                               description: Get current Main zone eco mode setting
                               cmd: 'ECO?'
-                              msg: '' # FIXME
+                              msg:
+                                regex: '' # FIXME
 
     # MS: skipped for now (surround_mode)
     # VS: skipped for now
@@ -341,7 +345,8 @@
               ST: "Stereo"
           get:
             cmd: "Z2CS?"
-            msg: "(?P<setting>(ST|MONO))"
+            msg:
+              regex: "(?P<setting>(ST|MONO))"
             tests:
               msg:
                 "MONO":

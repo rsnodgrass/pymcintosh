@@ -1,0 +1,5 @@
+#!/bin/bash
+#
+# Validate's that a given YAML file defining a model is valid.
+# FIXME: implement
+

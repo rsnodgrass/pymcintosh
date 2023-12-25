@@ -23,10 +23,11 @@ mcintosh_mx170:
       actions:
         get:
           description: Get current treble level trim (10 = 1dB; -120=-10 dB to 120=+10 dB)
-          cmd: '!TRIMTREB?'
-          msg: '!TRIMTREBLE\(?P<trebble_level>-?[0-9]{1,3})\)'
-          tests:
-            msg:
+          cmd:
+            fstring: '!TRIMTREB?'
+          msg:
+            regex: '!TRIMTREBLE\(?P<trebble_level>-?[0-9]{1,3})\)'
+            tests:
               '!TRIMTREBLE(-120)':
                 trebble_level: -120
 
@@ -34,10 +35,11 @@ mcintosh_mx170:
       actions:
         max_vol:
           description: Requests the maximum volume setting (12-99) [MX170+]
-          cmd: '!MAXVOL?'
-          msg: '!MAXVOL(\(?P<volume>[0-9]{1,2}\))'
-          tests:
-            msg:
+          cmd:
+            fstring: '!MAXVOL?'
+          msg:
+            regex: '!MAXVOL(\(?P<volume>[0-9]{1,2}\))'
+            tests:
               '!MAXVOL(99)':
                 volume: 99
 
@@ -46,8 +48,10 @@ mcintosh_mx170:
       actions:
         get:
           description: get current Zone B Mute status
-          cmd: '!ZMUTE?'
-          msg: '!ZMUTEO\(?P<mute>[NF]F?' # FIXME: how to map to 0 or 1?
+          cmd:
+            fstring: '!ZMUTE?'
+          msg:
+            regex: '!ZMUTEO\(?P<mute>[NF]F?' # FIXME: how to map to 0 or 1?
           mappings:
             mute:
               O: 0

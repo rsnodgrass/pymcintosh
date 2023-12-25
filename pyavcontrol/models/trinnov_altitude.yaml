@@ -94,65 +94,77 @@
       actions:
         light:
           description: Light button
-          cmd: 'fav_light'
-	  
+          cmd:
+            fstring: 'fav_light'
+
     mute:
       description: Mute
       actions:
         toggle:
           description: Mute toggle button
-          cmd: 'mute 2'
+          cmd:
+            fstring: 'mute 2'
         get:
           description: get current Mute status
-          cmd: 'send_volume'
-          msg: 'MUTE (?P<power>[01])'
-          tests:
-            msg:
+          cmd:
+            fstring: 'send_volume'
+          msg:
+            regex: 'MUTE (?P<power>[01])'
+            tests:
               'MUTE 1':
                 mute: 1
         'off':
           description: Mute off
-          cmd: 'mute 0'
+          cmd:
+            fstring: 'mute 0'
         'on':
           description: Mute on
-          cmd: 'mute 1'
+          cmd:
+            fstring: 'mute 1'
 
     power_system:
       description: Entire system power
       actions:
         'off':
           description: Turn entire system off
-          cmd: 'power_off_SECURED_FHZMCH48FE'
+          cmd:
+            fstring: 'power_off_SECURED_FHZMCH48FE'
 
     volume:
       description: Volume controls
       actions:
         get:
           description: get current volume status
-          cmd: 'send_volume'  # FIXME: also 'send volume' for JBL 1.0
-          msg: 'VOLUME (?P<volume>[0-9]{1,2})'
-          tests:
-            msg:
+          cmd:
+            fstring: 'send_volume'  # FIXME: also 'send volume' for JBL 1.0
+          msg:
+            regex: 'VOLUME (?P<volume>[0-9]{1,2})'
+            tests:
               'VOLUME 10':
                 volume: 10
         set:
           description: Set volume to x (in dB) Volume attenuation in dB. Range -100 to 20.
-          cmd: 'volume {volume}'
-          cmd_pattern: 'volume (?P<volume>[0-9]{1,2}\)'
+          cmd:
+            fstring: 'volume {volume}'
+            regex: 'volume (?P<volume>[0-9]{1,2}\)'
         down:
           description: Decrease volume
-          cmd: 'dvolume -1'
+          cmd:
+            fstring: 'dvolume -1'
         down_by_x:
           description: Decrease volume by x
-          cmd: 'dvolume -{volume_amount}'
-          cmd_pattern: 'dvolume -\(?P<volume_amount>[0-9]{1,2}\)'
+          cmd:
+            fstring: 'dvolume -{volume_amount}'
+            regex: 'dvolume -\(?P<volume_amount>[0-9]{1,2}\)'
         up:
           description: Increase volume
-          cmd: 'dvolume 1'
+          cmd:
+            fstring: 'dvolume 1'
         up_by_x:
           description: Increase volume by x
-          cmd: 'dvolume {volume_amount}'
-          cmd_pattern: 'dvolume \(?P<volume_amount>[0-9]{1,2}\)'
+          cmd:
+            fstring: 'dvolume {volume_amount}'
+            regex: 'dvolume \(?P<volume_amount>[0-9]{1,2}\)'
 
   # FIXME: input source = profile
   # FIXME: preset selection

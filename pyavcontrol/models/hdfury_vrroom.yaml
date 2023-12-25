@@ -51,7 +51,7 @@
       0: 48kHz
       1: 96kHz
       2: 192kHz
-      2: copy sink
+      3: copy sink
     ediddtshdmode:
       0: 'DTS:X IMAX'
       1: 'DTS:X'
@@ -73,40 +73,47 @@
     power:
       actions:
         reboot:
-	  description: Reboot
-          get: 'vrroom set reboot'
-
+          description: Reboot
+          cmd:
+            fstring: 'vrroom set reboot'
 
     volume:
       actions:
         mute:
-          cmd: 'vrroom set mute{output}audio {on_off}'
-          cmd_pattern: 'vrroom set mute\(?P<output>tx[01]\)audio \(?P<on_off>o[nf][f]*\)'
+          cmd:
+            fstring: 'vrroom set mute{output}audio {on_off}'
+            regex: 'vrroom set mute\(?P<output>tx[01]\)audio \(?P<on_off>o[nf][f]*\)'
 
     opmode:
       description: Opmode
       actions:
         get:
-	  description: Get opmode
-          cmd: 'vrroom get opmode'
-	  msg: '(?P<opmode>[0-4)\)'
+          description: Get opmode
+          cmd:
+            fstring: 'vrroom get opmode'
+          msg:
+            regex: '(?P<opmode>[0-4)\)'
         set:
-	  description: Set opmode
-          cmd: 'vrroom set opmode {opmode}'
-          cmd_pattern: 'vrroom set opmode \(?P<opmode>[0-4]\)'
+          description: Set opmode
+          cmd:
+            fstring: 'vrroom set opmode {opmode}'
+            regex: 'vrroom set opmode \(?P<opmode>[0-4]\)'
 
     ddplus:
       description: Dolby Digital Plus
       actions:
         mode:
-	  description: Sets the features for Dolby Digital Plus
-          cmd: 'vrroom set edidddplusmode {ddplusmode}'
-          cmd_pattern: 'vrroom set edidddplusmode \(?P<ddplusmode>[0-2]\)'
+          description: Sets the features for Dolby Digital Plus
+          cmd:
+            fstring: 'vrroom set edidddplusmode {ddplusmode}'
+          regex: 'vrroom set edidddplusmode \(?P<ddplusmode>[0-2]\)'
         automix:
-	  description: Sets the automix EDID Dolby Digital Plus option
-          cmd: 'vrroom set edidddplusflag {on_off}'
-          cmd_pattern: 'vrroom set edidddplusflag \(?P<on_off>o[nf][f]*\)'
+          description: Sets the automix EDID Dolby Digital Plus option
+          cmd:
+            fstring: 'vrroom set edidddplusflag {on_off}'
+            regex: 'vrroom set edidddplusflag \(?P<on_off>o[nf][f]*\)'
         sample_rate:
-	  description: Sets the sample rate capability for Dolby Digital Plus
-          cmd: 'vrroom set edidddplussrmode {ddplussrmode}'
-          cmd_pattern: 'vrroom set edidddplussrmode \(?P<ddplussrmode>[0-3]\)'
+          description: Sets the sample rate capability for Dolby Digital Plus
+          cmd:
+            fstring: 'vrroom set edidddplussrmode {ddplussrmode}'
+            regex: 'vrroom set edidddplussrmode \(?P<ddplussrmode>[0-3]\)'

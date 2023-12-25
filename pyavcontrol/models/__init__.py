@@ -9,6 +9,14 @@ from ..core import load_yaml_file
 LOG = logging.getLogger(__name__)
 
 
+def validate_model_definition(self, definition: dict):
+    """
+    Validate that the given device model definition (yaml) is valid
+    """
+    # FIXME
+    return True
+
+
 class DeviceModel:
     def __init__(self, model_id: str):
         self._model_id = model_id

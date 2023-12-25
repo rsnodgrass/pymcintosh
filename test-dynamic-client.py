@@ -32,6 +32,9 @@ LOG = logging.getLogger(__name__)
 coloredlogs.install(level="DEBUG")
 
 NAMED_REGEX_PATTERN = re.compile(r"\(\?P\<(?P<name>.+)\>(?P<regex>.+)\)")
+FSTRING_ARG_PATTERN = re.compile(
+    r"\{(?P<arg_name>.+)\}"
+)  # FIXME: also parse any format strings out
 
 
 class ActionArgsValidator:
@@ -44,7 +47,7 @@ class ActionParser:
         return
 
 
-class DynamicDeviceActions:
+class DynamicActions:
     """
     Dynamically created class representing a group of actions that can be called
     on a device.
@@ -56,9 +59,15 @@ class DynamicDeviceActions:
 
 
 def _get_client_method(action_name, action_def):
-    def _activity_call(self, *args, **kwargs):
+    required_args = [action_name]
+    action_defs = action_def
+
+    def _activity_call(self, **kwargs):
+        #    def _activity_call(self, *args, **kwargs):
+        print(required_args)
+        print(action_defs)
         # FIXME: call the controller with the correct data for the RS232/IP connection
-        return self.make_modeled_api_call(action_name, *args, **kwargs)
+        # return self.make_modeled_api_call(action_name, *args, **kwargs)
 
     return _activity_call
 
@@ -81,11 +90,24 @@ def _parse_args(action_name, action_def):
         LOG.warning(f"CMD_PATTERN FOUND BUT IGNORING! {matches}")
 
     if cmd := action_def.get("cmd"):
-        pattern = re.compile(r"\{(?P<arg_name>.+)\}")
-        # extract args from the regexp pattern of parameters
-        for m in re.finditer(pattern, cmd):
+        if args := _parse_fstring(cmd):
             # FIXME: embed all the cmd_patterns into this
-            args += [{"name": m.group(1)}]
+            return args
+
+    return args
+
+
+def _parse_fstring(text: str):
+    """
+    Parse out all the F-string style arguments from the given string
+    """
+    args = []
+
+    # FIXME: remove any special format strings in the args???
+
+    # extract args from the regexp pattern of parameters
+    for m in re.finditer(FSTRING_ARG_PATTERN, text):
+        args += [{"name": m.group(1)}]
     return args
 
 
@@ -132,7 +154,7 @@ def create_activity_group_class(model_name, group_name, actions_model, cls_bases
     cls_name = camel_case(f"{model_name} {group_name}")
 
     if not cls_bases:
-        cls_bases = (DynamicDeviceActions,)
+        cls_bases = (DynamicActions,)
     cls_props = {}
 
     # dynamically add methods (and associated documentation) for each action
@@ -166,6 +188,9 @@ class GroupActions:
                 print(cmd)
 
     def make_method_call(self, method, *args, **kwargs):
+        """
+        Call the action on the remote device
+        """
         validated_params = self._validate_params(method, *args, **kwargs)
         api_response = self.make_api_call(method, validated_Params)
         return self._parse_api_response(method, api_respons)
@@ -186,8 +211,6 @@ class GroupActions:
         if method not in operation_models:
             raise RuntimeError("Unknown operation: %s" % method)
         return operation_models[method]
-
-    # raise RuntimeError
 
 
 class ModelInterface:
@@ -230,6 +253,6 @@ if __name__ == "__main__":
         LOG.debug(f"Adding property for group {group}")
 
         g = create_activity_group_class(model, group, group_def)
-        # g.min()
+        g.min()
         # help(g)
         break
