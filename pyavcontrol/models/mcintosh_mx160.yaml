@@ -167,14 +167,14 @@
         set:
           description: Set verbosity level of active interface
           cmd: '!VERB({verbosity_level})'
-        minimal:
-          description: Set verbosity level to min
+        min:
+          description: Set verbosity level to minimal
           cmd: '!VERB(1)'
         normal:
           description: Set verbosity level to normal
           cmd: '!VERB(2)'
-        all:
-          description: Set verbosity level to max
+        max:
+          description: Set verbosity level to maximum
           cmd: '!VERB(3)'
         get:
           description: Request verbosity level of active interface
@@ -198,6 +198,8 @@
           description: Request audio processing mode
           cmd: '!AUDMODE?'
           msg: '!AUDMODE\((?P<type>\d+)\)\s*"(?P<name>\s+)"'
+          output:
+            documentation: Details on the audio processing mode
           tests:
             msg:
               '!AUDMODE(1) "Test"':

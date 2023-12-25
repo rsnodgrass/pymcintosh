@@ -6,9 +6,6 @@
   settings:
     min_time_between_commands: 0.4
 
-    # upon connection, initialize device with these commands
-    connection_init: "id pyavcontrol_api"
-
   manufacturer:
     name: HDFury
     model: VRROOM
