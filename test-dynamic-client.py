@@ -31,6 +31,8 @@ from pyavcontrol import DeviceController, DeviceModel
 LOG = logging.getLogger(__name__)
 coloredlogs.install(level="DEBUG")
 
+NAMED_REGEX_PATTERN = re.compile(r"\(\?P\<(?P<name>.+)\>(?P<regex>.+)\)")
+
 
 class ActionArgsValidator:
     def __init__(self):
@@ -42,32 +44,23 @@ class ActionParser:
         return
 
 
-def create_actions(model, cls_name="MyAction", cls_bases=None):
-    if not cls_bases:
-        cls_bases = (Model_client,)
-    cls_props = {}
-
-    for operation_name, operation_model in model["operations"].items():
-        method = _get_client_method(operation_model)
-        method.__name__ = str(operation_name)
-        method.__doc__ = _get_docstring(operation_model)
-        cls_props[operation_name] = method
-
-    cls = type(cls_name, cls_bases, cls_props)
-    return cls(model)
-
-
 class DynamicDeviceActions:
+    """
+    Dynamically created class representing a group of actions that can be called
+    on a device.
+    """
+
     def __init__(self, model_name, actions_def):
         self._model_name = model_name
         self._actions_def = actions_def
 
 
-def _get_client_method(operation_name):
-    def _api_call(self, *args, **kwargs):
-        return self.make_modeled_api_call(operation_name, *args, **kwargs)
+def _get_client_method(action_name, action_def):
+    def _activity_call(self, *args, **kwargs):
+        # FIXME: call the controller with the correct data for the RS232/IP connection
+        return self.make_modeled_api_call(action_name, *args, **kwargs)
 
-    return _api_call
+    return _activity_call
 
 
 def camel_case(text: str):
@@ -79,31 +72,41 @@ def camel_case(text: str):
 
 def _parse_args(action_name, action_def):
     """
-    Parse the definition into an array of arguments for the action, with a dictionary
+    Parse the command definition into an array of arguments for the action, with a dictionary
     describing additional type information about each argument.
     """
     args = []
+    if cmd_pattern := action_def.get("cmd_pattern"):
+        matches = _parse_regex(cmd_pattern)
+        LOG.warning(f"CMD_PATTERN FOUND BUT IGNORING! {matches}")
+
     if cmd := action_def.get("cmd"):
         pattern = re.compile(r"\{(?P<arg_name>.+)\}")
         # extract args from the regexp pattern of parameters
         for m in re.finditer(pattern, cmd):
+            # FIXME: embed all the cmd_patterns into this
             args += [{"name": m.group(1)}]
     return args
 
 
-def _parse_response_args(action_name, action_def):
+def _parse_regex(text: str):
+    """
+    Parse out all regex patterns from the given text into an array of dictionaries containing name and regex
+    """
+    matches = []
+    for m in re.finditer(NAMED_REGEX_PATTERN, text):
+        matches += [{"name": m.group(1), "regex": m.group(2)}]
+    return matches
+
+
+def _parse_response_args(action_name: str, action_def: dict):
     args = []
     if msg := action_def.get("msg"):
-
-        pattern = re.compile(r"\(\?P\<(?P<name>.+)\>(?P<regexp>.+)\)")
-
-        # extract args from the regexp pattern of parameters
-        for m in re.finditer(pattern, msg):
-            args += {m.group(1): {pattern: m.group(2)}}
+        args = _parse_regex(msg)
     return args
 
 
-def _document_action(action_name, action_def):
+def _document_action(action_name: str, action_def: dict):
     doc = action_def.get("description")
 
     # append details on all the command arguments
@@ -112,15 +115,21 @@ def _document_action(action_name, action_def):
             arg_doc = arg.get("doc", "unknown")
             doc += f"\n:param {arg['name']}: {arg_doc}"
 
+    # append details of any response message for this action
+    if args := _parse_response_args(action_name, action_def):
+        doc += "\n:return: {"
+        for arg in args:
+            arg_doc = arg.get("doc", "unknown")
+            doc += f" {arg['name']}: {arg_doc}, "
+        doc += "}\n"
+
     # FIXME: may need type info from the overall api variables section
     return doc
 
 
 def create_activity_group_class(model_name, group_name, actions_model, cls_bases=None):
     # CamelCase the model and group to represent this class of methods
-    model_name = camel_case(model_name)
-    group_name = camel_case(group_name)
-    cls_name = model_name + group_name
+    cls_name = camel_case(f"{model_name} {group_name}")
 
     if not cls_bases:
         cls_bases = (DynamicDeviceActions,)
@@ -128,7 +137,7 @@ def create_activity_group_class(model_name, group_name, actions_model, cls_bases
 
     # dynamically add methods (and associated documentation) for each action
     for action_name, action_def in actions_model["actions"].items():
-        method = _get_client_method(action_name)
+        method = _get_client_method(action_name, action_def)
         method.__name__ = action_name
         method.__doc__ = _document_action(action_name, action_def)
         cls_props[action_name] = method
@@ -221,5 +230,6 @@ if __name__ == "__main__":
         LOG.debug(f"Adding property for group {group}")
 
         g = create_activity_group_class(model, group, group_def)
-        help(g)
+        # g.min()
+        # help(g)
         break

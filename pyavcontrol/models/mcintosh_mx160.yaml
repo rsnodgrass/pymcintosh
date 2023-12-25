@@ -198,8 +198,6 @@
           description: Request audio processing mode
           cmd: '!AUDMODE?'
           msg: '!AUDMODE\((?P<type>\d+)\)\s*"(?P<name>\s+)"'
-          output:
-            documentation: Details on the audio processing mode
           tests:
             msg:
               '!AUDMODE(1) "Test"':
