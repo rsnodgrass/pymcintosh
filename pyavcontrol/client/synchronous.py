@@ -11,8 +11,8 @@ LOG = logging.getLogger(__name__)
 
 
 class DeviceClientSync(DeviceClientBase):
-    def __init__(self, model: str, url: str, serial_config: dict):
-        DeviceClientBase.__init__(self, model, url, serial_config)
+    def __init__(self, model_def: dict, url: str, serial_config: dict):
+        DeviceClientBase.__init__(self, model_def, url, serial_config)
         self._connection = serial.serial_for_url(url, **serial_config)
 
     @synchronized

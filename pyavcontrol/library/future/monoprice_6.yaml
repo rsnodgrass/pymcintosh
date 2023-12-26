@@ -1,70 +1,76 @@
-- model: monoprice_6
-  name: Monoprice 6-Zone
-  description: Monoprice API
-  urls:
-    - https://app.box.com/s/bp7h228vihe92nmjlo6o8w6e66tvj58o
+---
+id: monoprice_6
+name: Monoprice 6-Zone
+description: Monoprice API
+urls:
+  - https://app.box.com/s/bp7h228vihe92nmjlo6o8w6e66tvj58o
 
-  manufacturer:
-    name: Monoprice
-    models:
-      '6':
-        description: 6-Zone (model 10761)
-        tested: false
+manufacturer:
+  name: Monoprice
+  models:
+    '6':
+      description: 6-Zone (model 10761)
+      tested: false
 
-  connection:
-    rs232:
-      baudrate: 9600
-      bytesize: 8
-      parity: N
-      stopbits: 1
-      timeout: 2.0
-      write_timeout: 2.0
+connection:
+  rs232:
+    baudrate: 9600
+    bytesize: 8
+    parity: N
+    stopbits: 1
+    timeout: 2.0
+    write_timeout: 2.0
 
-  format:
-    command:
-      format: "<{cmd}{eol}"
-      eol: "\r"  # CR Carriage Return
-      separator: "#"
+format:
+  command:
+    format: <{cmd}{eol}
+    eol: "\r"    # CR Carriage Return
+    separator: '#'
 
-    message:
-      format: ">{msg}{eol}"
-      eol: "\r"
+  message:
+    format: '>{msg}{eol}'
+    eol: "\r"
 
-  api:
-    zone:
-      actions:
-        status:
-	  cmd: '?{zone}'
-	  cmd_pattern: '?P(?<zone>\d)'
+api:
+  zone:
+    actions:
+      status:
+  cmd:
+    fstring: ?{zone}
+    regex: ?P(?<zone>\d)
 
-    power:
-      actions:
-	set:
-	  cmd: '<{zone}PR{power:02}'
-	  cmd_pattern: '?(?P<zone>\d)PR0(?P<power>[01])'
-	  cmd: '<{zone}PR'
-	  tests:
-	    cmd:
-	      '?1PR01':
-	        power: 1
-        'on':
-          cmd: '<{zone}PR01'
-        'off':
-          cmd: '<{zone}PR00'
+  power:
+    actions:
+      set:
+        cmd:
+          fstring: <{zone}PR{power:02}
+          regex: ?(?P<zone>\d)PR0(?P<power>[01])
+          tests:
+            ?1PR01:
+            power: 1
+      on:
+        cmd:
+          fstring: <{zone}PR01
+      off:
+        cmd:
+          fstring: <{zone}PR00
 
-    mute:
-      description: Mute
-      actions:
-        'on':
-          description: Mute on
-	  cmd: '<{zone}MU01'
-        'off':
-          description: Mute off
-	  cmd: '<{zone}MU00'
+  mute:
+    description: Mute
+    actions:
+      on:
+        description: Mute on
+        cmd:
+          fstring: <{zone}MU01
+      off:
+        description: Mute off
+        cmd:
+          fstring: <{zone}MU00
 
-    volume:
-      description: Volume controls
-      actions:
-        set:
-          description: Set volume
-          cmd: '<{zone}VO{volume:02}'
+  volume:
+    description: Volume controls
+    actions:
+      set:
+        description: Set volume
+        cmd:
+          fstring: <{zone}VO{volume:02}

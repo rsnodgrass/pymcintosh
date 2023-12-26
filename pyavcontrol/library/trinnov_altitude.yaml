@@ -1,5 +1,7 @@
+---
 - model: trinnov_altitude
-  description: Trinnov Altitude and JBL Synthesis Processor Automation Protocol over RS232 and IP [2016-11-22 v1.13]
+  description: Trinnov Altitude and JBL Synthesis Processor Automation Protocol
+    over RS232 and IP [2016-11-22 v1.13]
   urls:
     - https://docplayer.net/176487263-Trinnov-altitude-processor-automation-protocol.html
     - https://www.jblsynthesis.com/on/demandware.static/-/Sites-masterCatalog_Harman/default/dw45d0257f/pdfs/JBL%20Synthesis%20SDP-75_Automation%20Protocol%20Guide.pdf
@@ -11,25 +13,25 @@
   settings:
     min_time_between_commands: 0.4
 
-    # upon connection, initialize device with these commands
-    connection_init: "id pyavcontrol_api"
+  # upon connection, initialize device with these commands
+    connection_init: id pyavcontrol_api
 
   manufacturer:
     name: Trinnov
     model: Altitude
-    
+
     name2: JBL Synthesis
     model2: SDP-75
 
   tested: false
-  
+
   connection:
     ip:
       port: 44100
     rs232:
       baudrate: 19200
       bytesize: 8
-      parity: 'N'
+      parity: N
       stopbits: 1
       timeout: 2.0
       write_timeout: 2.0
@@ -39,11 +41,11 @@
 
   format:
     command:
-      format: "{cmd}{eol}"
-      eol: "\r"  # CR Carriage Return
+      format: '{cmd}{eol}'
+      eol: "\r" # CR Carriage Return
 
     message:
-      format: "{msg}{eol}"
+      format: '{msg}{eol}'
       eol: "\r"
 
   vars:
@@ -72,7 +74,6 @@
       14: optinal5
       15: optinal6
       16: optinal7
-      16: optinal8
       17: optinal71PCM
       18: dcimchaes
       19: aes1
@@ -95,7 +96,7 @@
         light:
           description: Light button
           cmd:
-            fstring: 'fav_light'
+            fstring: fav_light
 
     mute:
       description: Mute
@@ -103,32 +104,32 @@
         toggle:
           description: Mute toggle button
           cmd:
-            fstring: 'mute 2'
+            fstring: mute 2
         get:
           description: get current Mute status
           cmd:
-            fstring: 'send_volume'
+            fstring: send_volume
           msg:
-            regex: 'MUTE (?P<power>[01])'
+            regex: MUTE (?P<power>[01])
             tests:
-              'MUTE 1':
+              MUTE 1:
                 mute: 1
-        'off':
+        off:
           description: Mute off
           cmd:
-            fstring: 'mute 0'
-        'on':
+            fstring: mute 0
+        on:
           description: Mute on
           cmd:
-            fstring: 'mute 1'
+            fstring: mute 1
 
     power_system:
       description: Entire system power
       actions:
-        'off':
+        off:
           description: Turn entire system off
           cmd:
-            fstring: 'power_off_SECURED_FHZMCH48FE'
+            fstring: power_off_SECURED_FHZMCH48FE
 
     volume:
       description: Volume controls
@@ -136,36 +137,36 @@
         get:
           description: get current volume status
           cmd:
-            fstring: 'send_volume'  # FIXME: also 'send volume' for JBL 1.0
+            fstring: send_volume  # FIXME: also 'send volume' for JBL 1.0
           msg:
-            regex: 'VOLUME (?P<volume>[0-9]{1,2})'
+            regex: VOLUME (?P<volume>[0-9]{1,2})
             tests:
-              'VOLUME 10':
+              VOLUME 10:
                 volume: 10
         set:
-          description: Set volume to x (in dB) Volume attenuation in dB. Range -100 to 20.
+          description: Set volume to x (in dB) Volume attenuation in dB. Range -100
+            to 20.
           cmd:
-            fstring: 'volume {volume}'
-            regex: 'volume (?P<volume>[0-9]{1,2}\)'
+            fstring: volume {volume}
+            regex: volume (?P<volume>[0-9]{1,2}\)
         down:
           description: Decrease volume
           cmd:
-            fstring: 'dvolume -1'
+            fstring: dvolume -1
         down_by_x:
           description: Decrease volume by x
           cmd:
-            fstring: 'dvolume -{volume_amount}'
-            regex: 'dvolume -\(?P<volume_amount>[0-9]{1,2}\)'
+            fstring: dvolume -{volume_amount}
+            regex: dvolume -\(?P<volume_amount>[0-9]{1,2}\)
         up:
           description: Increase volume
           cmd:
-            fstring: 'dvolume 1'
+            fstring: dvolume 1
         up_by_x:
           description: Increase volume by x
           cmd:
-            fstring: 'dvolume {volume_amount}'
-            regex: 'dvolume \(?P<volume_amount>[0-9]{1,2}\)'
+            fstring: dvolume {volume_amount}
+            regex: dvolume \(?P<volume_amount>[0-9]{1,2}\)
 
-  # FIXME: input source = profile
-  # FIXME: preset selection
-  
+# FIXME: input source = profile
+# FIXME: preset selection

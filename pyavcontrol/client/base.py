@@ -2,7 +2,7 @@ import logging
 from collections.abc import Callable
 
 from ..const import *  # noqa: F403
-from ..models import DeviceModel
+from ..library import DeviceModel
 
 LOG = logging.getLogger(__name__)
 
@@ -13,14 +13,10 @@ class DeviceClientBase:
     to control a device.
     """
 
-    def __init__(self, model: str, url: str, serial_config: dict):
-        self._model = model
-        # FIXCME: remove
-        self._model_def = DeviceModel.get_config(model)
-
+    def __init__(self, model_def: dict, url: str, serial_config: dict):
+        self._model_def = model_def
         self._url = url
         self._serial_config = serial_config
-
         self._callbacks = []
 
     def send_command(self, group: str, action: str, **kwargs):

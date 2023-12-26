@@ -10,7 +10,7 @@ from pprint import pprint
 
 import coloredlogs
 
-from pyavcontrol import DeviceController
+from pyavcontrol import DeviceClient, DeviceModelLibrary
 
 LOG = logging.getLogger(__name__)
 coloredlogs.install(level="DEBUG")

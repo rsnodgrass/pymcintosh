@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env python3
 #
 # 1. Generate the SUPPORTED.md based on what is defined in the models/*.yaml files.
 # 2. (Ideally) generate a complete API reference for EACH model under docs/<model>
@@ -10,4 +10,4 @@
 # See also:
 #  PyScaffold
 #  https://pdoc.dev/
-#  
+#

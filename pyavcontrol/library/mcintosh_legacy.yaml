@@ -1,261 +1,263 @@
-- protocol: mcintosh_legacy
-  name: Original McIntosh RS232 Protocol
-  description: Original RS232 protocol for McIntosh MX121/MX122/MX123 and compatible models
-  urls:
-    - https://github.com/RobKikta/IntoBlue/blob/master/McIntosh_RS232ControlApplicationNote.pdf
-    - https://community.home-assistant.io/t/need-help-using-rs232-to-control-a-receiver/95210/4
+---
+id: mcintosh_legacy
+name: Original McIntosh RS232 Protocol
+description: Original RS232 protocol for McIntosh MX121/MX122/MX123 and compatible
+  models
+urls:
+  - https://github.com/RobKikta/IntoBlue/blob/master/McIntosh_RS232ControlApplicationNote.pdf
+  - https://community.home-assistant.io/t/need-help-using-rs232-to-control-a-receiver/95210/4
 
-  manufacturer:
-    name: McIntosh
-    models:
-      MX118:
-      MX119:
-      MX120:
-      MX121:
-      MX122:
-      MX123:
-      MX130:
-      MX132:
-      MX134:
-      MX135:
-      MX136:
-      MX150:
-      MX151:
-      MHT100:
-      MHT200:
+manufacturer:
+  name: McIntosh
+  models:
+    MX118:
+    MX119:
+    MX120:
+    MX121:
+    MX122:
+    MX123:
+    MX130:
+    MX132:
+    MX134:
+    MX135:
+    MX136:
+    MX150:
+    MX151:
+    MHT100:
+    MHT200:
 
-  format:
-    command:
-      format: "{cmd}{eol}"
-      eol: "\r"  # CR Carriage Return
-      separator: '#'   # FIXME: is this old?
+format:
+  command:
+    format: '{cmd}{eol}'
+    eol: "\r"    # CR Carriage Return
+    separator: '#'     # FIXME: is this old?
 
-    message:
-      format: "{msg}{eol}"
-      eol: "\r"
-      separator: '#'
+  message:
+    format: '{msg}{eol}'
+    eol: "\r"
+    separator: '#'
 
-  api_settings:
-    min_time_between_commands: 0.4
+api_settings:
+  min_time_between_commands: 0.4
 
-  vars:
-    zone:
-      type: int
-      pattern: '[1-8]'
-      min: 1
-      max: 8
-    power:
-      type: int
-      pattern: '[01]'
-      min: 0
-      max: 1
-    mute:
-      type: int
-      pattern: '[01]'
-      min: 0
-      max: 1
+vars:
+  zone:
+    type: int
+    pattern: '[1-8]'
+    min: 1
+    max: 8
+  power:
+    type: int
+    pattern: '[01]'
+    min: 0
+    max: 1
+  mute:
+    type: int
+    pattern: '[01]'
+    min: 0
+    max: 1
+  volume:
+    type: int
+    min: 0
+    max: 38
+  treble:
+    type: int
+    min: 0
+    max: 14
+  bass:
+    type: int
+    min: 0
+    max: 14
+  balance:
+    type: int
+    min: 0
+    max: 63
+  source:
+    type: int
+    min: 1
+    max: 8
+  verbosity_level:
+    type: int
+    min: 1
+    max: 3
+    values:
+      1: Minimal
+      2: Normal
+      3: All
+  dim_level:
+    type: int
+    min: 0
+    max: 3
+    values:
+      0: Full (100%)
+      1: Bright (75%)
+      2: Low (50%)
+      3: Dark (25%)
+  interface:
+    type: string
+    values:
+      IP: IP
+      SERIAL: Serial
+  lipsync:
+    type: int
+  loudness:
+    type: int
+    min: 0
+    max: 1
+    pattern: '[01]'
+    values:
+      0: 'Off'
+      1: 'On'
+  roomperfect_position:
+    type: int
+    min: 1
+    max: 9
+    pattern: '[1-9]'
+    values:
+      0: Bypass
+      1: Focus 1
+      2: Focus 2
+      3: Focus 3
+      4: Focus 4
+      5: Focus 5
+      6: Focus 6
+      7: Focus 7
+      8: Focus 8
+      9: Global
+  input:
+    type: int
+    min: 0
+    max: 25
+    values:
+      0: HDMI 1
+      1: HDMI 2
+      2: HDMI 3
+      3: HDMI 4
+      4: HDMI 5
+      5: HDMI 6
+      6: HDMI 7
+      7: HDMI 8
+      8: Audio Return
+      9: SPDIF 1 (Optical)
+      10: SPDIF 2 (Optical)
+      11: SPDIF 3 (Optical)
+      12: SPDIF 4 (Optical)
+      13: SPDIF 5 (AES/EBU)
+      14: SPDIF 6 (Coaxial)
+      15: SPDIF 7 (Coaxial)
+      16: SPDIF 8 (Coaxial)
+      17: USB Audio
+      18: Analog 1
+      19: Analog 2
+      20: Analog 3
+      21: Analog 4
+      22: Balanced 1
+      23: Balanced 2
+      24: Phono
+      25: 8 Channel Analog
+
+api:
+  system_power:    # DONE
+    actions:
+      on:
+        description: Turn entire system on
+        cmd: PWON
+      off:
+        description: Turn entire system off
+        cmd: PWSTANDBY
+      get:
+        description: Get system power status (0=off; 1=on)
+        cmd: PW?
+        msg: (?P<power>[01])      # FIXME
+
     volume:
-      type: int
-      min: 0
-      max: 38
-    treble:
-      type: int
-      min: 0
-      max: 14
-    bass:
-      type: int
-      min: 0
-      max: 14
-    balance:
-      type: int
-      min: 0
-      max: 63
-    source:
-      type: int
-      min: 1
-      max: 8
-    verbosity_level:
-      type: int
-      min: 1
-      max: 3
-      values:
-        1: Minimal
-        2: Normal
-        3: All
-    dim_level:
-      type: int
-      min: 0
-      max: 3
-      values:
-        0: Full (100%)
-        1: Bright (75%)
-        2: Low (50%)
-        3: Dark (25%)
-    interface:
-      type: string
-      values:
-        IP: IP
-        SERIAL: Serial
-    lipsync:
-      type: int
-    loudness:
-      type: int
-      min: 0
-      max: 1
-      pattern: '[01]'
-      values:
-        0: 'Off'
-        1: 'On'
-    roomperfect_position:
-      type: int
-      min: 1
-      max: 9
-      pattern: '[1-9]'
-      values:
-        0: Bypass
-        1: Focus 1
-        2: Focus 2
-        3: Focus 3
-        4: Focus 4
-        5: Focus 5
-        6: Focus 6
-        7: Focus 7
-        8: Focus 8
-        9: Global
-    input:
-      type: int
-      min: 0
-      max: 25
-      values:
-        0: HDMI 1
-        1: HDMI 2
-        2: HDMI 3
-        3: HDMI 4
-        4: HDMI 5
-        5: HDMI 6
-        6: HDMI 7
-        7: HDMI 8
-        8: Audio Return
-        9: SPDIF 1 (Optical)
-        10: SPDIF 2 (Optical)
-        11: SPDIF 3 (Optical)
-        12: SPDIF 4 (Optical)
-        13: SPDIF 5 (AES/EBU)
-        14: SPDIF 6 (Coaxial)
-        15: SPDIF 7 (Coaxial)
-        16: SPDIF 8 (Coaxial)
-        17: USB Audio
-        18: Analog 1
-        19: Analog 2
-        20: Analog 3
-        21: Analog 4
-        22: Balanced 1
-        23: Balanced 2
-        24: Phono
-        25: 8 Channel Analog
-
-  api:
-    system_power:  # DONE
       actions:
-        'on':
-          description: Turn entire system on
-          cmd: 'PWON'
-        'off':
-          description: Turn entire system off
-          cmd: 'PWSTANDBY'
         get:
-          description: Get system power status (0=off; 1=on)
-          cmd: 'PW?'
-          msg: "(?P<power>[01])" # FIXME
-
-      volume:
-        actions:
-              get:
-                description: Get current volume
-                cmd: 'MV?'
-                msg: "(P<volume>\\d+)"
-              set:
-                description: Set volume to x
-                cmd: 'MV{volume}' # FIXME: need 0 prefixed
-              down:
-                description: Decrease volume
-                cmd: 'MVDOWN'
-              up:
-                description: Increase volume
-                cmd: 'MVUP'
+          description: Get current volume
+          cmd: MV?
+          msg: (P<volume>\d+)
+        set:
+          description: Set volume to x
+          cmd: MV{volume}          # FIXME: need 0 prefixed
+        down:
+          description: Decrease volume
+          cmd: MVDOWN
+        up:
+          description: Increase volume
+          cmd: MVUP
 
 # FIXME: CV ... all the channel volume commands!
 
-    mute:
-      actions:
-        get:
-          description: get current Mute status
-          cmd: 'MU?'
-          msg:
-            regex: "(?P<mute>[01])" # FIXME
-        'off':
-          description: Mute off
-          cmd: 'MUOFF'
-        'on':
-          description: Mute on
-          cmd: 'MUON'
+  mute:
+    actions:
+      get:
+        description: get current Mute status
+        cmd: MU?
+        msg:
+          regex: (?P<mute>[01])      # FIXME
+      off:
+        description: Mute off
+        cmd: MUOFF
+      on:
+        description: Mute on
+        cmd: MUON
 
-    source:
-            description: Source selection
-            actions:
-              get:
-                description: Get info for currently active source
-                cmd: 'SI?'
-                msg: "\\(\\(?P<source>\\d+\\)\\)\\s+\"\\(?P<name>\\s+\\)\""
-              set:
-                description: Select source
-                cmd: 'SI{source}'
-                values:
-                  - PHONO
-                  - CD
-                  - TUNER
-                  - DVD
-                  - BD
-                  - TV
-                  - SAT/CBL
-                  - MPLAY
-                  - GAME
-                  - HDRADIO
-                  - NET
-                  - PANDORA
-                  - SIRIUSXM
-                  - SPOTIFY
-                  - LASTFM
-                  - FLICKR
-                  - IRADIO
-                  - SERVER
-                  - FAVORITES
-                  - AUX1
-                  - AUX2
-                  - AUX3
-                  - AUX4
-                  - AUX5
-                  - AUX6
-                  - AUX7
-                  - BT
-                  - M-XPORT
-                  - USB
-                  - IPD
-                  - IRP
-                  - FVP
+  source:
+    description: Source selection
+    actions:
+      get:
+        description: Get info for currently active source
+        cmd: SI?
+        msg: \(\(?P<source>\d+\)\)\s+"\(?P<name>\s+\)"
+      set:
+        description: Select source
+        cmd: SI{source}
+        values:
+          - PHONO
+          - CD
+          - TUNER
+          - DVD
+          - BD
+          - TV
+          - SAT/CBL
+          - MPLAY
+          - GAME
+          - HDRADIO
+          - NET
+          - PANDORA
+          - SIRIUSXM
+          - SPOTIFY
+          - LASTFM
+          - FLICKR
+          - IRADIO
+          - SERVER
+          - FAVORITES
+          - AUX1
+          - AUX2
+          - AUX3
+          - AUX4
+          - AUX5
+          - AUX6
+          - AUX7
+          - BT
+          - M-XPORT
+          - USB
+          - IPD
+          - IRP
+          - FVP
 
-    main_zone_power:  # DONE
-                  actions:
-                    'on':
-                      description: Turn Main zone on
-                      cmd: 'ZMON'
-                    'off':
-                      description: Turn Main zone off
-                      cmd: 'ZMOFF'
-                    get:
-                      description: Get Main zone power status (0=off; 1=on)
-                      cmd: 'ZM?'
-                      msg: "(?P<power>[01])" # FIXME
+  main_zone_power:    # DONE
+    actions:
+      on:
+        description: Turn Main zone on
+        cmd: ZMON
+      off:
+        description: Turn Main zone off
+        cmd: ZMOFF
+      get:
+        description: Get Main zone power status (0=off; 1=on)
+        cmd: ZM?
+        msg: (?P<power>[01])                  # FIXME
 
      # FIXME: SR mode skipped
      # FIXME: SD mode skipped
@@ -265,52 +267,52 @@
      # FIXME: skipped SV modes
 
 
-    main_zone_sleep:
-        actions:
-          'off':
-            description: Turn Main zone sleep off
-          set:
-            description: Set Main zone sleep time
-            cmd: "SLP{minutes}"
-          get:
-              description: Get remaining Main zone sleep time (in minutes)
-              cmd: 'SLP?'
-              msg:
-                regex: "(?P<power>[01])" # FIXME
+  main_zone_sleep:
+    actions:
+      off:
+        description: Turn Main zone sleep off
+      set:
+        description: Set Main zone sleep time
+        cmd: SLP{minutes}
+      get:
+        description: Get remaining Main zone sleep time (in minutes)
+        cmd: SLP?
+        msg:
+          regex: (?P<power>[01])          # FIXME
 
-    main_zone_standby:
-                actions:
-                  'off':
-                    description: Turn Main zone standby off
-                    cmd: 'STBYOFF'
-                  set:
-                    description: Set Main zone standby time (15, 30 or 60)
-                    cmd: "STBY{minutes}M"
-                    values:
-                        - 15
-                        - 30
-                        - 60
-                  get:
-                      description: Get remaining Main zone sleep time (in minutes)
-                      cmd: 'STBY?'
-                      msg:
-                        regex: '' # FIXME
+  main_zone_standby:
+    actions:
+      off:
+        description: Turn Main zone standby off
+        cmd: STBYOFF
+      set:
+        description: Set Main zone standby time (15, 30 or 60)
+        cmd: STBY{minutes}M
+        values:
+          - 15
+          - 30
+          - 60
+      get:
+        description: Get remaining Main zone sleep time (in minutes)
+        cmd: STBY?
+        msg:
+          regex: ''                # FIXME
 
-    main_zone_eco_mode:
-                        actions:
-                          'off':
-                            description: Turn Main zone eco mode off
-                            cmd: 'ECOOFF'
-                          'on':
-                              description: Turn Main zone eco mode on
-                              cmd: 'ECOON'
-                          auto:
-                            cmd: "ECOAUTO"
-                          get:
-                              description: Get current Main zone eco mode setting
-                              cmd: 'ECO?'
-                              msg:
-                                regex: '' # FIXME
+  main_zone_eco_mode:
+    actions:
+      off:
+        description: Turn Main zone eco mode off
+        cmd: ECOOFF
+      on:
+        description: Turn Main zone eco mode on
+        cmd: ECOON
+      auto:
+        cmd: ECOAUTO
+      get:
+        description: Get current Main zone eco mode setting
+        cmd: ECO?
+        msg:
+          regex: ''                        # FIXME
 
     # MS: skipped for now (surround_mode)
     # VS: skipped for now
@@ -318,39 +320,39 @@
     # PV: skipped for now
     # Z2 SRC skipped for now
 
-    zone_2_mute:
-      actions:
-        'off':
-            description: Zone 2 mute off
-            cmd: 'Z2MUOFF'
-        'on':
-            description: Zone 2 mute on
-            cmd: 'Z2MUON'
-        get:
-          description: Get Zone 2 mute status
-          cmd: 'Z2MU?'
+  zone_2_mute:
+    actions:
+      off:
+        description: Zone 2 mute off
+        cmd: Z2MUOFF
+      on:
+        description: Zone 2 mute on
+        cmd: Z2MUON
+      get:
+        description: Get Zone 2 mute status
+        cmd: Z2MU?
 
-    zone_2_channel:
+  zone_2_channel:
+    description: Zone 2 channel setting
+    actions:
+      stereo:
+        cmd: Z2CSST
+      mono:
+        cmd: Z2CSMONO
+      set:
         description: Zone 2 channel setting
-        actions:
-          stereo:
-            cmd: Z2CSST
-          mono:
-            cmd: Z2CSMONO
-          set:
-            description: Zone 2 channel setting
-            cmd: "Z2CS{setting}"
-            values:
-              MONO: "Mono"
-              ST: "Stereo"
-          get:
-            cmd: "Z2CS?"
-            msg:
-              regex: "(?P<setting>(ST|MONO))"
-            tests:
-              msg:
-                "MONO":
-                  setting: MONO
+        cmd: Z2CS{setting}
+        values:
+          MONO: Mono
+          ST: Stereo
+      get:
+        cmd: Z2CS?
+        msg:
+          regex: (?P<setting>(ST|MONO))
+        tests:
+          msg:
+            MONO:
+              setting: MONO
 
    # FIXME: Z2CV skipped for now
    # FIXME: Z2HP skipped for now
@@ -359,8 +361,8 @@
    # FIXME: Zone 4 commands skipped
 
     # FIXME: tuner control skipped
-    tuner_frequency:
-      actions:
-        up:
-           description: Tuner frequency up
-           cmd: 'TFANUP'
+  tuner_frequency:
+    actions:
+      up:
+        description: Tuner frequency up
+        cmd: TFANUP

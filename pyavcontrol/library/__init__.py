@@ -13,18 +13,6 @@ from ..const import DEFAULT_MODEL_LIBRARIES
 
 LOG = logging.getLogger(__name__)
 
-# library = DeviceModelLibrary.create(event_loop=loop)
-# model = await library.load_model("mxintosh_mx165")
-# if DeviceModelNew.validate(model):
-#    LOG....
-# model_names = await library.get_supported_models()
-# ctrl = DeviceController.create(model)
-#
-# model = await DeviceModelLibrary.create(event_loop=loop).load_model("mcintosh_mx160")
-# client = DeviceController.create(
-#    model_defs, args.url, serial_config_overrides={"baudrate": args.baud},
-# )
-
 
 class DeviceModel:
     @staticmethod

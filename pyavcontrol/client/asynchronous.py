@@ -9,8 +9,8 @@ LOG = logging.getLogger(__name__)
 
 
 class DeviceClientAsync(DeviceClientBase):
-    def __init__(self, model: str, url: str, serial_config: dict, loop):
-        DeviceClientBase.__init__(self, model, url, serial_config)
+    def __init__(self, model_def: dict, url: str, serial_config: dict, loop):
+        DeviceClientBase.__init__(self, model_def, url, serial_config)
         self._loop = loop
         self._connection_ref = None
 

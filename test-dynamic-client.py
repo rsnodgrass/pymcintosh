@@ -26,7 +26,7 @@ import re
 
 import coloredlogs
 
-from pyavcontrol import DeviceController, DeviceModel
+from pyavcontrol import DeviceClient, DeviceModelLibrary
 
 LOG = logging.getLogger(__name__)
 coloredlogs.install(level="DEBUG")
@@ -85,14 +85,16 @@ def _parse_args(action_name, action_def):
     describing additional type information about each argument.
     """
     args = []
-    if cmd_pattern := action_def.get("cmd_pattern"):
-        matches = _parse_regex(cmd_pattern)
-        LOG.warning(f"CMD_PATTERN FOUND BUT IGNORING! {matches}")
 
     if cmd := action_def.get("cmd"):
-        if args := _parse_fstring(cmd):
+        fstring = cmd.get("fstring")
+        if args := _parse_fstring(fstring):
             # FIXME: embed all the cmd_patterns into this
             return args
+
+        if regex := cmd.get("regex"):
+            matches = _parse_regex(regex)
+            LOG.warning(f"Command regex found BUT IGNORING! {matches}")
 
     return args
 
@@ -242,9 +244,13 @@ class ModelInterface:
 
 if __name__ == "__main__":
     model = "mcintosh_mx160"
-    device = DeviceModel(model)
 
-    api = device.config.get("api", {})
+    model_def = DeviceModelLibrary.create().load_model(model)
+    client = DeviceClient.create(
+        model_def, args.url, serial_config_overrides={"baudrate": args.baud}
+    )
+
+    api = model_def.get("api", {})
     for group, group_def in api.items():
         LOG.debug(f"Adding property for group {group}")
 
