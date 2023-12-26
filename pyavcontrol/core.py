@@ -6,6 +6,13 @@ from .const import *  # noqa: F403
 LOG = logging.getLogger(__name__)
 
 
+def camel_case(text: str):
+    """
+    Convert string into a CamelCase format without any spaces or special characters
+    """
+    return re.sub("[^0-9a-zA-Z]+", "", re.sub("[-_.]+", " ", text).title())
+
+
 def get_subkey(dictionary: dict, top_key: str, key: str, log_missing=True):
     """Load a subkey from a nested dictionary and log if missing"""
     d = dictionary.get(top_key)

@@ -27,6 +27,8 @@ import re
 import coloredlogs
 
 from pyavcontrol import DeviceClient, DeviceModelLibrary
+from pyavcontrol.client import DeviceClientAsync, DeviceClientBase, DeviceClientSync
+from pyavcontrol.core import camel_case
 
 LOG = logging.getLogger(__name__)
 coloredlogs.install(level="DEBUG")
@@ -58,28 +60,42 @@ class DynamicActions:
         self._actions_def = actions_def
 
 
-def _get_client_method(action_name, action_def):
-    required_args = [action_name]
+def _get_client_method(action_name: str, action_def: str, event_loop=None):
+    group_name = None
     action_defs = action_def
+    required_args = [action_name]
 
-    def _activity_call(self, **kwargs):
+    def _validate_args(self, **kwargs):
+        for arg in required_args:
+            if arg not in kwargs:
+                err_msg = "Missing {arg} in {group_name}.{action_name} call"
+                LOG.warning(f"{err_msg}: %s", kwargs)
+                raise IllegalArgumentError(err_msg)
+
+    def _activity_call_sync(self, **kwargs):
+        """
+        Synchronous version of making a client call
+        """
         #    def _activity_call(self, *args, **kwargs):
-        print(required_args)
-        print(action_defs)
-        # FIXME: call the controller with the correct data for the RS232/IP connection
-        # return self.make_modeled_api_call(action_name, *args, **kwargs)
+        _validate_args(**kwargs)
+        return self.send_command(group_name, action_name, **kwargs)
 
-    return _activity_call
+    async def _activity_call_async(self, **kwargs):
+        """
+        Asynchronous version of making a client call is used when an event_loop
+        is provided. Calling code knows whether they instantiated a synchronous
+        or asynchronous client.
+        """
+        _validate_args(**kwargs)
+        return await self.send_command(group_name, action_name, **kwargs)
+
+    if event_loop:
+        return _activity_call_async
+    else:
+        return _activity_call_sync
 
 
-def camel_case(text: str):
-    """
-    Convert string into a CamelCase format without any spaces or special characters
-    """
-    return re.sub("[^0-9a-zA-Z]+", "", re.sub("[-_.]+", " ", text).title())
-
-
-def _parse_args(action_name, action_def):
+def _parse_args(action_name: str, action_def: dict):
     """
     Parse the command definition into an array of arguments for the action, with a dictionary
     describing additional type information about each argument.
@@ -151,7 +167,13 @@ def _document_action(action_name: str, action_def: dict):
     return doc
 
 
-def create_activity_group_class(model_name, group_name, actions_model, cls_bases=None):
+def create_activity_group_class(
+    model_name: str,
+    group_name: str,
+    actions_model: dict,
+    cls_bases=None,
+    event_loop=None,
+):
     # CamelCase the model and group to represent this class of methods
     cls_name = camel_case(f"{model_name} {group_name}")
 
@@ -161,7 +183,7 @@ def create_activity_group_class(model_name, group_name, actions_model, cls_bases
 
     # dynamically add methods (and associated documentation) for each action
     for action_name, action_def in actions_model["actions"].items():
-        method = _get_client_method(action_name, action_def)
+        method = _get_client_method(action_name, action_def, event_loop)
         method.__name__ = action_name
         method.__doc__ = _document_action(action_name, action_def)
         cls_props[action_name] = method
@@ -179,7 +201,7 @@ class GroupActions:
         self._actions_def = actions
 
         self._validator = ActionArgsValidator()
-        self._parer = ActionParser()
+        self._parser = ActionParser()
 
         # call superclass constructor (if any)
 
