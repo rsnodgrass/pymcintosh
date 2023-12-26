@@ -1,0 +1,53 @@
+---
+id: lyngdorf
+name: Lyngdorf A/V Control
+description: Lyngdorf A/V Controls
+
+models:
+  - name: Lyngdorf MP-40
+    model: mp40
+
+  - name: Lyngdorf MP-50
+    model: mp50
+
+  - name: Lyngdorf MP-60
+    model: mp60
+
+  - name: Lyngdorf P100
+    model: p100
+
+  - name: Lyngdorf P200
+    model: p200
+
+  - name: Lyngdorf P300
+    model: p300
+
+
+urls:
+  - https://www.docdroid.net/OnipkTW/mx160-serial-control-manual-v3-pdf
+
+manufacturer:
+  name: Lyngdorf
+  model: TDAI-3400
+
+tested: true
+
+connection:
+  rs232:
+    baudrate: 115200
+    bytesize: 8
+    parity: N
+    stopbits: 1
+    timeout: 2.0
+    write_timeout: 2.0
+
+hardware:
+  type: processor
+  features:
+    zones: 8
+    sources: 8
+
+format:
+  command:
+    format: '{cmd}{eol}'
+    eol: "\r"    # CR Carriage Return

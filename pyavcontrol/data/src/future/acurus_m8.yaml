@@ -82,7 +82,7 @@ api:
         cmd:
           fstring: MOTCH{zone}
           regex: MOTCH\d
-
+  
   volume:
     description: Volume controls
     actions:
