@@ -6,7 +6,7 @@ DEFAULT_TCP_IP_PORT = 4999  # IP2SL / Virtual IP2SL uses this port
 DEFAULT_TIMEOUT = 1.0
 
 PACKAGE_DIR = os.path.dirname(__file__)
-DEFAULT_MODEL_LIBRARIES = [f"{PACKAGE_DIR}/models"]
+DEFAULT_MODEL_LIBRARIES = [f"{PACKAGE_DIR}/library"]
 
 CONF_SERIAL_CONFIG = "rs232"
 CONF_PROTOCOL_NAME = "protocol"
