@@ -1,0 +1,14 @@
+---
+id: trinnov_altitude16
+
+import_models:
+  - trinnov_altitude32
+
+manufacturer:
+  name: Trinnov
+  model: Altitude16
+
+  name2: JBL Synthesis
+  model2: SDP-75
+
+tested: false
