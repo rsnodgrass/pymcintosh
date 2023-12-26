@@ -7,14 +7,15 @@ from ..models import DeviceModel
 LOG = logging.getLogger(__name__)
 
 
-class DeviceControllerBase:
+class DeviceClientBase:
     """
-    DeviceControllerBase base class that defines operations allowed
+    DeviceClientBase base class that defines operations allowed
     to control a device.
     """
 
     def __init__(self, model: str, url: str, serial_config: dict):
         self._model = model
+        # FIXCME: remove
         self._model_def = DeviceModel.get_config(model)
 
         self._url = url

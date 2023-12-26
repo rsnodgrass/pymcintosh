@@ -5,14 +5,14 @@ import serial
 
 from ..connection.sync import synchronized
 from ..const import *  # noqa: F403
-from .base import DeviceControllerBase
+from .base import DeviceClientBase
 
 LOG = logging.getLogger(__name__)
 
 
-class DeviceControllerSync(DeviceControllerBase):
+class DeviceClientSync(DeviceClientBase):
     def __init__(self, model: str, url: str, serial_config: dict):
-        DeviceControllerBase.__init__(self, model, url, serial_config)
+        DeviceClientBase.__init__(self, model, url, serial_config)
         self._connection = serial.serial_for_url(url, **serial_config)
 
     @synchronized

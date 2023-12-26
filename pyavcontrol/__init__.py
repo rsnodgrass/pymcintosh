@@ -1,4 +1,4 @@
-__version__ = "2023.12.09"
+__version__ = "2023.12.25"
 
-from .controller import DeviceController
+from .client import DeviceClient
 from .models import DeviceModel

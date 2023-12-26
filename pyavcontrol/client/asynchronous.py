@@ -3,14 +3,14 @@ from collections.abc import Callable
 
 from ..connection.asynchronous import async_get_rs232_connection, locked_coro
 from ..const import *  # noqa: F403
-from .base import DeviceControllerBase
+from .base import DeviceClientBase
 
 LOG = logging.getLogger(__name__)
 
 
-class DeviceControllerAsync(DeviceControllerBase):
+class DeviceClientAsync(DeviceClientBase):
     def __init__(self, model: str, url: str, serial_config: dict, loop):
-        DeviceControllerBase.__init__(self, model, url, serial_config)
+        DeviceClientBase.__init__(self, model, url, serial_config)
         self._loop = loop
         self._connection_ref = None
 

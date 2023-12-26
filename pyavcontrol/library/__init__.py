@@ -1,4 +1,6 @@
-"""Configuration and data structures around device models"""
+"""
+Configuration and data structures around device models
+"""
 import logging
 import os
 from fnmatch import fnmatch
@@ -16,11 +18,11 @@ LOG = logging.getLogger(__name__)
 # if DeviceModelNew.validate(model):
 #    LOG....
 # model_names = await library.get_supported_models()
-# ctrl = controller(model)
+# ctrl = DeviceController.create(model)
 #
-# device = DeviceController.create(
-#    args.model, args.url, serial_config_overrides={"baudrate": args.baud},
-#    library=library ***FIXME***
+# model = await DeviceModelLibrary.create(event_loop=loop).load_model("mcintosh_mx160")
+# client = DeviceController.create(
+#    model_defs, args.url, serial_config_overrides={"baudrate": args.baud},
 # )
 
 
