@@ -182,8 +182,6 @@ class GroupActions:
         # call superclass constructor (if any)
 
         for action, action_def in actions_def.items():
-            action_id = f"{group}.{action}"
-
             if cmd := action_def.get("msg"):
                 print(cmd)
 
@@ -225,8 +223,6 @@ class ModelInterface:
 
         # get the API model for the device
         api = device.config.get("api", {})
-        pp.pprint(api)
-
         for group, group_def in api.items():
             LOG.debug(f"Adding property for group {group}")
             property_name = group

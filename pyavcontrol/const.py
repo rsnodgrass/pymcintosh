@@ -1,11 +1,12 @@
-"""Python client library for controlling McIntosh A/V processors and receivers"""
+"""Python client library for controlling A/V processors and receivers"""
 
 import os
 
 DEFAULT_TCP_IP_PORT = 4999  # IP2SL / Virtual IP2SL uses this port
 DEFAULT_TIMEOUT = 1.0
 
-CONFIG_DIR = os.path.dirname(__file__)
+PACKAGE_DIR = os.path.dirname(__file__)
+DEFAULT_MODEL_LIBRARIES = [f"{PACKAGE_DIR}/models"]
 
 CONF_SERIAL_CONFIG = "rs232"
 CONF_PROTOCOL_NAME = "protocol"
