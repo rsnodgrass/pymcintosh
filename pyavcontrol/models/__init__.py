@@ -1,12 +1,13 @@
 """Configuration and data structures around device models"""
 import logging
+import os
+from fnmatch import fnmatch
 from pprint import pprint
-from typing import List
+from typing import List, Set
 
 import yaml
 
 from ..const import DEFAULT_MODEL_LIBRARIES
-from ..core import load_yaml_file
 
 LOG = logging.getLogger(__name__)
 
@@ -46,9 +47,9 @@ class DeviceModelLibrary:
         """
         raise NotImplementedError("Subclasses must implement!")
 
-    def supported_models() -> List[str]:
+    def supported_models() -> Set[str]:
         """
-        :return: list of all model names supported
+        :return: all model names supported by this library
         """
         raise NotImplementedError("Subclasses must implement!")
 
@@ -106,9 +107,18 @@ class DeviceModelLibrarySync(DeviceModelLibrary):
             LOG.warning(f"Error in model {model}, returning anyway")
         return model
 
-    def supported_models() -> List[str]:
+    def supported_models() -> Set[str]:
         if self._supported_models:
             return self._supported_models
+
+        supported_models = []
+        for dir in self._dirs:
+            for r, d, f in os.walk(path):
+                if fnmatch(f, "*.yaml"):
+                    print(os.path.join(r, f))
+
+            model_file = f"{dir}/{name}.yaml"
+            y = _load_yaml_file(model_file)
 
         # FIXME
         return []
@@ -128,6 +138,9 @@ class DeviceModelLibrarySync(DeviceModelLibrary):
         Resolve all includes in the model to flush out the complete
         model definition.
         """
+
+        # FIXME: detect cycles?
+
         for imported_model in model.get("import_models"):
             model = load(imported_model)
             # FIXME: merge models
@@ -156,7 +169,7 @@ class DeviceModelLibraryAsync(DeviceModelLibrary):
         )
         return result
 
-    async def supported_models() -> List[str]:
+    async def supported_models() -> Set[str]:
         result = await self._loop.run_in_executor(
             None, self._sync.supported_models, self
         )
