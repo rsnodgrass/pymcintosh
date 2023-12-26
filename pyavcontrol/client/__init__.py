@@ -2,7 +2,6 @@ import logging
 
 from ..connection import ConnectionBase
 from ..const import *  # noqa: F403
-from ..models import DeviceModel
 from .base import DeviceClientBase
 from .synchronous import DeviceClientSync
 
@@ -25,14 +24,10 @@ class DeviceClient:
 
     @staticmethod
     def create(
-        model_id: str,
-        url: str,
-        serial_config_overrides={},
-        event_loop=None,
-        library=None,
-    ) -> DeviceControllerBase:
+        model_def: dict, url: str, serial_config_overrides={}, event_loop=None
+    ) -> DeviceClientBase:
         """
-        Convenience function that creates a DeviceController instance using
+        Convenience function that creates a DeviceClient instance using
         the standard pyserial Connection types supported by this library when
         given details about the model and connection url.
 
@@ -56,9 +51,9 @@ class DeviceClient:
 
         if not library:  # use default library if none specified
             if event_loop:
-                library = DeviceLibraryModel.create(event_loop=event_loop)
+                library = DeviceModelLibrary.create(event_loop=event_loop)
             else:
-                library = DeviceLibraryModel.create()
+                library = DeviceModelLibrary.create()
 
         if event_loop:
             # lazy import the async client to avoid loading both sync/async

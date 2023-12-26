@@ -38,13 +38,14 @@ if args.debug:
 
 
 def main():
-    device = DeviceController.create(
-        args.model, args.url, serial_config_overrides={"baudrate": args.baud}
+    model_def = DeviceModelLibrary.create().load_model(args.model)
+    client = DeviceClient.create(
+        model_def, args.url, serial_config_overrides={"baudrate": args.baud}
     )
-    device.send_raw(b"PING?")
 
-    # group, action
-    # device.send(ping, ping)
+    client.send_raw(b"PING?")
+    # client.volume.set(volume=20)
+    # client.power.off()
 
 
 main()

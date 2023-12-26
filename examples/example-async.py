@@ -12,7 +12,7 @@ from pprint import pprint
 
 import coloredlogs
 
-from pyavcontrol import DeviceController
+from pyavcontrol import DeviceClient, DeviceModelLibrary
 
 LOG = logging.getLogger(__name__)
 coloredlogs.install(level="DEBUG")
@@ -39,17 +39,19 @@ if args.debug:
 
 async def main():
     try:
-        device = DeviceController.create(
-            args.model,
+        library = DeviceModelLibrary.create(event_loop=asyncio.get_event_loop())
+        model_def = library.load_model(args.model)
+
+        client = DeviceClient.create(
+            model_def,
             args.url,
             serial_config_overrides={"baudrate": args.baud},
             event_loop=asyncio.get_event_loop(),
         )
 
-        await device.send_raw(b"PING?")
-
-        # group, action
-        # await device.send(ping, ping)
+        await client.send_raw(b"PING?")
+        # await client.volume.set(volume=20)
+        # await client.power.off()
 
     except Exception as e:
         LOG.error(f"Failed for {args.model}", e)
