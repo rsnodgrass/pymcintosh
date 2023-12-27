@@ -1,12 +1,44 @@
 import logging
+import re
 from copy import copy, deepcopy
+from typing import List
 
 from .const import *  # noqa: F403
 
 LOG = logging.getLogger(__name__)
 
+NAMED_REGEX_PATTERN = re.compile(r"\(\?P\<(?P<name>.+)\>(?P<regex>.+)\)")
 
-def camel_case(text: str):
+
+def extract_named_regex(text: str) -> dict:
+    """
+    Parse out named regex patterns from text into a dictionary of
+    names and associated regex.
+    """
+    named_regex = {}
+    for m in re.finditer(NAMED_REGEX_PATTERN, text):
+        named_regex[m.group(1)] = m.group(2)
+    return named_regex
+
+
+def missing_keys_in_dict(required_keys: List[str], d: dict) -> List[str]:
+    """
+    Checks that the provided dictionary contains all the required keys,
+    and if not, return a list of the missing keys.
+    """
+    missing_keys = []
+    for key in required_keys:
+        if key not in d:
+            missing_keys += key
+    return missing_keys
+
+
+def substitute_fstring_vars(fstring: str, vars: dict) -> str:
+    # see also https://stackoverflow.com/questions/42497625/how-to-postpone-defer-the-evaluation-of-f-strings
+    return fstring.format(**vars)
+
+
+def camel_case(text: str) -> str:
     """
     Convert string into a CamelCase format without any spaces or special characters
     """
@@ -29,6 +61,7 @@ def get_subkey(dictionary: dict, top_key: str, key: str, log_missing=True):
     return value
 
 
+# FIXME: delete this, as we no longer are merging dictionaries at runtime!
 def merge_nested_dicts(d1: dict, d2: dict) -> dict:
     """
     Merge two dictionaries with a nested data structure.

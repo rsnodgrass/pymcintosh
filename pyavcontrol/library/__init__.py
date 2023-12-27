@@ -53,7 +53,7 @@ class DeviceModelLibrary:
     #        return supported_models
 
     @staticmethod
-    def create(library_dirs=DEFAULT_MODEL_LIBRARIES, event_loop=None) -> DeviceModelDef:
+    def create(library_dirs=DEFAULT_MODEL_LIBRARIES, event_loop=None):
         """
         Create an DeviceModelLibrary object representing all the complete
         library for resolving models and includes.
@@ -68,9 +68,9 @@ class DeviceModelLibrary:
         :return an instance of DeviceLibraryModel
         """
         if event_loop:
-            return DeviceModelLibraryAync(event_loop)
+            return DeviceModelLibraryAsync(library_dirs, event_loop)
         else:
-            return None
+            return DeviceModelLibrarySync(library_dirs)
 
 
 class DeviceModelLibrarySync(DeviceModelLibrary):
@@ -142,7 +142,7 @@ class DeviceModelLibraryAsync(DeviceModelLibrary):
     Asynchronous implementation of DeviceModelLibrary
     """
 
-    def __init__(self, library_dirs: List[str], event_loop: AbstractEventLoop):
+    def __init__(self, library_dirs: List[str], event_loop):
         self._loop = event_loop
         self._dirs = library_dirs
 
