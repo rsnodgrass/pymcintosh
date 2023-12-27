@@ -76,36 +76,3 @@ def get_subkey(dictionary: dict, top_key: str, key: str, log_missing=True):
     if value is None and log_missing:
         LOG.warning(f"Missing subkey '{key}' under key '{top_key}'; returning None")
     return value
-
-
-# FIXME: delete this, as we no longer are merging dictionaries at runtime!
-def merge_nested_dicts(d1: dict, d2: dict) -> dict:
-    """
-    Merge two dictionaries with a nested data structure.
-
-    # FIXME: consider using jsonmerge...rather than implementing own
-    # complex merger!
-
-    # FIXME: see also https://github.com/adobe/himl
-
-    See https://noteable.io/blog/how-to-merge-dictionaries-in-python/
-    """
-    for key, value in d2.items():
-        if not key in d1:
-            d1[key] = value
-            continue
-
-        type1 = type(d1[key])
-        type2 = type(value)
-        if type1 != type2:
-            LOG.warning(
-                f"When merging dictionaries, different types for key '{key}', overwriting!: {type1} != {type2}"
-            )
-            d1[key] = value
-        elif isinstance(d1[key], dict) and isinstance(value, dict):
-            merge_nested_dicts(d1[key], value)
-        elif isinstance(d1[key], list):
-            # FIXME: what if duplicate items?
-            d1[key] += value
-        else:
-            d1[key] = value
