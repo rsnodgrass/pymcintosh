@@ -508,6 +508,9 @@ api:
           fstring: '!POWER?'
         msg:
           regex: '!POWER\((?P<power>[01])\)'
+          tests:
+            '!POWER(1)':
+              power: 1
 
   power_zone_main:
     description: Main zone power
@@ -642,6 +645,10 @@ api:
           fstring: '!SRC({source})?'
         msg:
           regex: '!SRC\((?P<source>\d+)\)\s*"(?P<name>.+)"'
+          tests:
+            '!SRC(2) HiFiBerry':
+              source: 2
+              name: HiFiBerry
       next:
         description: Next source button
         cmd:
