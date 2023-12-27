@@ -11,6 +11,10 @@ urls:
 contacts:
   - remy.bruno@trinnov.com
 
+# FUTURE: add bindings for other models
+# Port 44100, Altitude/Amethyst/JBL SDP-XX. Applies to JBL SDP-65 and SDP-75.
+# JBL SDP-35/38 and SDP-55/58 use port 50000, category SDP-35/38/55/58 Zone 1.
+
 settings:
   min_time_between_commands: 0.4
 

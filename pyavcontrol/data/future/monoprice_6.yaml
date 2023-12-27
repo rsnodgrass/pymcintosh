@@ -1,16 +1,14 @@
 ---
 id: monoprice_6
-name: Monoprice 6-Zone
 description: Monoprice API
 urls:
   - https://app.box.com/s/bp7h228vihe92nmjlo6o8w6e66tvj58o
 
 manufacturer:
   name: Monoprice
-  models:
-    '6':
-      description: 6-Zone (model 10761)
-      tested: false
+  model: '6-Zone (model 10761)'
+
+tested: false
 
 connection:
   rs232:
@@ -19,7 +17,6 @@ connection:
     parity: N
     stopbits: 1
     timeout: 2.0
-    write_timeout: 2.0
 
 format:
   command:
@@ -35,30 +32,30 @@ api:
   zone:
     actions:
       status:
-  cmd:
-    fstring: ?{zone}
-    regex: ?P(?<zone>\d)
+        cmd:
+          fstring: '?{zone}'
+          regex: '\?(?P<zone>[1-6])'
 
   power:
     actions:
       set:
         cmd:
-          fstring: <{zone}PR{power:02}
-          regex: ?(?P<zone>\d)PR0(?P<power>[01])
+          fstring: '<{zone}PR0{power}'
+          regex: '\?(?P<zone>[1-6])PR0(?P<power>[01])'
           tests:
-            ?1PR01:
-            power: 1
-      on:
+            '?1PR01':
+              power: 1
+      'on':
         cmd:
           fstring: <{zone}PR01
-      off:
+      'off':
         cmd:
           fstring: <{zone}PR00
 
   mute:
     description: Mute
     actions:
-      on:
+      'on':
         description: Mute on
         cmd:
           fstring: <{zone}MU01
@@ -73,4 +70,5 @@ api:
       set:
         description: Set volume
         cmd:
-          fstring: <{zone}VO{volume:02}
+          fstring: '<{zone}VO{volume:02}'
+          regex: '<(?P<zone>\d+)VO(?P<volume>\d+)'
