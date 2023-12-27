@@ -28,14 +28,15 @@ from typing import List
 import coloredlogs
 
 from pyavcontrol import DeviceClient, DeviceModelLibrary
-from pyavcontrol.core import camel_case, missing_keys_in_dict
+from pyavcontrol.core import (
+    camel_case,
+    extract_named_regex,
+    get_fstring_vars,
+    missing_keys_in_dict,
+)
 
 LOG = logging.getLogger(__name__)
 coloredlogs.install(level="DEBUG")
-
-FSTRING_ARG_PATTERN = re.compile(
-    r"\{(?P<arg_name>.+)[:.,]*\}"
-)  # FIXME: also parse any format strings out
 
 
 class ActionArgsValidator:
@@ -60,9 +61,13 @@ class DynamicActions:
 
 
 def _get_client_method(
-    group_name: str, action_name: str, action_def: dict, event_loop=None
+    client: DeviceClient,
+    group_name: str,
+    action_name: str,
+    action_def: dict,
+    event_loop=None,
 ):
-    required_args = _get_required_args_for_command(action_def)
+    required_args = _get_args_for_command(action_def)
 
     def _prepare_cmd(**kwargs):
         if cmd := action_def.get("cmd"):
@@ -75,7 +80,7 @@ def _get_client_method(
         Synchronous version of making a client call
         """
         #    def _activity_call(self, *args, **kwargs):
-        required_args = _get_required_args_for_command(action_def)
+        required_args = _get_args_for_command(action_def)
 
         if missing_keys := missing_keys_in_dict(required_args, kwargs):
             err_msg = f"Call to {group_name}.{action_name} missing required keys {missing_keys}, skipping!"
@@ -84,8 +89,9 @@ def _get_client_method(
 
         if cmd := action_def.get("cmd"):
             if fstring := cmd.get("fstring"):
-                request = substitute_fstring_vars(fstring, kwargs)
-                return self.send_raw(request)
+                request = fstring.format(**kwargs)
+                return client.send_raw(request)
+        LOG.warning(f"Failed to make request for {group_name}.{action_name}")
 
     async def _activity_call_async(self, **kwargs):
         """
@@ -102,8 +108,9 @@ def _get_client_method(
 
         if cmd := action_def.get("cmd"):
             if fstring := cmd.get("fstring"):
-                request = substitute_fstring_vars(fstring, kwargs)
-                return await self.send_command(request)
+                request = fstring.format(**kwargs)
+                return await client.send_raw(request)
+        LOG.warning(f"Failed to make request for {group_name}.{action_name}")
 
     if event_loop:
         return _activity_call_async
@@ -111,7 +118,21 @@ def _get_client_method(
         return _activity_call_sync
 
 
-def _get_required_args_for_command(action_def: dict) -> List[str]:
+def _get_vars_for_message(action_def: dict) -> dict:
+    """
+    Parse out all variables that would be returned in the msg response
+    for this action.
+
+    :return: list of variables for the message
+    """
+    if msg := action_def.get("msg"):
+        if regex := msg.get("regex"):
+            named_regex = extract_named_regex(regex)
+            return named_regex
+    return {}
+
+
+def _get_args_for_command(action_def: dict) -> List[str]:
     """
     Parse the command definition into an array of arguments for the action, with a dictionary
     describing additional type information about each argument.
@@ -126,27 +147,9 @@ def _get_required_args_for_command(action_def: dict) -> List[str]:
             LOG.warning(f"Command regex found BUT IGNORING! {matches}")
 
         fstring = cmd.get("fstring")
-        if args := _get_fstring_vars(fstring):
+        if args := get_fstring_vars(fstring):
             # FIXME: embed all the cmd_patterns into this
             return args
-
-    return args
-
-
-def _get_fstring_vars(text: str) -> List[str]:
-    """
-    Parse out all the F-string style arguments from the given string
-    """
-    args = []
-
-    # FIXME: remove any special format strings in the args???
-
-    # extract args from the regexp pattern of parameters
-    for m in re.finditer(FSTRING_ARG_PATTERN, text):
-        args += [{"name": m.group(1)}]
-
-    # get dictionary containing the parts of your text
-    # info = re.match(retext, text).groupdict()
 
     return args
 
@@ -159,27 +162,29 @@ def _parse_response_args(action_name: str, action_def: dict) -> List[str]:
 
 
 def _document_action(action_name: str, action_def: dict):
+    """
+    Return formatted Sphinx documentation for the action
+    """
     doc = action_def.get("description")
 
     # append details on all the command arguments
-    if args := _parse_args(action_name, action_def):
+    if args := _get_args_for_command(action_def):
         for arg in args:
-            arg_doc = arg.get("doc", "unknown")
-            doc += f"\n:param {arg['name']}: {arg_doc}"
+            doc += f"\n:param {arg}: see manual for device"
 
     # append details of any response message for this action
-    if args := _parse_response_args(action_name, action_def):
+    if v := _get_vars_for_message(action_def):
         doc += "\n:return: {"
-        for arg in args:
-            arg_doc = arg.get("doc", "unknown")
-            doc += f" {arg['name']}: {arg_doc}, "
-        doc += "}\n"
+        for var in v:
+            doc += f"\n  {var}: ..., "
+        doc += "\n}"
 
     # FIXME: may need type info from the overall api variables section
     return doc
 
 
 def create_activity_group_class(
+    client: DeviceClient,
     model_name: str,
     group_name: str,
     actions_model: dict,
@@ -195,7 +200,9 @@ def create_activity_group_class(
 
     # dynamically add methods (and associated documentation) for each action
     for action_name, action_def in actions_model["actions"].items():
-        method = _get_client_method(group_name, action_name, action_def, event_loop)
+        method = _get_client_method(
+            client, group_name, action_name, action_def, event_loop
+        )
         method.__name__ = action_name
         method.__doc__ = _document_action(action_name, action_def)
         cls_props[action_name] = method
@@ -287,7 +294,7 @@ if __name__ == "__main__":
     for group, group_def in api.items():
         LOG.debug(f"Adding property for group {group}")
 
-        g = create_activity_group_class(model, group, group_def)
+        g = create_activity_group_class(client, model, group, group_def)
         g.min()
         # help(g)
         break
