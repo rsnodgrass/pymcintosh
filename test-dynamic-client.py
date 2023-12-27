@@ -278,11 +278,10 @@ class ModelInterface:
 
 if __name__ == "__main__":
     model = "mcintosh_mx160"
+    url = "socket://localhost:4166"
 
     model_def = DeviceModelLibrary.create().load_model(model)
-    client = DeviceClient.create(
-        model_def, args.url, serial_config_overrides={"baudrate": args.baud}
-    )
+    client = DeviceClient.create(model_def, url)
 
     api = model_def.get("api", {})
     for group, group_def in api.items():

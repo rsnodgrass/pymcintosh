@@ -28,15 +28,16 @@ class DeviceClient:
 
         :return an instance of DeviceControllerBase
         """
+        model_id = model_def["id"]
         LOG.debug(f"Connecting to {model_id} at {url}")
 
         # caller can override the default serial port config for a given type
         # of device since the user could have changed settings on their
         # physical device (e.g. increasing the baud rate)
-        serial_config = model.config.get("communication", {}).get(CONF_SERIAL_CONFIG)
+        serial_config = model_def.get("communication", {}).get(CONF_SERIAL_CONFIG, {})
         if serial_config_overrides:
             LOG.info(
-                f"Overriding {model} serial config: {serial_config_overrides}; url={url}"
+                f"Overriding {model_id} serial config: {serial_config_overrides}; url={url}"
             )
             serial_config.update(serial_config_overrides)
 
@@ -44,9 +45,9 @@ class DeviceClient:
             # lazy import the async client to avoid loading both sync/async
             from .asynchronous import DeviceClientAsync
 
-            return DeviceClientAsync(model, url, serial_config, event_loop)
+            return DeviceClientAsync(model_def, url, serial_config, event_loop)
 
         else:
             from .synchronous import DeviceClientSync
 
-            return DeviceClientSync(device, url, serial_config)
+            return DeviceClientSync(model_def, url, serial_config)

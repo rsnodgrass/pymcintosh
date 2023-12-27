@@ -14,6 +14,16 @@ from ..const import DEFAULT_MODEL_LIBRARIES
 LOG = logging.getLogger(__name__)
 
 
+def _load_yaml_file(path: str) -> dict:
+    try:
+        if os.path.isfile(path):
+            with open(path, "r") as stream:
+                return yaml.safe_load(stream)
+    except yaml.YAMLError as exc:
+        LOG.error(f"Failed reading YAML {filepath}: {exc}")
+        return None
+
+
 class DeviceModel:
     @staticmethod
     def validate_model_definition(model_def: dict) -> bool:
@@ -31,13 +41,13 @@ class DeviceModel:
 
 
 class DeviceModelLibrary:
-    def load_model(name: str) -> dict:
+    def load_model(self, name: str) -> dict:
         """
         :param name: model name or a complete path to a file
         """
         raise NotImplementedError("Subclasses must implement!")
 
-    def supported_models() -> Set[str]:
+    def supported_models(self) -> Set[str]:
         """
         :return: all model names supported by this library
         """
@@ -81,23 +91,23 @@ class DeviceModelLibrarySync(DeviceModelLibrary):
     def __init__(self, library_dirs: List[str]):
         self._dirs = library_dirs
 
-    def load_model(name: str) -> dict:
+    def load_model(self, name: str) -> dict:
         # FIXME: ensure name does not have any /
-        model = {}
-
         for dir in self._dirs:
             model_file = f"{dir}/{name}.yaml"
-            y = _load_yaml_file(model_file)
+            model = _load_yaml_file(model_file)
+            if model:
+                break
 
-        # FIXME: recursively apply imports
-
-        model = self._resolve_includes(model)
+        if not model:
+            LOG.error(f"Could not find model '{model}'")
+            return None
 
         if not DeviceModel.validate_model_definition(model):
             LOG.warning(f"Error in model {model}, returning anyway")
         return model
 
-    def supported_models() -> Set[str]:
+    def supported_models(self) -> Set[str]:
         if self._supported_models:
             return self._supported_models
 
@@ -112,29 +122,6 @@ class DeviceModelLibrarySync(DeviceModelLibrary):
 
         # FIXME
         return []
-
-    def _load_yaml_file(path: str) -> dict:
-        try:
-            if os.path.isfile(path):
-                with open(path, "r") as stream:
-                    y = yaml.safe_load(stream)
-                    return y[0]
-        except yaml.YAMLError as exc:
-            LOG.error(f"Failed reading YAML {filepath}: {exc}")
-            return None
-
-    def _resolve_includes(model: dict) -> dict:
-        """
-        Resolve all includes in the model to flush out the complete
-        model definition.
-        """
-
-        # FIXME: detect cycles?
-
-        for imported_model in model.get("import_models"):
-            model = load(imported_model)
-            # FIXME: merge models
-        return model
 
 
 class DeviceModelLibraryAsync(DeviceModelLibrary):
@@ -153,13 +140,13 @@ class DeviceModelLibraryAsync(DeviceModelLibrary):
         # FUTURE: consider implementing async method
         self._sync = DeviceModelLibrarySync(library_dirs)
 
-    async def load_model(name: str) -> dict:
+    async def load_model(self, name: str) -> dict:
         result = await self._loop.run_in_executor(
             None, self._sync.load_model, self, name
         )
         return result
 
-    async def supported_models() -> Set[str]:
+    async def supported_models(self) -> Set[str]:
         result = await self._loop.run_in_executor(
             None, self._sync.supported_models, self
         )
