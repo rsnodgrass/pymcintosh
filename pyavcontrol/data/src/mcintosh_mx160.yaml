@@ -304,7 +304,8 @@ api:
           fstring: '!NUM(3)'
       num4:
         description: Number button 4
-        cmd: '!NUM(4)'
+        cmd:
+          fstring: '!NUM(4)'
       num5:
         description: Number button 5
         cmd:
@@ -719,7 +720,7 @@ api:
         description: Sets bass level trim (10 = 1dB)
         cmd:
           fstring: '!TRIMBASS({bass_level})'
-          regex: '!TRIMBASS(\(?P<bass_level>-?[0-9]{1,3}\))'
+          regex: '!TRIMBASS\((?P<bass_level>-?[0-9]{1,3})\)'
       up:
         description: Increases bass level trim (10 = 1dB)
         cmd:
@@ -745,7 +746,7 @@ api:
         description: Sets center channel level trim (10 = 1dB)
         cmd:
           fstring: '!TRIMCENTER({center_level})'
-          regex: '!TRIMCENTER(\(?P<center_level>-?[0-9]{1,3}\))'
+          regex: '!TRIMCENTER\((?P<center_level>-?[0-9]{1,3})\)'
       up:
         description: Increases center channel level trim (10 = 1dB)
         cmd:
@@ -771,7 +772,7 @@ api:
         description: Sets height channels level trim (10 = 1dB)
         cmd:
           fstring: '!TRIMHEIGHT({height_level})'
-          regex: '!TRIMHEIGHT(\(?P<height_level>-?[0-9]{1,3}\))'
+          regex: '!TRIMHEIGHT\((?P<height_level>-?[0-9]{1,3})\)'
       up:
         description: Increases height channels level trim (10 = 1dB)
         cmd:
@@ -797,7 +798,7 @@ api:
         description: Sets LFE channel level trim (10 = 1dB)
         cmd:
           fstring: '!TRIMLFE({lfe_level})'
-          regex: '!TRIMLFE(\(?P<lfe_level>-?[0-9]{1,3}\))'
+          regex: '!TRIMLFE\((?P<lfe_level>-?[0-9]{1,3})\)'
       up:
         description: Increases LFE channel level trim (10 = 1dB)
         cmd:
@@ -827,7 +828,7 @@ api:
         description: Sets surround channels level trim (10 = 1dB)
         cmd:
           fstring: '!TRIMSURRS({surround_level})'
-          regex: '!TRIMSURRS(\(?P<surround_level>-?[0-9]{1,3}\))'
+          regex: '!TRIMSURRS\((?P<surround_level>-?[0-9]{1,3})\)'
       up:
         description: Increases surround channels level trim (10 = 1dB)
         cmd:
@@ -850,7 +851,7 @@ api:
         description: Sets treble level trim (10 = 1dB)
         cmd:
           fstring: '!TRIMTREB({trebble_level})'
-          regex: '!TRIMTREB(\(?P<trebble_level>-?[0-9]{1,3}\))'
+          regex: '!TRIMTREB\((?P<trebble_level>-?[0-9]{1,3})\)'
       down:
         description: Decreases treble level trim (10 = 1dB)
         cmd:
@@ -868,7 +869,7 @@ api:
         cmd:
           fstring: '!VOL?'
         msg:
-          regex: '!VOL\(?P<volume>[0-9]{1,2})\)'
+          regex: '!VOL\((?P<volume>[0-9]{1,2})\)'
           tests:
             '!VOL(1)':
               volume: 1
@@ -876,7 +877,7 @@ api:
         description: Set volume to x
         cmd:
           fstring: '!VOL({volume})'
-          regex: '!VOL(\(?P<volume>[0-9]{1,2}\))'
+          regex: '!VOL\((?P<volume>[0-9]{1,2})\)'
       down:
         description: Decrease volume
         cmd:
@@ -885,7 +886,7 @@ api:
         description: Decrease volume by x
         cmd:
           fstring: '!VOL-({volume_amount})'
-          regex: '!VOL-(\(?P<volume_amount>[0-9]{1,2}\))'
+          regex: '!VOL-\((?P<volume_amount>[0-9]{1,2})\)'
       up:
         description: Increase volume
         cmd:
@@ -894,7 +895,7 @@ api:
         description: Increase volume by x
         cmd:
           fstring: '!VOL+({volume_amount})'
-          regex: '!VOL+(\(?P<volume_amount>[0-9]{1,2}\))'
+          regex: '!VOL+\((?P<volume_amount>[0-9]{1,2})\)'
 
   zone_2_mute:
     description: Zone 2 mute
@@ -904,7 +905,7 @@ api:
         cmd:
           fstring: '!ZMUTE?'
         msg:
-          regex: '!ZMUTE\((?P<mute>[01)\)'    # MX160
+          regex: '!ZMUTE\((?P<mute>[01])\)'    # MX160
           tests:
             '!ZMUTE(1)':
               mute: 1
@@ -958,7 +959,7 @@ api:
         description: Set Zone B source
         cmd:
           fstring: '!ZSRC({source})'
-          regex: '!ZSRC(\(?P<source>\d+\))'
+          regex: '!ZSRC\((?P<source>\d+)\)'
 #        info:
 #          description: Get info about a specific Zone B source
 #          cmd: '!ZSRC({source})?'

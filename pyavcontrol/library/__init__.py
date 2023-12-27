@@ -30,9 +30,10 @@ class DeviceModel:
         """
         Validate that the given device model definition is valid
         """
+        model_id = "Unknown"
         name = model_def.get("name")
         if not name:
-            LOG.warning("Model is missing required 'name': %s", model_def)
+            LOG.warning(f"Model {model_id} is missing required 'name'")
             return False
 
         # FIXME
@@ -104,7 +105,7 @@ class DeviceModelLibrarySync(DeviceModelLibrary):
             return None
 
         if not DeviceModel.validate_model_definition(model):
-            LOG.warning(f"Error in model {model}, returning anyway")
+            LOG.warning(f"Error in model {name} definition, returning anyway")
         return model
 
     def supported_models(self) -> Set[str]:
