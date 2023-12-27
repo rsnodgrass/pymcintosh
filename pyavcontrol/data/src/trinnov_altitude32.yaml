@@ -3,6 +3,7 @@ id: trinnov_altitude32
 description: Trinnov Altitude and JBL Synthesis Processor Automation Protocol over
   RS232 and IP [2016-11-22 v1.13]
 urls:
+  - https://www.trinnov.com/site/assets/files/1219/al32_usman_14_10_19_he_0001_sd.pdf
   - https://docplayer.net/176487263-Trinnov-altitude-processor-automation-protocol.html
   - https://www.jblsynthesis.com/on/demandware.static/-/Sites-masterCatalog_Harman/default/dw45d0257f/pdfs/JBL%20Synthesis%20SDP-75_Automation%20Protocol%20Guide.pdf
   - https://github.com/bjorg/RadiantPi.Trinnov.Altitude
@@ -28,13 +29,13 @@ tested: false
 connection:
   ip:
     port: 44100
+    timeout: 1.0
   rs232:
     baudrate: 19200
     bytesize: 8
     parity: N
     stopbits: 1
-    timeout: 2.0
-    write_timeout: 2.0
+    timeout: 1.0
 
 hardware:
   type: processor
@@ -71,10 +72,10 @@ vars:
     11: spdif3
     12: spdif4
     13: spdif71Pcm
-    14: optinal5
-    15: optinal6
-    16: optinal7
-    17: optinal71PCM
+    14: optional5
+    15: optional6
+    16: optional7
+    17: optional71PCM
     18: dcimchaes
     19: aes1
     20: aes2
@@ -106,19 +107,19 @@ api:
         cmd:
           fstring: mute 2
       get:
-        description: get current Mute status
+        description: Get current mute setting
         cmd:
           fstring: send_volume
         msg:
           regex: MUTE (?P<power>[01])
           tests:
-            MUTE 1:
+            'MUTE 1':
               mute: 1
-      off:
+      'off':
         description: Mute off
         cmd:
           fstring: mute 0
-      on:
+      'on':
         description: Mute on
         cmd:
           fstring: mute 1
@@ -139,7 +140,7 @@ api:
         cmd:
           fstring: send_volume    # FIXME: also 'send volume' for JBL 1.0
         msg:
-          regex: VOLUME (?P<volume>[0-9]{1,2})
+          regex: 'VOLUME (?P<volume>[0-9]{1,2})'
           tests:
             VOLUME 10:
               volume: 10
@@ -147,8 +148,8 @@ api:
         description: Set volume to x (in dB) Volume attenuation in dB. Range -100
           to 20.
         cmd:
-          fstring: volume {volume}
-          regex: volume (?P<volume>[0-9]{1,2}\)
+          fstring: 'volume {volume}'
+          regex: 'volume (?P<volume>[0-9]{1,2})'
       down:
         description: Decrease volume
         cmd:
@@ -157,7 +158,7 @@ api:
         description: Decrease volume by x
         cmd:
           fstring: dvolume -{volume_amount}
-          regex: dvolume -\(?P<volume_amount>[0-9]{1,2}\)
+          regex: dvolume -(?P<volume_amount>[0-9]{1,2})
       up:
         description: Increase volume
         cmd:
@@ -166,7 +167,7 @@ api:
         description: Increase volume by x
         cmd:
           fstring: dvolume {volume_amount}
-          regex: dvolume \(?P<volume_amount>[0-9]{1,2}\)
+          regex: dvolume (?P<volume_amount>[0-9]{1,2})
 
 # FIXME: input source = profile
 # FIXME: preset selection

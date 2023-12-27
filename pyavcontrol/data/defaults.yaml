@@ -19,10 +19,8 @@ connection:
     baudrate: 9600   # most common baudrate for A/V RS232 devices
     bytesize: 8
     parity: N
-    stopbits: 1
-    
+    stopbits: 1    
     timeout: 1.0
-    write_timeout: 1.0
 
   encoding: ascii
 
@@ -37,7 +35,3 @@ format:
 
 settings:
   min_time_between_commands: 0.4
-
-  timeouts:
-    connect: 1.0
-    write: 1.0

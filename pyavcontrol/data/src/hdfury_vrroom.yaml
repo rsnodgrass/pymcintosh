@@ -22,7 +22,6 @@ connection:
     parity: N
     stopbits: 1
     timeout: 1.0
-    write_timeout: 1.0
 
 format:
   command:

@@ -23,7 +23,6 @@ connection:
     parity: N
     stopbits: 1
     timeout: 2.0
-    write_timeout: 2.0
 
 hardware:
   type: processor
@@ -895,7 +894,7 @@ api:
         description: Increase volume by x
         cmd:
           fstring: '!VOL+({volume_amount})'
-          regex: '!VOL+\((?P<volume_amount>[0-9]{1,2})\)'
+          regex: '!VOL\+\((?P<volume_amount>[0-9]{1,2})\)'
 
   zone_2_mute:
     description: Zone 2 mute
@@ -1012,4 +1011,4 @@ api:
         description: Increase zone B volume by x
         cmd:
           fstring: '!ZVOL+({volume_amount})'
-          regex: '!ZVOL+\((?P<volume_amount>[0-9]{1,2})\)'
+          regex: '!ZVOL\+\((?P<volume_amount>[0-9]{1,2})\)'

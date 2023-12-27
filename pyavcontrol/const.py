@@ -11,9 +11,6 @@ DEFAULT_MODEL_LIBRARIES = [
     f"{PACKAGE_PATH}/data/src",
 ]  # FIXME: remove this later
 
-CONF_SERIAL_CONFIG = "rs232"
-CONF_PROTOCOL_NAME = "protocol"
-
 CONF_COMMAND_EOL = "command_eol"
 CONF_RESPONSE_EOL = "response_eol"
 CONF_COMMAND_SEPARATOR = "command_separator"
