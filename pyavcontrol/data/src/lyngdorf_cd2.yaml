@@ -22,7 +22,6 @@ connection:
 
 format:
   command:
-    format: '{cmd}{eol}'
     eol: "\r\n" # CR/LF
 
 api:

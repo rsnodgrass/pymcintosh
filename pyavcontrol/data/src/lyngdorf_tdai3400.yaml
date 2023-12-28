@@ -41,7 +41,6 @@ connection:
 
 format:
   command:
-    format: '{cmd}{eol}'
     eol: "\r"    # CR Carriage Return
 
 

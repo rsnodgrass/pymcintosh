@@ -24,12 +24,10 @@ connection:
 
 format:
   command:
-    format: '{cmd}{eol}'
     eol: "\r"    # CR Carriage Return
     separator: '+'
 
   message:
-    format: '{msg}{eol}'
     eol: "\r"
     separator: '+'
 

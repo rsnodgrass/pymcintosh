@@ -46,11 +46,9 @@ hardware:
 
 format:
   command:
-    format: '{cmd}{eol}'
     eol: "\r"    # CR Carriage Return
 
   message:
-    format: '{msg}{eol}'
     eol: "\r"
 
 vars:

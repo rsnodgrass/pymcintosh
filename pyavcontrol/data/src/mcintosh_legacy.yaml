@@ -28,12 +28,10 @@ manufacturer:
 
 format:
   command:
-    format: '{cmd}{eol}'
     eol: "\r"    # CR Carriage Return
     separator: '#'     # FIXME: is this old?
 
   message:
-    format: '{msg}{eol}'
     eol: "\r"
     separator: '#'
 
