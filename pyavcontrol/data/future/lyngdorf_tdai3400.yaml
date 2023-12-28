@@ -1,0 +1,337 @@
+---
+id: lyngdorf_tdai3400
+name: Lyngdorf A/V Control
+description: Lyngdorf A/V Controls
+urls:
+  - https://site.currants.info/wp-content/uploads/2021/07/TDAI-3400-External-Control-Manual-March-2021.pdf
+
+manufacturer:
+  name: Lyngdorf
+  model: TDAI-3400
+
+models:
+  - name: Lyngdorf MP-40
+    model: mp40
+
+  - name: Lyngdorf MP-50
+    model: mp50
+
+  - name: Lyngdorf MP-60
+    model: mp60
+
+  - name: Lyngdorf P100
+    model: p100
+
+  - name: Lyngdorf P200
+    model: p200
+
+  - name: Lyngdorf P300
+    model: p300
+
+tested: false
+
+connection:
+  ip:
+    port: 84
+  rs232:
+    baudrate: 115200
+    bytesize: 8
+    parity: N
+    stopbits: 1
+    timeout: 2.0
+
+hardware:
+  type: processor
+  features:
+    zones: 8
+    sources: 8
+
+format:
+  command:
+    format: '{cmd}{eol}'
+    eol: "\r"    # CR Carriage Return
+
+
+# FIXME:
+# !AUDIOSTATUS?
+
+api:
+  device:
+    actions:
+      name:
+        description: Returns the name of the device
+        cmd:
+          fstring: '!DEVICE?'
+        msg:
+          regex: '!DEVICE\((?P<name>.+)\)'
+          tests:
+            '!DEVICE(TDAI-3400)':
+              name: TDAI-3400
+
+  balance:
+    description: "Balance describes the balance setting in this range: L1 to L10: Balance is to the left. 0: Balance is centered R1 - R10: Balance is to the right"
+    actions:
+      get:
+        description: Get current balance
+        cmd:
+          fstring: '!BAL?'
+        msg:
+          regex: '!BAL\((?P<balance>[RL]*[0-9]{1,2})\)'
+          tests:
+            '!BAL(R10)':
+              balance: R10
+            '!BAL(L2)':
+              balance: L2
+            '!BAL(0)':
+              balance: 0
+      set:
+        description: Sets balance
+        cmd:
+          fstring: '!BAL({balance})'
+          regex: '!BAL\((?P<balance>[RL]*[0-9]{1,2})\)'
+
+  bass_gain:
+    description: Bass gain trim controls
+    actions:
+      get:
+        description: Get current bass level trim
+        cmd:
+          fstring: '!BASS?'
+        msg:
+          regex: '!BASS\((?P<bass_level>-?[0-9]{1,2})\)'
+          tests:
+            '!BASS(10)':
+              bass_level: 10
+            '!BASS(-12)':
+              bass_level: -12
+      set:
+        description: Sets bass level trim (-12 to 12 dB)
+        cmd:
+          fstring: '!BASS({bass_level})'
+          regex: '!BASS\((?P<bass_level>-?[0-9]{1,2})\)'
+
+  bass_frequency:
+    description: Bass frequency trim controls
+    actions:
+      get:
+        description: Get current bass frequency trim
+        cmd:
+          fstring: '!BASSFREQ?'
+        msg:
+          regex: '!BASSFREQ\((?P<bass_frequency>[0-9]{2,3})\)'
+          tests:
+            '!BASSFREQ(20)':
+              bass_level: 20
+            '!BASS(800)':
+              bass_level: 800
+      set:
+        description: Sets bass frequency trim (20 to 800 Hz)
+        cmd:
+          fstring: '!BASSFREQ({bass_frequency})'
+          regex: '!BASS\((?P<bass_frequency>[0-9]{2,3})\)'
+
+  headphone:
+    description: Headphone status
+    actions:
+      connected:
+        description: Determine if headphones connected (0=no; 1=yes)
+        cmd:
+          fstring: '!HP?'
+        msg:
+          regex: '!HP\\((?P<connected>[01])\)'
+          tests:
+            '!HP(1)':
+              connected: 1
+
+  # FIXME: headphone volume and mute
+
+
+  mute:
+    description: Mute
+    actions:
+      toggle:
+        description: Mute toggle button
+        cmd:
+          fstring: '!MUTE'
+      get:
+        description: get current Mute status
+        cmd:
+          fstring: '!MUTE?'
+        msg:
+          regex: '!MUTE\\((?P<mute>(ON|OFF))\)'
+          tests:
+            '!MUTE(ON)':
+              mute: ON
+            '!MUTE(OFF)':
+              mute: OFF
+      off:
+        description: Mute off
+        cmd:
+          fstring: '!MUTEOFF'
+      on:
+        description: Mute on
+        cmd:
+          fstring: '!MUTEON'
+
+
+  power_system:
+    description: Entire system power
+    actions:
+      on:
+        description: Turn entire system on
+        cmd:
+          fstring: '!ON'
+      off:
+        description: Turn entire system off
+        cmd:
+          fstring: '!OFF'
+      toggle:
+        description: Toggle system power
+        cmd:
+          fstring: '!PWR'
+      get:
+        description: Get system power status
+        cmd:
+          fstring: '!POWER?'
+        msg:
+          regex: '!POWER\((?P<power>(ON|OFF))\)'
+          tests:
+            '!POWER(ON)':
+              power: ON
+            '!POWER(OFF)':
+              power: OFF
+
+
+  roomperfect_position:
+    description: RoomPerfect position
+    actions:
+      previous:
+        description: Previous RoomPerfect position button
+        cmd:
+          fstring: '!RPDOWN'
+      set:
+        description: Set RoomPerfect position (0=bypass, 1-8=focus1-8, 9=global)
+        cmd:
+          fstring: '!RP({roomperfect_position})'
+          regex: '!RP\((?P<position>[0-9])\)'
+      up:
+        description: Next Roomperfect position button
+        cmd:
+          fstring: '!RPUP'
+      get:
+        description: Get currently selected RoomPerfect position (0=bypass, 1-8=focus1-8, 9=global)
+        cmd:
+          fstring: '!RP?'
+        msg:
+          regex: '!RP\((?P<position>[0-9])\)'
+          tests:
+            '!RP(0)':
+              position: 0
+            '!RP(9)':
+              position: 9
+      list:
+        description: List all the RoomPerfect positions
+        cmd:
+          fstring: '!RPLIST?'
+        msg:
+          regexp: '!RPCOUNT(N)'  # FIXME
+      name:
+        description: Get the name for the current RoomPerfect position
+        cmd:
+          fstring: '!RPNAME?'
+        msg:
+          regex: '!RPNAME\((?P<position>[0-9]),"(?P<name>\s+)"\)'
+          tests:
+            '!RPNAME(1,"Unknown")':
+              position: 1
+              name: Unknown
+      name_lookup:
+        description: Get the name for the given RoomPerfect position
+        cmd:
+          fstring: '!RPNAME({position})?'
+          regex: '!RPNAME\((?P<position>[0-9])\)\?'
+        msg:
+          regex: '!RPNAME\((?P<position>[0-9]),"(?P<name>\s+)"\)'
+          tests:
+            '!RPNAME(1,"Unknown")':
+              position: 1
+              name: Unknown
+
+  speaker_setup:
+    actions:
+      get:
+        description: Get currently selected speaker setup
+        cmd:
+          fstring: '!SPEAKER?'
+        msg:
+          regex: '!SPEAKER\((?P<speaker_setup>[0-2])\)'
+          tests:
+            '!SPEAKER(0)':
+              speaker_setup: 0
+            '!SPEAKER(1)':
+              speaker_setup: 1
+      set:
+        description: Selects speaker setup n (if speaker setup 2 is activated).
+        cmd:
+          fstring: '!SPEAKER({speaker_setup})'
+          regex: '!SPEAKER\((?P<speaker_setup>[1-2])\)'
+
+  source:
+    description: Input source selection
+    actions:
+      previous:
+        description: Previous source button
+        cmd:
+          fstring: '!SRCDN'
+      get:
+        description: Get info for currently active source
+        cmd:
+          fstring: '!SRC?'
+        msg:
+          regex: '!SRC\((?P<source>\d+),"(?P<name>.+)"\)'
+          tests:
+            '!SRC(1,"CD")':
+              source: 1
+              name: CD
+      set:
+        description: Select source
+        cmd:
+          fstring: '!SRC({source})'
+          regex: '!SRC\((?P<source>\d+)\)'
+      name:
+        description: Get name for current source
+        cmd:
+          fstring: '!SRCNAME?'
+        msg:
+          regex: '!SRCNAME\((?P<source>\d+),*"(?P<name>.+)"\)'
+          tests:
+            '!SRC(3,"HiFiBerry")':
+              source: 3
+              name: HiFiBerry
+            '!SRC(8,"")':
+              source: 8
+              name: ''
+      name_lookup:
+        description: Get name for a specific source
+        cmd:
+          fstring: '!SRCNAME({source})?'
+        msg:
+          regex: '!SRCNAME\((?P<source>\d+),*"(?P<name>.+)"\)'
+          tests:
+            '!SRC(2,"HiFiBerry")':
+              source: 2
+              name: HiFiBerry
+      next:
+        description: Next source button
+        cmd:
+          fstring: '!SRCUP'
+      list:
+        description: Get list of available sources
+        cmd:
+          fstring: '!SRCLIST?'
+        msg:
+          regex: "!SRCCOUNT\\((?P<count>\\d+)\\)\r"    # FIXME: multi-line!
+          tests:
+            FIXME:
+              count: 2
+

@@ -51,6 +51,23 @@ api:
               source: 6
               keypad: 0
 
+      all_status:
+        description: Special status request that returns statue for all zones for a specific hardware unit
+        cmd:
+          fstring: '?{zone_group}0'
+          regex: '\?(?P<zone_group[1-3]0)'
+          tests:
+            '?10':
+              zone_group: 1
+            '?20':
+              zone_group: 2
+            '?30':
+              zone_group: 3
+        msg:
+          # FIXME: this regexp repeats 6+ times!
+          regex: '#>(?P<zone>\d{2})(?P<pa>\d{2})(?P<power>[01]{2})(?P<mute>[01]{2})(?P<do_not_disturb>[01]{2})(?P<volume>\d{2})(?P<treble>\d{2})(?P<bass>\d{2})(?P<balance>\d{2})(?P<source>\d{2})(?P<keypad>\d{2})'
+
+
   power:
     actions:
       set:
@@ -74,7 +91,7 @@ api:
         description: Mute on
         cmd:
           fstring: <{zone}MU01
-      off:
+      'off':
         description: Mute off
         cmd:
           fstring: <{zone}MU00
