@@ -11,6 +11,8 @@ tested: false
 # NOTE: None of the state subscriptions have been defined (SUBSCRIBETRACK. etc)
 
 connection:
+  ip:
+    port: 84
   rs232:
     baudrate: 115200
     bytesize: 8
@@ -24,6 +26,18 @@ format:
     eol: "\r\n" # CR/LF
 
 api:
+  device:
+    actions:
+      name:
+        description: Returns the name of the device
+        cmd:
+          fstring: '!DEVICE?'
+        msg:
+          regex: '!DEVICE\((?P<name>.+)\)'
+          tests:
+            '!DEVICE(CD-2)':
+              name: CD-2
+
   power:
     description: Power controls
     actions:

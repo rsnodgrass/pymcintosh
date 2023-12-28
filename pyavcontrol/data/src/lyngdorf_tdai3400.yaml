@@ -1,7 +1,6 @@
 ---
 id: lyngdorf_tdai3400
-name: Lyngdorf A/V Control
-description: Lyngdorf A/V Controls
+description: Lyngdorf TDAI-3400 control
 urls:
   - https://site.currants.info/wp-content/uploads/2021/07/TDAI-3400-External-Control-Manual-March-2021.pdf
 
@@ -39,12 +38,6 @@ connection:
     parity: N
     stopbits: 1
     timeout: 2.0
-
-hardware:
-  type: processor
-  features:
-    zones: 8
-    sources: 8
 
 format:
   command:
