@@ -232,7 +232,10 @@ api:
         cmd:
           fstring: '!RPLIST?'
         msg:
-          regexp: '!RPCOUNT(N)'  # FIXME
+          regexp: '!RPCOUNT\((?P<count>\d+)\)'
+          tests:
+            "!RPCOUNT(1)\r\n!RPNAME(1,\"CD\")":
+              count: 1
       name:
         description: Get the name for the current RoomPerfect position
         cmd:

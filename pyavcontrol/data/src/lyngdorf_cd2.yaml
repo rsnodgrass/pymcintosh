@@ -92,6 +92,17 @@ api:
         description: Stop winding
         cmd:
           fstring: '!STOPWIND'
+      state:
+        description: Current state of playback
+        cmd:
+          fstring: '!STATE?'
+        msg:
+          regex: '!STATE\((?P<state>(OFF|OPENING|OPEN|CLOSING|NODISC|DISCERROR|READING|PLAY|STOP|PAUSE|WIND|REWIND))\)'
+          tests:
+            '!STATE(PLAY)':
+              state: PLAY
+            '!STATE(NODISC)':
+              state: NODISC
       
   buttons:
     actions:
@@ -103,6 +114,54 @@ api:
         description: Button number 2
         cmd:
           fstring: '!DIGIT(2)'
+
+  play_status:
+    actions:
+      track:
+        description: Get current track
+        cmd:
+          fstring: '!TRACK?'
+        msg:
+          regex: '!TRACK\((?P<track>([-]|\d+))\)'
+          tests:
+            '!TRACK(-)':
+              track: '-'
+            '!TRACK(14)':
+              track: 14
+      total_tracks:
+        description: Total number of tracks being played
+        cmd:
+          fstring: '!NOFTRACKS?'
+        msg:
+          regex: '!NOFTRACKS\((?P<track>([-]|\d+))\)'
+          tests:
+            '!NOFTRACKS(-)':
+              track: '-'
+            '!NOFTRACKS(20)':
+              track: 20
+      time:
+        description: Requests the elapsed time of the playing track.
+        cmd:
+          fstring: '!TIME?'
+        msg:
+          regex: '!TIME\((?P<time>[-]*\d+)\)'
+          tests:
+            '!TIME(-0:01)':
+              time: '-0:01'
+            '!TIME(1:23)':
+              time: '1:23'
+      remaining_time:
+        description: Requests the remaining time of the playing track.
+        cmd:
+          fstring: '!REMTIME?'
+        msg:
+          regex: '!REMTIME\((?P<time>[-]*\d+)\)'
+          tests:
+            '!REMTIME(-0:01)':
+              time: '-0:01'
+            '!REMTIME(3:21)':
+              time: '3:21'
+
 
   playback_mode:
     description: Playback modes
@@ -182,6 +241,6 @@ api:
         msg:
           regex: '!SRC\((?P<source>\d+),"(?P<name>.+)"\)'
           tests:
-            '!SRC(0,"CD")':
+            '!SRC(1,"CD")':
               source: 0
               name: CD
