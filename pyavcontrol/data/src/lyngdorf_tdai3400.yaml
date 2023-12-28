@@ -502,5 +502,5 @@ api:
       down_by_x:
         description: Decrease volume by x
         cmd:
-          fstring: '!VOL(-{volume_amount})'
-          regex: '!VOL\(\-(?P<volume_amount>[0-9]{1,3})\)'
+          fstring: '!VOLCH(-{volume_amount})'
+          regex: '!VOLCH\(-(?P<volume_amount>[0-9]{1,3})\)'
