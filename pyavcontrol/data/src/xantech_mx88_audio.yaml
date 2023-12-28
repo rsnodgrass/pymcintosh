@@ -1,12 +1,16 @@
 ---
-id: xantech_mx88
-description: Xantech matrix audio MRAUDIO8x8, MRAUDIO8x8m, MX88a, MX88ai, MX88, MX88vi, MRC88, MRC88m. Long term the video models should split into their own model yaml and expose the video switching options.
+id: xantech_mx88_audio
+description: Xantech matrix audio only MRAUDIO8x8, MRAUDIO8x8m, MX88a, MX88ai
 urls:
   - https://app.box.com/s/bp7h228vihe92nmjlo6o8w6e66tvj58o
 
 manufacturer:
   name: Xantech
-  model: MRAUDIO8x8
+  models:
+    - MRAUDIO8X8
+    - MRAUDIO8X8m
+    - MX88a
+    - MX88ai
 
 tested: false
 
@@ -58,7 +62,7 @@ api:
         description: Special status request that returns statue for all zones for a specific hardware unit
         cmd:
           fstring: '?{zone_group}0'
-          regex: '\?(?P<zone_group[1-3]0)'
+          regex: '\?(?P<zone_group>[1-3])0'
           tests:
             '?10':
               zone_group: 1
