@@ -47,6 +47,12 @@ format:
 
 # FIXME:
 # !AUDIOSTATUS?
+# !SWUPD?
+# !MAXVOL?
+# !RPSTATUS?
+# !VOIAVAILABLE
+# !VOIENABLED?
+# !AUDIOSTATUS?
 
 api:
   device:
@@ -380,7 +386,7 @@ api:
           fstring: '!TREBFREQ({frequence})'
           regex: '!TREBLE\((?P<frequency>[0-9]{4,5})\)'
   
-    verbosity:
+  verbosity:
     actions:
       set:
         description: Set verbosity level of active interface
@@ -497,4 +503,4 @@ api:
         description: Decrease volume by x
         cmd:
           fstring: '!VOL(-{volume_amount})'
-          regex: '!VOL\(-(?P<volume_amount>[0-9]{1,3})\)'
+          regex: '!VOL\(\-(?P<volume_amount>[0-9]{1,3})\)'

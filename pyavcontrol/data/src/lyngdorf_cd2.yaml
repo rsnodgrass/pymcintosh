@@ -35,8 +35,8 @@ api:
         msg:
           regex: '!DEVICE\((?P<name>.+)\)'
           tests:
-            '!DEVICE(CD-2)':
-              name: CD-2
+            '!DEVICE(CD2)':
+              name: CD2
 
   power:
     description: Power controls
@@ -171,3 +171,17 @@ api:
         cmd:
           fstring: '!GAIN({gain})'
           regex: '!GAIN\((?P<gain>-?[0-9]{1,3})\)'
+
+  source:
+    description: Input source selection
+    actions:
+      get:
+        description: Get info for currently active source
+        cmd:
+          fstring: '!SRC?'
+        msg:
+          regex: '!SRC\((?P<source>\d+),"(?P<name>.+)"\)'
+          tests:
+            '!SRC(0,"CD")':
+              source: 0
+              name: CD
