@@ -435,11 +435,11 @@ api:
   loudness:
     description: Loudness
     actions:
-      on:
+      'on':
         description: Turn loudness on
         cmd:
           fstring: '!LOUDNESS(1)'
-      off:
+      'off':
         description: Turn loudness off
         cmd:
           fstring: '!LOUDNESS(0)'
@@ -468,11 +468,11 @@ api:
           tests:
             '!MUTE(1)':
               mute: 1
-      off:
+      'off':
         description: Mute off
         cmd:
           fstring: '!MUTEOFF'
-      on:
+      'on':
         description: Mute on
         cmd:
           fstring: '!MUTEON'
@@ -490,11 +490,11 @@ api:
   power_system:
     description: Entire system power
     actions:
-      on:
+      'on':
         description: Turn entire system on
         cmd:
           fstring: '!PON'
-      off:
+      'off':
         description: Turn entire system off
         cmd:
           fstring: '!POFF'
@@ -515,11 +515,11 @@ api:
   power_zone_main:
     description: Main zone power
     actions:
-      on:
+      'on':
         description: Turn main zone power on
         cmd:
           fstring: '!POWERONMAIN'
-      off:
+      'off':
         description: Turn main zone power off
         cmd:
           fstring: '!POWEROFFMAIN'
@@ -536,11 +536,11 @@ api:
   power_zone_2:
     description: Zone 2 power
     actions:
-      on:
+      'on':
         description: Turn zone 2 power on
         cmd:
           fstring: '!POWERONZONE2'
-      off:
+      'off':
         description: Turn zone 2 power off
         cmd:
           fstring: '!POWEROFFZONE2'
@@ -908,11 +908,11 @@ api:
           tests:
             '!ZMUTE(1)':
               mute: 1
-      on:
+      'on':
         description: Zone B Mute on
         cmd:
           fstring: '!ZMUTEON'
-      off:
+      'off':
         description: Zone B Mute off
         cmd:
           fstring: '!ZMUTEOFF'
@@ -924,11 +924,11 @@ api:
   zone_2_power:
     description: Zone 2 power
     actions:
-      on:
+      'on':
         description: Zone Power On
         cmd:
           fstring: '!ZPON'
-      off:
+      'off':
         description: Zone Power Off
         cmd:
           fstring: '!ZPOFF'

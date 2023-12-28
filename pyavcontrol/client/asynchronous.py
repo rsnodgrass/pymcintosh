@@ -17,7 +17,7 @@ class DeviceClientAsync(DeviceClientBase):
     @locked_coro
     async def send_raw(self, data: bytes) -> None:
         if LOG.isEnabledFor(logging.DEBUG):
-            LOG.debug(f"Sending {self._model} @ {self._url}: %s", data.decode())
+            LOG.debug(f"Sending {self._url}: {data}")
 
         # send the data and flush all the bytes to the connection
         connection = await self._connection()

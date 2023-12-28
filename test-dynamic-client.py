@@ -89,7 +89,7 @@ def _get_client_method(
 
         if cmd := action_def.get("cmd"):
             if fstring := cmd.get("fstring"):
-                request = fstring.format(**kwargs)
+                request = fstring.format(**kwargs).encode("ascii")
                 return client.send_raw(request)
         LOG.warning(f"Failed to make request for {group_name}.{action_name}")
 
@@ -108,7 +108,7 @@ def _get_client_method(
 
         if cmd := action_def.get("cmd"):
             if fstring := cmd.get("fstring"):
-                request = fstring.format(**kwargs)
+                request = fstring.format(**kwargs).encode("ascii")
                 return await client.send_raw(request)
         LOG.warning(f"Failed to make request for {group_name}.{action_name}")
 
@@ -144,7 +144,7 @@ def _get_args_for_command(action_def: dict) -> List[str]:
     if cmd := action_def.get("cmd"):
         if regex := cmd.get("regex"):
             named_regex = extract_named_regex(regex)
-            LOG.warning(f"Command regex found BUT IGNORING! {matches}")
+            LOG.warning(f"Command regex found BUT IGNORING! {named_regex}")
 
         fstring = cmd.get("fstring")
         if args := get_fstring_vars(fstring):
@@ -203,6 +203,9 @@ def create_activity_group_class(
         method = _get_client_method(
             client, group_name, action_name, action_def, event_loop
         )
+        print(group_name)
+        print(action_name)
+        # FIXME: danger will robinson...potential exploits
         method.__name__ = action_name
         method.__doc__ = _document_action(action_name, action_def)
         cls_props[action_name] = method
@@ -256,8 +259,8 @@ class GroupActions:
 
 class ModelInterface:
     """
-    Dynamic class generation to represent a device model based on its API definition for
-    RS232/IP communication.
+    Dynamic class generation to represent a device model based on its API
+    definition for RS232/IP communication.
     """
 
     def __init__(self, device):
@@ -285,7 +288,8 @@ class ModelInterface:
 
 if __name__ == "__main__":
     model = "mcintosh_mx160"
-    url = "socket://localhost:4166"
+    # model = "lyngdorf_tdai3400"
+    url = "socket://localhost:4999"
 
     model_def = DeviceModelLibrary.create().load_model(model)
     client = DeviceClient.create(model_def, url)
@@ -295,6 +299,13 @@ if __name__ == "__main__":
         LOG.debug(f"Adding property for group {group}")
 
         g = create_activity_group_class(client, model, group, group_def)
-        g.min()
+        setattr(type(client), group, g)
+
         # help(g)
-        break
+    #       break
+
+    # help(client)
+    client.source.get()
+    client.source.next()
+    client.source.set()
+    print(client.software.info())
