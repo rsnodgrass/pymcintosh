@@ -8,7 +8,7 @@ from .const import *  # noqa: F403
 LOG = logging.getLogger(__name__)
 
 NAMED_REGEX_PATTERN = re.compile(r"\(\?P\<(?P<name>.+)\>(?P<regex>.+)\)")
-FSTRING_ARG_PATTERN = re.compile(r"\{(?P<arg_name>.+)\}")
+FSTRING_ARG_PATTERN = re.compile(r"{(?P<arg_name>.+)}")
 
 
 def extract_named_regex(text: str) -> dict:

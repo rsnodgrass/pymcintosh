@@ -38,6 +38,15 @@ from pyavcontrol.core import (
 LOG = logging.getLogger(__name__)
 coloredlogs.install(level="DEBUG")
 
+MODELS = [
+    "hdfury_vrroom",
+    "trinnov_altitude32",
+    "lyngdorf_cd2",
+    "mcintosh_mx160",
+    "xantech_mx88_audio",
+    "lyngdorf_tdai3400",
+]
+
 
 class ActionArgsValidator:
     def __init__(self):
@@ -165,7 +174,7 @@ def _document_action(action_name: str, action_def: dict):
     """
     Return formatted Sphinx documentation for the action
     """
-    doc = action_def.get("description")
+    doc = action_def.get("description", "")
 
     # append details on all the command arguments
     if args := _get_args_for_command(action_def):
@@ -200,6 +209,12 @@ def create_activity_group_class(
 
     # dynamically add methods (and associated documentation) for each action
     for action_name, action_def in actions_model["actions"].items():
+
+        if action_name == False:
+            action_name = "off"
+        elif action_name == True:
+            action_name = "on"
+
         method = _get_client_method(
             client, group_name, action_name, action_def, event_loop
         )
@@ -286,11 +301,7 @@ class ModelInterface:
             # help(cls)
 
 
-if __name__ == "__main__":
-    model = "mcintosh_mx160"
-    # model = "lyngdorf_tdai3400"
-    url = "socket://localhost:4999"
-
+def construct_dynamic_classes(model, url):
     model_def = DeviceModelLibrary.create().load_model(model)
     client = DeviceClient.create(model_def, url)
 
@@ -301,7 +312,19 @@ if __name__ == "__main__":
         g = create_activity_group_class(client, model, group, group_def)
         setattr(type(client), group, g)
 
-        # help(g)
+    return client
+
+
+url = "socket://localhost:4999"
+for model in MODELS:
+    construct_dynamic_classes(model, url)
+
+
+if __name__ == "__main__":
+    model = "mcintosh_mx160"
+    # model = "lyngdorf_tdai3400"
+
+    # help(g)
     #       break
 
     # help(client)
@@ -309,3 +332,12 @@ if __name__ == "__main__":
     client.source.next()
     client.source.set()
     print(client.software.info())
+
+
+# FIXME: for Sphinx docs we may need to get more creative
+# see also https://stackoverflow.com/questions/44316745/how-to-autogenerate-python-documentation-using-sphinx-when-using-dynamic-classes
+#
+# one idea...generate pyavcontrol/clients/<model_name>/__init__.py  (or just model_name.py)
+#   which creates the class for the client + action groups
+# then Sphinx will be able to document as it actually loads the vclasses.
+3
