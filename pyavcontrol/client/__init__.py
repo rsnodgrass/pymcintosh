@@ -1,6 +1,5 @@
 import logging
 
-from ..connection import ConnectionBase
 from ..const import *  # noqa: F403
 from .base import DeviceClientBase
 
@@ -10,7 +9,7 @@ LOG = logging.getLogger(__name__)
 class DeviceClient:
     @staticmethod
     def create(
-        model_def: dict, url: str, serial_config_overrides={}, event_loop=None
+        model_def: dict, url: str, serial_config_overrides=None, event_loop=None
     ) -> DeviceClientBase:
         """
         Creates a DeviceClient instance using the standard pyserial connection
@@ -21,7 +20,7 @@ class DeviceClient:
         asynchronous implementation. By default the synchronous interface
         is returned.
 
-        :param model: dict, dictionary that describes the model
+        :param model_def: dict, dictionary that describes the model
         :param url: pyserial supported url for communication (e.g. '/dev/ttyUSB0' or 'socket://remote-host:4999/')
         :param serial_config_overrides: dictionary of serial port configuration overrides (e.g. baudrate)
         :param event_loop: optionally to get an interface that can be used asynchronously, pass in an event loop
@@ -43,11 +42,11 @@ class DeviceClient:
 
         if event_loop:
             # lazy import the async client to avoid loading both sync/async
-            from .asynchronous import DeviceClientAsync
+            from .async_client import DeviceClientAsync
 
             return DeviceClientAsync(model_def, url, serial_config, event_loop)
 
         else:
-            from .synchronous import DeviceClientSync
+            from .sync_client import DeviceClientSync
 
             return DeviceClientSync(model_def, url, serial_config)

@@ -3,6 +3,7 @@
 *.log
 *.egg-info
 .venv
+venv
 
 dist
 build

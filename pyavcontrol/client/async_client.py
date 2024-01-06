@@ -1,7 +1,7 @@
 import logging
 from collections.abc import Callable
 
-from ..connection.asynchronous import async_get_rs232_connection, locked_coro
+from ..connection.async_connection import async_get_rs232_connection, locked_coro
 from ..const import *  # noqa: F403
 from .base import DeviceClientBase
 
@@ -25,8 +25,10 @@ class DeviceClientAsync(DeviceClientBase):
         await connection.flush()
 
     @locked_coro
-    async def send_command(self, data: str) -> None:
-        await self.send_raw(data.bytes())
+    async def send_command(self, group: str, action: str, **kwargs) -> None:
+        # await self.send_raw(data.bytes())
+        # FIXME: implement, if necessary?
+        LOG.error(f"Not implemented send_command!")
 
     @locked_coro
     def register_callback(self, callback: Callable[[str], None]) -> None:

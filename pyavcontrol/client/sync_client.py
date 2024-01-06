@@ -3,7 +3,7 @@ from collections.abc import Callable
 
 import serial
 
-from ..connection.sync import synchronized
+from ..connection.sync_connection import synchronized
 from ..const import *  # noqa: F403
 from .base import DeviceClientBase
 
@@ -25,17 +25,19 @@ class DeviceClientSync(DeviceClientBase):
         self._connection.flush()
 
     @synchronized
-    def send_command(self, data: str) -> None:
-        self.send_raw(data.bytes())
+    def send_command(self, group: str, action: str, **kwargs) -> None:
+        # self.send_raw(data.bytes())
+        LOG.error(f"Not implemented!")  # FIXME
 
     @synchronized
     def register_callback(self, callback: Callable[[str], None]) -> None:
         self._callbacks.append(callback)
 
     @synchronized
-    async def received_message(self):
+    def received_message(self):
         for cb in self._callbacks:
-            self._loop.call_soon(cb)
+            LOG.error(f"Callbacks not implemented!! {cb}")  # FIXME
+            # self._loop.call_soon(cb)
 
     @synchronized
     def _write(self, request: bytes, skip=0):
@@ -48,8 +50,9 @@ class DeviceClientSync(DeviceClientBase):
         self._connection.reset_output_buffer()
         self._connection.reset_input_buffer()
 
-        self.send_raw(bytes)
+        self.send_raw(request)
 
+        # FIXME: what is this?
         eol = self._protocol_defs.get(CONF_RESPONSE_EOL).encode("ascii")
         eol_len = len(eol)
 

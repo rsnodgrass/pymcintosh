@@ -19,7 +19,7 @@ class DeviceClientBase:
         self._serial_config = serial_config
         self._callbacks = []
 
-    def send_command(self, group: str, action: str, **kwargs):
+    def send_command(self, group: str, action: str, **kwargs) -> None:
         """
         Call a command by the group/action and args as defined in the
         device's protocol yaml.

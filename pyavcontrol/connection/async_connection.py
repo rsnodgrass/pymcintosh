@@ -32,7 +32,7 @@ def get_connection_config(config, serial_config):
 
 
 async def async_get_rs232_connection(
-    serial_port, config, serial_config, protocol_config, loop
+    serial_port: str, config: dict, serial_config: dict, protocol_config: dict, loop
 ):
     # ensure only a single, ordered command is sent to RS232 at a time (non-reentrant lock)
     def locked_method(method):
@@ -84,7 +84,7 @@ async def async_get_rs232_connection(
             # ensure only a single, ordered command is sent to RS232 at a time (non-reentrant lock)
             self._lock = asyncio.Lock()
 
-        def register_response_callback(self, callback):
+        def register_callback(self, callback) -> None:
             """Register a callback that is called for each response line"""
             self._response_callback = callback
 
