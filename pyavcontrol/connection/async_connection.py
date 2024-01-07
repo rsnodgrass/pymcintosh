@@ -2,10 +2,13 @@ import logging
 import asyncio
 import functools
 import time
+from abc import ABC
 from functools import wraps
 
 from ratelimit import limits
 from serial_asyncio import create_serial_connection
+
+from pyavcontrol.connection import DeviceConnection
 
 from ..const import *  # noqa: F403
 
@@ -27,8 +30,16 @@ def locked_coro(coro):
     return wrapper
 
 
-def get_connection_config(config, serial_config):
-    return {}
+class AsyncDeviceConnection(DeviceConnection, ABC):
+    def __init__(
+        self, url: str, config: dict, serial_config: dict, protocol_config: dict, loop
+    ):
+        """
+        :param url: pyserial compatible url
+        """
+        # FIXME: ...have it async created lazily
+        # FIXME: ...implement!!!
+        super().__init__()
 
 
 async def async_get_rs232_connection(
@@ -67,7 +78,9 @@ async def async_get_rs232_connection(
             self._serial_config = serial_config
             self._loop = loop
 
-            self._encoding = "ascii"
+            # FIXME: this should actually be on the client layer and not connection itself
+            self._encoding = protocol_config.get("encoding", "ascii")
+
             self._response_eol = protocol_config[CONF_RESPONSE_EOL].encode(
                 self._encoding
             )

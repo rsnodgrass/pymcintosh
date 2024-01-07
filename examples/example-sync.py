@@ -6,11 +6,11 @@
 
 import logging
 import argparse as arg
-from pprint import pprint
 
 import coloredlogs
 
-from pyavcontrol import DeviceClient, DeviceModelLibrary
+from pyavcontrol import DeviceClientDeprecate, DeviceModelLibrary
+from pyavcontrol.client import create_device_client
 
 LOG = logging.getLogger(__name__)
 coloredlogs.install(level="DEBUG")
@@ -39,7 +39,7 @@ if args.debug:
 
 def main():
     model_def = DeviceModelLibrary.create().load_model(args.model)
-    client = DeviceClient.create(
+    client = create_device_client(
         model_def, args.url, serial_config_overrides={"baudrate": args.baud}
     )
 

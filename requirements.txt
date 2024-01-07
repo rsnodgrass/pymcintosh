@@ -3,3 +3,5 @@ pyserial-asyncio>=0.6
 ratelimit
 yaml
 coloredlogs
+pydantic
+syncer

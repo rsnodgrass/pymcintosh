@@ -1,18 +1,20 @@
 import logging
+from abc import ABC
 from collections.abc import Callable
 
 from ..connection.async_connection import async_get_rs232_connection, locked_coro
 from ..const import *  # noqa: F403
-from .base import DeviceClientBase
+from .base import DeviceClient
 
 LOG = logging.getLogger(__name__)
 
 
-class DeviceClientAsync(DeviceClientBase):
+class DeviceClientAsync(DeviceClient, ABC):
     def __init__(self, model_def: dict, url: str, serial_config: dict, loop):
-        DeviceClientBase.__init__(self, model_def, url, serial_config)
+        DeviceClient.__init__(self, model_def, url, serial_config)
         self._loop = loop
         self._connection_ref = None
+        self._callback = None
 
     @locked_coro
     async def send_raw(self, data: bytes) -> None:
@@ -32,7 +34,9 @@ class DeviceClientAsync(DeviceClientBase):
 
     @locked_coro
     def register_callback(self, callback: Callable[[str], None]) -> None:
-        self._callbacks.append(callback)
+        if not callable(callback):
+            raise ValueError("Callback is not Callable")
+        self._callback = callback
 
     @locked_coro
     async def received_message(self):

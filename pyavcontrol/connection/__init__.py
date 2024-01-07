@@ -3,7 +3,10 @@ import logging
 LOG = logging.getLogger(__name__)
 
 
-class ConnectionBase:
+# FIXME: implement sync and async
+
+
+class DeviceConnection:
     """
     Connection base class that defines communication APIs.
     """

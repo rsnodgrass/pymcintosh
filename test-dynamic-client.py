@@ -27,7 +27,7 @@ from typing import List
 
 import coloredlogs
 
-from pyavcontrol import DeviceClient, DeviceModelLibrary
+from pyavcontrol import DeviceClientDeprecate, DeviceModelLibrary
 from pyavcontrol.core import (
     camel_case,
     extract_named_regex,
@@ -70,7 +70,7 @@ class DynamicActions:
 
 
 def _get_client_method(
-    client: DeviceClient,
+    client: DeviceClientDeprecate,
     group_name: str,
     action_name: str,
     action_def: dict,
@@ -193,7 +193,7 @@ def _document_action(action_name: str, action_def: dict):
 
 
 def create_activity_group_class(
-    client: DeviceClient,
+    client: DeviceClientDeprecate,
     model_name: str,
     group_name: str,
     actions_model: dict,
@@ -279,6 +279,8 @@ class ModelInterface:
     """
 
     def __init__(self, device):
+        variable = "test"
+
         def _f(captured_variable=variable):
             print(captured_variable)
 
@@ -301,9 +303,9 @@ class ModelInterface:
             # help(cls)
 
 
-def construct_dynamic_classes(model, url):
-    model_def = DeviceModelLibrary.create().load_model(model)
-    client = DeviceClient.create(model_def, url)
+def construct_dynamic_classes(model_id: str, url: str):
+    model_def = DeviceModelLibrary.create().load_model(model_id)
+    client = create_device_client(model_def, url)
 
     api = model_def.get("api", {})
     for group, group_def in api.items():
@@ -320,19 +322,24 @@ for model in MODELS:
     construct_dynamic_classes(model, url)
 
 
+def main():
+    model_id = "mcintosh_mx160"
+
+    library = DeviceModelLibrary.create()
+    model_def = library.load_model(model_id)
+
+    # FIXME: the above construct_dynamic_classes(model, url) needs to be in DeviceClient.create()
+    client = create_device_client(model_def, url)
+
+    help(client)
+    # client.source.get()
+    # client.source.next()
+    # client.source.set()
+    # print(client.software.info())
+
+
 if __name__ == "__main__":
-    model = "mcintosh_mx160"
-    # model = "lyngdorf_tdai3400"
-
-    # help(g)
-    #       break
-
-    # help(client)
-    client.source.get()
-    client.source.next()
-    client.source.set()
-    print(client.software.info())
-
+    main()
 
 # FIXME: for Sphinx docs we may need to get more creative
 # see also https://stackoverflow.com/questions/44316745/how-to-autogenerate-python-documentation-using-sphinx-when-using-dynamic-classes

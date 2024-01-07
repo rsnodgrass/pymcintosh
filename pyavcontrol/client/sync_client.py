@@ -1,19 +1,21 @@
 import logging
+from abc import ABC
 from collections.abc import Callable
 
 import serial
 
 from ..connection.sync_connection import synchronized
 from ..const import *  # noqa: F403
-from .base import DeviceClientBase
+from .base import DeviceClient
 
 LOG = logging.getLogger(__name__)
 
 
-class DeviceClientSync(DeviceClientBase):
+class DeviceClientSync(DeviceClient, ABC):
     def __init__(self, model_def: dict, url: str, serial_config: dict):
-        DeviceClientBase.__init__(self, model_def, url, serial_config)
+        DeviceClient.__init__(self, model_def, url, serial_config)
         self._connection = serial.serial_for_url(url, **serial_config)
+        self._callback = None
 
     @synchronized
     def send_raw(self, data: bytes) -> None:
@@ -31,12 +33,14 @@ class DeviceClientSync(DeviceClientBase):
 
     @synchronized
     def register_callback(self, callback: Callable[[str], None]) -> None:
-        self._callbacks.append(callback)
+        if not callable(callback):
+            raise ValueError("Callback is not Callable")
+        self._callback = callback
 
     @synchronized
     def received_message(self):
-        for cb in self._callbacks:
-            LOG.error(f"Callbacks not implemented!! {cb}")  # FIXME
+        if self._callback:
+            LOG.error(f"Callback not implemented!! {cb}")  # FIXME
             # self._loop.call_soon(cb)
 
     @synchronized

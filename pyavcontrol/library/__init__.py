@@ -3,12 +3,14 @@ Configuration and data structures around device models
 """
 import logging
 import os
+from abc import ABC, abstractmethod
 from fnmatch import fnmatch
 from typing import List, Set
 
 import yaml
 
 from ..const import DEFAULT_MODEL_LIBRARIES
+from .validate import DeviceModel
 
 LOG = logging.getLogger(__name__)
 
@@ -23,30 +25,15 @@ def _load_yaml_file(path: str) -> dict | None:
         return None
 
 
-class DeviceModel:
-    @staticmethod
-    def validate_model_definition(model_def: dict) -> bool:
-        """
-        Validate that the given device model definition is valid
-        """
-        model_id = "Unknown"
-        name = model_def.get("name")
-        if not name:
-            LOG.warning(f"Model {model_id} is missing required 'name'")
-            return False
-
-        # FIXME
-        # LOG.warning(f"Model {name} fails validation: ...")
-        return True
-
-
-class DeviceModelLibrary:
+class DeviceModelLibrary(ABC):
+    @abstractmethod
     def load_model(self, name: str) -> dict:
         """
         :param name: model name or a complete path to a file
         """
         raise NotImplementedError("Subclasses must implement!")
 
+    @abstractmethod
     def supported_models(self) -> Set[str]:
         """
         :return: all model names supported by this library
@@ -83,7 +70,7 @@ class DeviceModelLibrary:
             return DeviceModelLibrarySync(library_dirs)
 
 
-class DeviceModelLibrarySync(DeviceModelLibrary):
+class DeviceModelLibrarySync(DeviceModelLibrary, ABC):
     """
     Synchronous implementation of DeviceModelLibrary
     """
@@ -92,21 +79,22 @@ class DeviceModelLibrarySync(DeviceModelLibrary):
         self._dirs = library_dirs
         self._supported_models = set()
 
-    def load_model(self, name: str) -> dict | None:
+    def load_model(self, model_id: str) -> dict | None:
         # FIXME: ensure name does not have any /
         model = None
         for path in self._dirs:
-            model_file = f"{path}/{name}.yaml"
+            model_file = f"{path}/{model_id}.yaml"
             model = _load_yaml_file(model_file)
             if model:
                 break
 
         if not model:
-            LOG.warning(f"Could not find model '{name}' in the library")
+            LOG.warning(f"Could not find model '{model_id}' in the library")
             return None
 
         if not DeviceModel.validate_model_definition(model):
-            LOG.warning(f"Error in model {name} definition, returning anyway")
+            LOG.warning(f"Error in model {model_id} definition, returning anyway")
+
         return model
 
     def supported_models(self) -> Set[str]:
@@ -128,7 +116,7 @@ class DeviceModelLibrarySync(DeviceModelLibrary):
         return self._supported_models
 
 
-class DeviceModelLibraryAsync(DeviceModelLibrary):
+class DeviceModelLibraryAsync(DeviceModelLibrary, ABC):
     """
     Asynchronous implementation of DeviceModelLibrary
     """

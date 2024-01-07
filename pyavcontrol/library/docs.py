@@ -7,7 +7,7 @@ documentation to be generated.
 
 FIXME: We may want to move this to tools/ or docs/
 """
-from . import DeviceModel, DeviceModelLibrary
+from . import DeviceModelLibrary
 
 MODELS = [
     "hdfury_vrroom",
@@ -18,5 +18,8 @@ MODELS = [
     "lyngdorf_tdai3400",
 ]
 
-for model in MODELS:
-    model_def = DeviceModelLibrary.create().load_model(model)
+MODEL_DEFS = []
+
+for model_id in MODELS:
+    model = DeviceModelLibrary.create().load_model(model_id)
+    MODEL_DEFS.append(model)
