@@ -28,6 +28,7 @@ from typing import List
 import coloredlogs
 
 from pyavcontrol import DeviceClientDeprecate, DeviceModelLibrary
+from pyavcontrol.client import DeviceClient
 from pyavcontrol.core import (
     camel_case,
     extract_named_regex,
@@ -329,7 +330,7 @@ def main():
     model_def = library.load_model(model_id)
 
     # FIXME: the above construct_dynamic_classes(model, url) needs to be in DeviceClient.create()
-    client = create_device_client(model_def, url)
+    client = DeviceClient.create(model_def, url)
 
     help(client)
     # client.source.get()
@@ -344,7 +345,7 @@ if __name__ == "__main__":
 # FIXME: for Sphinx docs we may need to get more creative
 # see also https://stackoverflow.com/questions/44316745/how-to-autogenerate-python-documentation-using-sphinx-when-using-dynamic-classes
 #
-# one idea...generate pyavcontrol/clients/<model_name>/__init__.py  (or just model_name.py)
+# one idea...generate pyavcontrol/clients/<model_name>/yaml_library.py  (or just model_name.py)
 #   which creates the class for the client + action groups
 # then Sphinx will be able to document as it actually loads the vclasses.
 3

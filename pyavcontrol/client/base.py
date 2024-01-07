@@ -1,4 +1,6 @@
-from __future__ import annotations  # postpone evaluation of annotations
+from __future__ import (  # postpone eval of annotations (for DeviceClient type annotation)
+    annotations,
+)
 
 import logging
 from abc import ABC, abstractmethod
@@ -76,20 +78,26 @@ class DeviceClient(ABC):
         cls, model_def: dict, url: str, serial_config_overrides=None, event_loop=None
     ) -> DeviceClient:
         """
-         Creates a DeviceClient instance using the standard pyserial connection
-         types supported by this library when given details about the model
-         and connection url.
+        Creates a DeviceClient instance using the standard pyserial connection
+        types supported by this library when given details about the model
+        and connection url.
+
+        NOTE: The model definition could be passed in from any source, though
+        it is recommended to only use those from the DeviceClient library. That
+        said, it MAY make sense to split the entire connection stuff into a more
+        generalized library for serial/IP communication to legacy devices and
+        have libraries in separate package that are domain specific.
 
         If an event_loop argument is passed in this will return the
-         asynchronous implementation. By default the synchronous interface
-         is returned.
+        asynchronous implementation. By default, the synchronous interface
+        is returned.
 
-         :param model_def: dict, dictionary that describes the model
-         :param url: pyserial supported url for communication (e.g. '/dev/ttyUSB0' or 'socket://remote-host:4999/')
-         :param serial_config_overrides: dictionary of serial port configuration overrides (e.g. baudrate)
-         :param event_loop: optionally to get an interface that can be used asynchronously, pass in an event loop
+        :param model_def: dict, dictionary that describes the model
+        :param url: pyserial supported url for communication (e.g. '/dev/ttyUSB0' or 'socket://remote-host:4999/')
+        :param serial_config_overrides: dictionary of serial port configuration overrides (e.g. baudrate)
+        :param event_loop: optionally to get an interface that can be used asynchronously, pass in an event loop
 
-         :return an instance of DeviceControllerBase
+        :return an instance of DeviceControllerBase
         """
         model_id = model_def["id"]
         LOG.debug(f"Connecting to {model_id} at {url}")
@@ -109,8 +117,7 @@ class DeviceClient(ABC):
             from .async_client import DeviceClientAsync
 
             return DeviceClientAsync(model_def, url, serial_config, event_loop)
-
         else:
             from .sync_client import DeviceClientSync
 
-        return DeviceClientSync(model_def, url, serial_config)
+            return DeviceClientSync(model_def, url, serial_config)
