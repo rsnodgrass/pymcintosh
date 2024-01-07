@@ -1,3 +1,5 @@
+from __future__ import annotations  # postpone evaluation of annotations
+
 import logging
 from abc import ABC, abstractmethod
 from collections.abc import Callable
@@ -50,13 +52,20 @@ class DeviceClient(ABC):
         raise NotImplementedError()
 
     def _command(self, model_id: str, format_code: str, args=None):
+        """
+        Convert group/action/args into the full command string that should be sent
+
+        FIXME: is this still even used/referenced?
+        """
         cmd_eol = self._protocol_def.get(CONF_COMMAND_EOL)
         cmd_separator = self._protocol_def.get(CONF_COMMAND_SEPARATOR)
 
         rs232_commands = self._protocol_def.get("commands")
         command = rs232_commands.get(format_code) + cmd_separator + cmd_eol
 
-        return command.format(**args).encode("ascii")
+        return command.format(**args).encode(
+            "ascii"
+        )  # FIXME: should be proper encoding
 
     @abstractmethod
     def describe(self) -> dict:
