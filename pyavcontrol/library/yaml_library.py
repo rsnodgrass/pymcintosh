@@ -2,9 +2,10 @@
 Configuration and data structures around device models
 """
 import logging
+import fnmatch
 import os
+import pathlib
 from abc import ABC, abstractmethod
-from fnmatch import fnmatch
 from typing import List, Set
 
 import yaml
@@ -15,14 +16,14 @@ from .validate import DeviceModel
 LOG = logging.getLogger(__name__)
 
 
-def _load_yaml_file(path: str) -> dict | None:
+def _load_yaml_file(path: str) -> dict:
     try:
         if os.path.isfile(path):
             with open(path, "r") as stream:
                 return yaml.safe_load(stream)
     except yaml.YAMLError as exc:
         LOG.error(f"Failed reading YAML {path}: {exc}")
-        return None
+        return {}
 
 
 class DeviceModelLibrary(ABC):
@@ -77,7 +78,7 @@ class DeviceModelLibrarySync(DeviceModelLibrary, ABC):
 
     def __init__(self, library_dirs: List[str]):
         self._dirs = library_dirs
-        self._supported_models = set()
+        self._supported_models = frozenset()
 
     def load_model(self, model_id: str) -> dict | None:
         # FIXME: ensure name does not have any /
@@ -97,22 +98,22 @@ class DeviceModelLibrarySync(DeviceModelLibrary, ABC):
 
         return model
 
-    def supported_models(self) -> Set[str]:
+    def supported_models(self) -> frozenset[str]:
         if self._supported_models:
             return self._supported_models
 
-        supported_models = set()
+        # build and cache the list of supported models based all the
+        # yaml device definition files that are included in the library
+        supported_models = {}
         for path in self._dirs:
-            for r, d, f in os.walk(path):
-                if fnmatch(f, "*.yaml"):
-                    print(os.path.join(r, f))
-                    name = os.path.join(r, f)
+            for root, dirs, filenames in os.walk(path):
+                for fn in filenames:
+                    if fn.endswith(".yaml"):
+                        model_file = os.path.join(root, fn)
+                        name = pathlib.Path(model_file).stem
+                        supported_models[name] = model_file
 
-            model_file = f"{dir}/{name}.yaml"
-            y = _load_yaml_file(model_file)
-
-        # FIXME: work!!
-        self._supported_models = supported_models
+        self._supported_models = frozenset(supported_models.keys())  # immutable
         return self._supported_models
 
 
