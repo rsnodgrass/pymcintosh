@@ -1,22 +1,33 @@
-# Python API for Controlling RS232/Text Based A/V Equipment (pyavcontrol)
-
-![McIntosh](https://raw.githubusercontent.com/rsnodgrass/pyavcontrol/main/img/mcintosh-logo.png)
+# Python RS232/IP Control of A/V Equipment
 
 ![beta_badge](https://img.shields.io/badge/maturity-Beta-yellow.png)
 [![PyPi](https://img.shields.io/pypi/v/pyavcontrol.svg)](https://pypi.python.org/pypi/pyavcontrol)
 [![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
 [![Build Status](https://github.com/rsnodgrass/pyavcontrol/actions/workflows/ci.yml/badge.svg)](https://github.com/rsnodgrass/pyavcontrol/actions/workflows/ci.yml)
 
-This library was created to control McIntosh and Lyngdorf A/V equipment using their
-text-based control protocols over RS232, USB serial connections, and remote IP sockets for the purpose of
-building a [Home Assistant](https://home-assistant.io) integration as well as a command line tool.
-
-This has been derived from an earlier effort with [pyxantech](https://github.com/rsnodgrass/pyxantech) to explore a new way to define the protocol to enable
-automated or programmatic, along with support for a variety
-of amps and protocols.
-
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=WREP29UDAMB6G)
 [![Buy Me A Coffee](https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg)](https://buymeacoffee.com/DYks67r)
+
+Library created to control a wide variety of A/V equipment which expose text-based control 
+protocols over RS232, USB serial connections, and/or remote IP sockets. 
+
+### Background
+
+This `pyavcontrol` library evolved from learnings during implementation a half dozen 
+custom client libraries for controlling specific equipment such as  [pyxantech](https://github.com/rsnodgrass/pyxantech) and pyanthem-serial, which
+were used to expose integrations for [Home Assistant](https://home-assistant.io).
+
+From those learnings, it was observed that the control protocols were often fairly similar and typically
+simple pattern matching could be used for converting the interfaces into more modern dictionary based APIs.
+This couples with dynamic Python class creation based on YAML protocol definition files for the protocols enables
+quickly spinning up new interfaces for specific devices even by anyone who has the ability to read technical
+documentation on the protocols (and not just those who are software developers).
+
+Two additional goals:
+
+1. allow clients in other programming languages to share the same YAML protocol definitions to provide similar dynamic APIs that support a wide variety of devices quickly.
+2. Create a basic IP-based RS232 emulator which allows spinning up a basic emulator for each supported
+device model based purely on the YAML definition and unit tests against those definitions. This emulator can be used by client libraries in any language for testing. See [avemu]() for more details.
 
 # THIS IS IN DEVELOPMENT - DOES NOT WORK YET!!!
 
@@ -76,26 +87,35 @@ protocol files from this repository as a basis for the interface you provide.
 The protocol and series definitions will likely be split out into separate
 definition-only package(s) in the future.
 
-## Asynchronous & Synchronous APIs
+## Using pyavcontrol
 
-This library provides both an `asyncio` and a synchronoous implementation.
+### Asynchronous & Synchronous APIs
+
+This library provides both an `asyncio` based and synchronous implementations.
 By default, the synchronous implementation is returned when instantiating
-new controller objects unless an `event_loop` is passed into the
-`create_equipment_controller` factory constructor.
+new objects unless an `event_loop` is passed in when creating
+DeviceModelLibrary or DeviceClient objects.
 
 Async example:
 
 ```python
-    equipment = DeviceController.create(
-        args.type,
-        args.url,
+    loop = asyncio.get_event_loop()
+
+    library = DeviceModelLibrary.create(event_loop=loop)
+    model_definition = library.load_model("mcintosh_mx160")
+    
+    client = DeviceClient.create(
+        model_definition, 
+        url,
         serial_config_overrides=config,
-        event_loop=asyncio.get_event_loop(),
+        event_loop=loop
     )
-    await equipment.power.off()
+    
+    await client.power.on()
+    await client.volume.set(50)
 ```
 
-## Connection URL
+### Connection URL
 
 This interface uses URLs for specifying the communication transport
 to use, as defined in [pyserial](https://pyserial.readthedocs.io/en/latest/url_handlers.html), to allow a wide variety of underlying mechanisms.
@@ -113,13 +133,14 @@ For example:
 
 See [pyserial](https://pyserial.readthedocs.io/en/latest/url_handlers.html) for additional formats supported.
 
-# Future Ideas
+## Future Ideas
 
 - Add programmatic override/enhancements to the base protocol where pure
   YAML configuration would not work fully. Of course, these overrides would have
   to be implemented in each language, but that surface area should be much smaller.
 
-# See Also
+## See Also
 
+- [avemu - A/V Equipment Emulator](https://github.com/rsnodgrass/avemu) (very useful for testing client libraries)
 - [Earlier McIntosh control in Home Assistant](https://community.home-assistant.io/t/need-help-using-rs232-to-control-a-receiver/95210/8)
 - https://drivers.control4.com/solr/drivers/browse?q=mcintosh
