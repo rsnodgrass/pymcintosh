@@ -1,4 +1,4 @@
-# Python RS232/IP Control of A/V Equipment
+# Python Control of A/V Equipment (RS232 / IP)
 
 ![beta_badge](https://img.shields.io/badge/maturity-Beta-yellow.png)
 [![PyPi](https://img.shields.io/pypi/v/pyavcontrol.svg)](https://pypi.python.org/pypi/pyavcontrol)
@@ -10,6 +10,8 @@
 
 Library created to control a wide variety of A/V equipment which expose text-based control 
 protocols over RS232, USB serial connections, and/or remote IP sockets. 
+
+# THIS IS IN DEVELOPMENT - DOES NOT WORK YET!!!
 
 ### Background
 
@@ -29,7 +31,6 @@ Two additional goals:
 2. Create a basic IP-based RS232 emulator which allows spinning up a basic emulator for each supported
 device model based purely on the YAML definition and unit tests against those definitions. This emulator can be used by client libraries in any language for testing. See [avemu]() for more details.
 
-# THIS IS IN DEVELOPMENT - DOES NOT WORK YET!!!
 
 ## Support
 

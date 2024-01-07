@@ -21,19 +21,17 @@
 # ```
 
 import logging
-import pprint as pp
-import re
 from typing import List
 
 import coloredlogs
 
-from pyavcontrol import DeviceClientDeprecate, DeviceModelLibrary
-from pyavcontrol.client import DeviceClient
+from pyavcontrol import DeviceClient, DeviceModelLibrary
 from pyavcontrol.core import (
     camel_case,
     extract_named_regex,
     get_fstring_vars,
     missing_keys_in_dict,
+    substitute_fstring_vars,
 )
 
 LOG = logging.getLogger(__name__)
@@ -71,7 +69,7 @@ class DynamicActions:
 
 
 def _get_client_method(
-    client: DeviceClientDeprecate,
+    client: DeviceClient,
     group_name: str,
     action_name: str,
     action_def: dict,
@@ -95,7 +93,7 @@ def _get_client_method(
         if missing_keys := missing_keys_in_dict(required_args, kwargs):
             err_msg = f"Call to {group_name}.{action_name} missing required keys {missing_keys}, skipping!"
             LOG.error(err_msg)
-            raise IllegalArgumentError(err_msg)
+            raise ValueError(err_msg)
 
         if cmd := action_def.get("cmd"):
             if fstring := cmd.get("fstring"):
@@ -194,26 +192,26 @@ def _document_action(action_name: str, action_def: dict):
 
 
 def create_activity_group_class(
-    client: DeviceClientDeprecate,
+    client: DeviceClient,
     model_name: str,
     group_name: str,
     actions_model: dict,
     cls_bases=None,
     event_loop=None,
 ):
-    # CamelCase the model and group to represent this class of methods
+    # CamelCase the model and actions group to represent this dynamic class of action methods
     cls_name = camel_case(f"{model_name} {group_name}")
 
     if not cls_bases:
-        cls_bases = (DynamicActions,)
+        cls_bases = DynamicActions
     cls_props = {}
 
     # dynamically add methods (and associated documentation) for each action
     for action_name, action_def in actions_model["actions"].items():
 
-        if action_name == False:
+        if not action_name:
             action_name = "off"
-        elif action_name == True:
+        else:
             action_name = "on"
 
         method = _get_client_method(
@@ -236,7 +234,7 @@ class GroupActions:
 
     def __init__(self, group: str, actions_def):
         self._group = group
-        self._actions_def = actions
+        self._actions_def = actions_def
 
         self._validator = ActionArgsValidator()
         self._parser = ActionParser()
@@ -267,7 +265,7 @@ class GroupActions:
         return self._parser.parse(output_model, api_response)
 
     def _get_operation_model(self, method):
-        operation_models = self.model_["operations"]
+        operation_models = self._model_def["operations"]
         if method not in operation_models:
             raise RuntimeError("Unknown operation: %s" % method)
         return operation_models[method]
@@ -304,30 +302,33 @@ class ModelInterface:
             # help(cls)
 
 
-def construct_dynamic_classes(model_id: str, url: str):
-    model_def = DeviceModelLibrary.create().load_model(model_id)
-    client = create_device_client(model_def, url)
-
+def add_dynamic_actions(client: DeviceClient, model_def: dict):
+    """
+    Add a property at the top level of a DeviceClient class that exposes a
+    group of actions that can be called. If none are specified in the
+    model definition, the client is returned unchanged.
+    """
     api = model_def.get("api", {})
     for group, group_def in api.items():
         LOG.debug(f"Adding property for group {group}")
-
-        g = create_activity_group_class(client, model, group, group_def)
+        g = create_activity_group_class(client, model_def, group, group_def)
         setattr(type(client), group, g)
 
     return client
 
 
-url = "socket://localhost:4999"
-for model in MODELS:
-    construct_dynamic_classes(model, url)
-
-
 def main():
-    model_id = "mcintosh_mx160"
+    url = "socket://localhost:4999"
 
     library = DeviceModelLibrary.create()
-    model_def = library.load_model(model_id)
+    print(library.supported_models())
+    return
+
+    supported_models = MODELS  # [ "mcintosh_mx160" ]
+    for model_id in supported_models:
+        model_def = DeviceModelLibrary.create().load_model(model_id)
+        client = DeviceClient.create(model_def, url)
+        return add_dynamic_actions(client, model_def)
 
     # FIXME: the above construct_dynamic_classes(model, url) needs to be in DeviceClient.create()
     client = DeviceClient.create(model_def, url)
@@ -341,11 +342,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-# FIXME: for Sphinx docs we may need to get more creative
-# see also https://stackoverflow.com/questions/44316745/how-to-autogenerate-python-documentation-using-sphinx-when-using-dynamic-classes
-#
-# one idea...generate pyavcontrol/clients/<model_name>/yaml_library.py  (or just model_name.py)
-#   which creates the class for the client + action groups
-# then Sphinx will be able to document as it actually loads the vclasses.
-3
