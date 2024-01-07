@@ -2,7 +2,6 @@
 Configuration and data structures around device models
 """
 import logging
-import fnmatch
 import os
 import pathlib
 from abc import ABC, abstractmethod
@@ -81,7 +80,9 @@ class DeviceModelLibrarySync(DeviceModelLibrary, ABC):
         self._supported_models = frozenset()
 
     def load_model(self, model_id: str) -> dict | None:
-        # FIXME: ensure name does not have any /
+        if "/" in model_id:
+            LOG.error(f"Invalid model '{model_id}': cannot contain / in identifier")
+
         model = None
         for path in self._dirs:
             model_file = f"{path}/{model_id}.yaml"
@@ -120,6 +121,10 @@ class DeviceModelLibrarySync(DeviceModelLibrary, ABC):
 class DeviceModelLibraryAsync(DeviceModelLibrary, ABC):
     """
     Asynchronous implementation of DeviceModelLibrary
+
+    NOTE: For simplicity in initial implementation, skipped writing the
+    asynchronous library and use the sync version for now. Especially
+    since loading all the model files should be a rare occurrence).
     """
 
     def __init__(self, library_dirs: List[str], event_loop):
@@ -127,10 +132,6 @@ class DeviceModelLibraryAsync(DeviceModelLibrary, ABC):
         self._dirs = library_dirs
         self._supported_models = set()
 
-        # For simplicity in initial implementation, skipped writing the
-        # asynchronous library and use the sync version for now. Especially
-        # since loading model files should be a rare occurrence.
-        #
         # FUTURE: consider implementing async method
         self._sync = DeviceModelLibrarySync(library_dirs)
 
@@ -145,39 +146,3 @@ class DeviceModelLibraryAsync(DeviceModelLibrary, ABC):
             None, self._sync.supported_models, self
         )
         return result
-
-
-class DeviceModelOld:
-    @classmethod
-    def apply_import_config(model: str, config: dict, previously_loaded=[]):
-        """
-        Recursively apply model configuration from importing other models.
-        """
-
-        # FIXME: this could accidentally create loops...detect and abort!
-        # load all the imported_models...and apply before copying over yaml
-        combined_config = {}
-        for imported_model in config.get("import_protocols", []):
-            # FIXME: but multiple imports of the same base.yaml should be allowed
-            # as long as there is not a loop!
-            if imported_model in previously_loaded:
-                LOG.error(
-                    f"Cyclical imports detected with {imported_model} for {model}; skipping!"
-                )
-                continue
-
-            imported = get_config(imported_model)
-            if not imported:
-                LOG.error(f"Failed to import {imported_model} for {model}; skipping!")
-                continue
-
-            # FIXME: since it is a deeply nested structure, we need to probably
-            # iterate through and modify to avoid blowing away complex nested
-            # dictionaries (or at least patch the final version with just the nested
-            # dicts).
-            combined_config = combined_config | imported
-
-        # FIXME: process all deletes for the outer layer before merging!!
-
-        merged_config = config | combined_config  # FIXME: order of precedence?
-        return merged_config

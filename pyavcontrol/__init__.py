@@ -1,4 +1,4 @@
-__version__ = "2023.12.25"
+__version__ = "2024.01.06"
 
-from .client import DeviceClientDeprecate
-from .library import DeviceModel, DeviceModelLibrary
+from .client import DeviceClient
+from .library import DeviceModelLibrary
