@@ -3,9 +3,6 @@ import logging
 LOG = logging.getLogger(__name__)
 
 
-# FIXME: implement sync and async
-
-
 class DeviceConnection:
     """
     Connection base class that defines communication APIs.
@@ -15,9 +12,15 @@ class DeviceConnection:
         LOG.error(f"Use factory method create(url, config_overrides")
         raise NotImplementedError()
 
+    def is_connected(self) -> bool:
+        """
+        :return: True if the connection is established
+        """
+        raise NotImplementedError()
+
     def send(self, data: bytes) -> None:
         """
-        Send data
+        Send data to the remote device
         """
         raise NotImplementedError()
 
@@ -30,12 +33,12 @@ class DeviceConnection:
 
 class Connection:
     @staticmethod
-    def create(url: str, config=None, event_loop=None) -> ConnectionBase | None:
+    def create(url: str, config=None, event_loop=None) -> DeviceConnection | None:
         """
         Create an Connection instance given details about the given device.
 
         If an event_loop argument is passed in this will return the
-        asynchronous implementation. By default the synchronous interface
+        asynchronous implementation. By default, the synchronous interface
         is returned.
 
         :param url: pyserial supported url for communication (e.g. '/dev/ttyUSB0' or 'socket://remote-host:7000/')
@@ -48,7 +51,6 @@ class Connection:
             config = {}
 
         LOG.debug(f"Connecting to {url}: %s", config)
-        return None
 
         if event_loop:
             return None
@@ -63,3 +65,4 @@ class Connection:
         # from sync import DeviceControllerSync
 
         # return DeviceControllerSync(model, url, connection_config)
+        return None

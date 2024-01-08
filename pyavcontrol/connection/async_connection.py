@@ -41,6 +41,32 @@ class AsyncDeviceConnection(DeviceConnection, ABC):
         # FIXME: ...implement!!!
         super().__init__()
 
+        self._url = url
+        self._protocol_def = (
+            config  # FIXME: aka model_def aka config aka...what is best name!
+        )
+        self._serial_config = serial_config
+
+        # FIXME: schedule a connection (or on first use connect!)
+        asyncio.create_task(self._connect())
+
+    async def _connect(self) -> None:
+        # FIXME: hacky...merge this old code into this class eventually...
+        self._legacy_connection = await async_get_rs232_connection(
+            url,
+            self._protocol_def,
+            serial_config,
+            protocol_config,
+            loop,
+        )
+
+    async def is_connected(self) -> bool:
+        return self._legacy_connection
+
+    async def send(self, data: bytes) -> None:
+        reply = False  # depends on action! FIXME
+        return await self._legacy_connection.send(self, data, wait_for_reply=reply)
+
 
 async def async_get_rs232_connection(
     serial_port: str, config: dict, serial_config: dict, protocol_config: dict, loop

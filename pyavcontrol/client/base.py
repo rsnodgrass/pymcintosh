@@ -76,7 +76,7 @@ class DeviceClient(ABC):
             "ascii"
         )  # FIXME: should be proper encoding
 
-    @abstractmethod
+    # @abstractmethod
     def describe(self) -> dict:
         return self._model_def
 
