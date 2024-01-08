@@ -16,6 +16,13 @@ class DeviceClientAsync(DeviceClient, ABC):
         self._connection_ref = None
         self._callback = None
 
+    @property
+    def is_async(self):
+        """
+        :return: True if this client impemenation is asynchronous (asyncio) versus synchronous.
+        """
+        return True
+
     @locked_coro
     async def send_raw(self, data: bytes) -> None:
         if LOG.isEnabledFor(logging.DEBUG):

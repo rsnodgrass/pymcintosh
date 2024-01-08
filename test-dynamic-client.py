@@ -21,6 +21,7 @@
 # ```
 
 import logging
+from dataclasses import dataclass
 from typing import List
 
 import coloredlogs
@@ -68,28 +69,20 @@ class DynamicActions:
         self._actions_def = actions_def
 
 
-def _get_client_method(
-    client: DeviceClient,
-    group_name: str,
-    action_name: str,
-    action_def: dict,
-    event_loop=None,
+def _create_action_method(
+    client: DeviceClient, group_name: str, action_name: str, action_def: dict
 ):
+    """
+    Creates a dynamic method that makes calls against the provided client using
+    the command format for the given action definition.
+
+    This returns an asynchronous method if an event_loop is provided, otherwise
+    a synchronous method is returned by default. Calling code knows whether they
+    instantiated a synchronous or asynchronous client.
+    """
     required_args = _get_args_for_command(action_def)
 
-    def _prepare_cmd(**kwargs):
-        if cmd := action_def.get("cmd"):
-            if fstring := cmd.get("fstring"):
-                return substitute_fstring_vars(fstring, kwargs)
-        return None
-
-    def _activity_call_sync(self, **kwargs):
-        """
-        Synchronous version of making a client call
-        """
-        #    def _activity_call(self, *args, **kwargs):
-        required_args = _get_args_for_command(action_def)
-
+    def _prepare_request(**kwargs):
         if missing_keys := missing_keys_in_dict(required_args, kwargs):
             err_msg = f"Call to {group_name}.{action_name} missing required keys {missing_keys}, skipping!"
             LOG.error(err_msg)
@@ -97,8 +90,16 @@ def _get_client_method(
 
         if cmd := action_def.get("cmd"):
             if fstring := cmd.get("fstring"):
-                request = fstring.format(**kwargs).encode("ascii")
-                return client.send_raw(request)
+                request = substitute_fstring_vars(fstring, kwargs)
+                return request.encode("ascii")
+        return None
+
+    def _activity_call_sync(**kwargs):
+        """
+        Synchronous version of making a client call
+        """
+        if request := _prepare_request(**kwargs):
+            return client.send_raw(request)
         LOG.warning(f"Failed to make request for {group_name}.{action_name}")
 
     async def _activity_call_async(self, **kwargs):
@@ -107,20 +108,11 @@ def _get_client_method(
         is provided. Calling code knows whether they instantiated a synchronous
         or asynchronous client.
         """
-        required_args = _get_command_args(action_def)
-
-        if missing_keys := missing_keys_in_dict(required_args, kwargs):
-            err_msg = f"Call to {group_name}.{action_name} missing required keys {missing_keys}, skipping!"
-            LOG.error(err_msg)
-            raise IllegalArgumentError(err_msg)
-
-        if cmd := action_def.get("cmd"):
-            if fstring := cmd.get("fstring"):
-                request = fstring.format(**kwargs).encode("ascii")
-                return await client.send_raw(request)
+        if request := _prepare_request(**kwargs):
+            return await client.send_raw(request)
         LOG.warning(f"Failed to make request for {group_name}.{action_name}")
 
-    if event_loop:
+    if client.is_async:
         return _activity_call_async
     else:
         return _activity_call_sync
@@ -168,22 +160,39 @@ def _generate_docs_for_action(action_name: str, action_def: dict):
     """
     doc = action_def.get("description", "")
 
-    # append details on all the command arguments
+    # append details for all command arguments
     if args := _get_args_for_command(action_def):
         args_docs = action_def.get("cmd", {}).get("docs", {})
         for arg in args:
-            arg_description = args_docs.get(arg, "see manufacturer's protocol manual")
-            doc += f"\n:param {arg}: {arg_description}"
+            arg_doc = args_docs.get(arg, "see protocol manual from manufacturer")
+            doc += f"\n:param {arg}: {arg_doc}"
 
-    # append details of any response message for this action
+    # append details if a response message is defined for this action
     if v := _get_vars_for_message(action_def):
+        msg_docs = action_def.get("msg", {}).get("docs", {})
         doc += "\n:return: {"
         for var in v:
-            doc += f"\n  {var}: ..., "
+            var_doc = msg_docs.get(arg, "see protocol manual from manufacturer")
+            doc += f"\n   {var}: {var_doc},"
         doc += "\n}"
 
     # FIXME: may need type info from the overall api variables section
     return doc
+
+
+@dataclass(frozen=True)
+class ClientAPIGroup:
+    client: DeviceClient
+    model_id: str
+    group_name: str
+    actions_model: dict
+
+
+@dataclass(frozen=True)
+class ClientAPIAction:
+    group: ClientAPIGroup
+    name: str
+    definition: dict
 
 
 def create_activity_group_class(
@@ -192,7 +201,6 @@ def create_activity_group_class(
     group_name: str,
     actions_model: dict,
     cls_bases=None,
-    event_loop=None,
 ):
     # CamelCase the model and actions group to represent this dynamic class of action methods
     cls_name = camel_case(f"{model_id} {group_name}")
@@ -204,17 +212,13 @@ def create_activity_group_class(
     # dynamically add methods (and associated documentation) for each action
     for action_name, action_def in actions_model["actions"].items():
         # handle yamlfmt/yamlfix rewriting of "on" and "off" as YAML keys into bools
-        if type(action_name) == bool:
-            if not action_name:
-                action_name = "off"
-            else:
-                action_name = "on"
+        if type(action_name) is bool:
+            action_name = "on" if action_name else "off"
 
-        method = _get_client_method(
-            client, group_name, action_name, action_def, event_loop
-        )
-
+        # ClientAPIAction(group=group, name=action_name, definition=action_def)
+        method = _create_action_method(client, group_name, action_name, action_def)
         print(f"{group_name}.{action_name}")
+
         # FIXME: danger will robinson...potential exploits (need to explore how to filter out)
         method.__name__ = action_name  # FIXME: what about __qualname__
         method.__doc__ = _generate_docs_for_action(action_name, action_def)

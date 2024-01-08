@@ -26,6 +26,13 @@ class DeviceClient(ABC):
         self._serial_config = serial_config
         self._callbacks = []
 
+    @property
+    def is_async(self):
+        """
+        :return: True if this client impemenation is asynchronous (asyncio) versus synchronous.
+        """
+        return False
+
     @abstractmethod
     def send_command(self, group: str, action: str, **kwargs) -> None:
         """
