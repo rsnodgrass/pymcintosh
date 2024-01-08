@@ -14,7 +14,7 @@ documentation to be generated.
 
 FIXME: We may want to move this to tools/ or docs/
 """
-from . import DeviceModelLibrary
+from . import DeviceClient, DeviceModelLibrary
 
 MODELS = [
     "hdfury_vrroom",
@@ -26,7 +26,13 @@ MODELS = [
 ]
 
 MODEL_DEFS = []
+CLIENTS = []
 
 for model_id in MODELS:
-    model = DeviceModelLibrary.create().load_model(model_id)
-    MODEL_DEFS.append(model)
+    model_def = DeviceModelLibrary.create().load_model(model_id)
+    MODEL_DEFS.append(model_def)
+
+    url = "/dev/null"
+
+    client = DeviceClient.create(model_def, url)
+    CLIENTS.append(client)

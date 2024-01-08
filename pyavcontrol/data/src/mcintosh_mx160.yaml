@@ -166,6 +166,8 @@ api:
         description: Set verbosity level of active interface
         cmd:
           fstring: '!VERB({verbosity_level})'
+          docs:
+            verbosity_level: 0 (min), 1 (normal), or 2 (max)
       min:
         description: Set verbosity level to minimal
         cmd:
@@ -283,6 +285,8 @@ api:
         description: Number button
         cmd:
           fstring: '!NUM({num})'
+          docs:
+            num: single digit integer (0-9)
       num0:
         description: Number button 0
         cmd:
@@ -360,6 +364,8 @@ api:
         description: Set display brightness level
         cmd:
           fstring: '!DIM({dim_level})'
+          docs:
+            dim_level: 0 (Full 100%), 1 (Bright 75%), 2 (Low 50%), or 3 (Dark 25%)
       full:
         description: Set display brightness Full (100%)
         cmd:
@@ -400,6 +406,8 @@ api:
         cmd:
           fstring: '!LIPSYNC({lipsync})'
           regex: '!LIPSYNC\((?P<lipsync>\d+)\)'
+          docs:
+            lipsync: "lipsync value"
       get:
         description: Get the lipsync value
         cmd:
@@ -564,9 +572,11 @@ api:
         cmd:
           fstring: '!RPFOC?'
       set:
-        description: Set RoomPerfect position (0=bypass, 1-8=focus1-8, 9=global)
+        description: Set RoomPerfect position
         cmd:
           fstring: '!RPFOC({roomperfect_position})'
+          docs:
+            roomperfect_position: RoomPerfect position (0=bypass, 1-8=focus1-8, 9=global)
       next:
         description: Next Roomperfect position button
         cmd:
@@ -602,6 +612,8 @@ api:
         description: Set voicing
         cmd:
           fstring: '!RPVOI({roomperfect_voicing})'
+        docs:
+          roomperfect_voicing: RoomPerfect voicing value
       next:
         description: Next voicing button
         cmd:
@@ -637,10 +649,14 @@ api:
         description: Select source
         cmd:
           fstring: '!SRC({source})'
+          docs:
+            source: Source to select (integer)
       info:
         description: Get info for a specific source
         cmd:
           fstring: '!SRC({source})?'
+          docs:
+            source: the integer identifying the source input
         msg:
           regex: '!SRC\((?P<source>\d+)\)\s*"(?P<name>.+)"'
           tests:

@@ -162,23 +162,18 @@ def _get_args_for_command(action_def: dict) -> List[str]:
     return args
 
 
-# FIXME: why do I need this func now?
-def _parse_response_args(action_name: str, action_def: dict) -> List[str]:
-    if msg := action_def.get("msg"):
-        return extract_named_regex(msg).keys()
-    return []
-
-
-def _document_action(action_name: str, action_def: dict):
+def _generate_docs_for_action(action_name: str, action_def: dict):
     """
-    Return formatted Sphinx documentation for the action
+    Return formatted Sphinx documentation for a given action definition
     """
     doc = action_def.get("description", "")
 
     # append details on all the command arguments
     if args := _get_args_for_command(action_def):
+        args_docs = action_def.get("cmd", {}).get("docs", {})
         for arg in args:
-            doc += f"\n:param {arg}: see manual for device"
+            arg_description = args_docs.get(arg, "see manufacturer's protocol manual")
+            doc += f"\n:param {arg}: {arg_description}"
 
     # append details of any response message for this action
     if v := _get_vars_for_message(action_def):
@@ -193,40 +188,42 @@ def _document_action(action_name: str, action_def: dict):
 
 def create_activity_group_class(
     client: DeviceClient,
-    model_name: str,
+    model_id: str,
     group_name: str,
     actions_model: dict,
     cls_bases=None,
     event_loop=None,
 ):
     # CamelCase the model and actions group to represent this dynamic class of action methods
-    cls_name = camel_case(f"{model_name} {group_name}")
+    cls_name = camel_case(f"{model_id} {group_name}")
 
     if not cls_bases:
-        cls_bases = DynamicActions
+        cls_bases = (DynamicActions,)
     cls_props = {}
 
     # dynamically add methods (and associated documentation) for each action
     for action_name, action_def in actions_model["actions"].items():
-
-        if not action_name:
-            action_name = "off"
-        else:
-            action_name = "on"
+        # handle yamlfmt/yamlfix rewriting of "on" and "off" as YAML keys into bools
+        if type(action_name) == bool:
+            if not action_name:
+                action_name = "off"
+            else:
+                action_name = "on"
 
         method = _get_client_method(
             client, group_name, action_name, action_def, event_loop
         )
-        print(group_name)
-        print(action_name)
-        # FIXME: danger will robinson...potential exploits
-        method.__name__ = action_name
-        method.__doc__ = _document_action(action_name, action_def)
+
+        print(f"{group_name}.{action_name}")
+        # FIXME: danger will robinson...potential exploits (need to explore how to filter out)
+        method.__name__ = action_name  # FIXME: what about __qualname__
+        method.__doc__ = _generate_docs_for_action(action_name, action_def)
+
         cls_props[action_name] = method
 
-    # return the new dynamic class that represents this device's group of actions
+    # return the new dynamic class that contains the above actions
     cls = type(cls_name, cls_bases, cls_props)
-    return cls(model_name, actions_model["actions"])
+    return cls(model_id, actions_model["actions"])
 
 
 class GroupActions:
@@ -302,17 +299,31 @@ class ModelInterface:
             # help(cls)
 
 
-def add_dynamic_actions(client: DeviceClient, model_def: dict):
+# Process:
+#  1. create mixin class
+#  2. inject the mixin to the DeviceClient
+def inject_client_activity_groups(model_id: str, client: DeviceClient, model_def: dict):
     """
     Add a property at the top level of a DeviceClient class that exposes a
     group of actions that can be called. If none are specified in the
     model definition, the client is returned unchanged.
     """
     api = model_def.get("api", {})
-    for group, group_def in api.items():
-        LOG.debug(f"Adding property for group {group}")
-        g = create_activity_group_class(client, model_def, group, group_def)
-        setattr(type(client), group, g)
+
+    for group_name, group_actions in api.items():
+        LOG.debug(f"Adding property for group {group_name}")
+        group_class = create_activity_group_class(
+            client, model_id, group_name, group_actions
+        )
+        setattr(type(client), group_name, group_class)
+
+        help(group_class)  # FIXME
+
+    # FIXME: after injection do we change the TYPE of the client to the SPECIFIC model E.g. McIntoshMx160Client
+    class_name = camel_case(f"{model_id} Client")
+    LOG.debug(f"Created {class_name} client with injected activities")
+    #    client.__name__ = class_name
+    #    client.__qualname__ = f"pyavcontrol.{class_name}"
 
     return client
 
@@ -328,7 +339,8 @@ def main():
     for model_id in supported_models:
         model_def = DeviceModelLibrary.create().load_model(model_id)
         client = DeviceClient.create(model_def, url)
-        return add_dynamic_actions(client, model_def)
+        # FIXME: the type of the returned DeviceClient should be the SPECIFIC model E.g. McIntoshMx160Client
+        return inject_client_activity_groups(model_id, client, model_def)
 
     # FIXME: the above construct_dynamic_classes(model, url) needs to be in DeviceClient.create()
     client = DeviceClient.create(model_def, url)
@@ -342,3 +354,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+22
