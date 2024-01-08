@@ -19,12 +19,12 @@ class DeviceClient(ABC):
     to control a device.
     """
 
-    def __init__(self, model_def: dict, url: str, serial_config: dict):
+    def __init__(self, model_def: dict, url: str, connection_config: dict):
         super().__init__()
         self._protocol_def = model_def
         self._url = url
-        self._serial_config = serial_config
-        self._callbacks = []
+        self._connection_config = connection_config
+        self._callback = None
 
     @property
     def is_async(self):
@@ -82,7 +82,11 @@ class DeviceClient(ABC):
 
     @classmethod
     def create(
-        cls, model_def: dict, url: str, serial_config_overrides=None, event_loop=None
+        cls,
+        model_def: dict,
+        url: str,
+        connection_config_overrides=None,
+        event_loop=None,
     ) -> DeviceClient:
         """
         Creates a DeviceClient instance using the standard pyserial connection
@@ -101,7 +105,7 @@ class DeviceClient(ABC):
 
         :param model_def: dict, dictionary that describes the model
         :param url: pyserial supported url for communication (e.g. '/dev/ttyUSB0' or 'socket://remote-host:4999/')
-        :param serial_config_overrides: dictionary of serial port configuration overrides (e.g. baudrate)
+        :param connection_config_overrides: dictionary of serial port configuration overrides (e.g. baudrate)
         :param event_loop: optionally to get an interface that can be used asynchronously, pass in an event loop
 
         :return an instance of DeviceControllerBase
@@ -112,19 +116,21 @@ class DeviceClient(ABC):
         # caller can override the default serial port config for a given type
         # of device since the user could have changed settings on their
         # physical device (e.g. increasing the baud rate)
-        serial_config = model_def.get("communication", {}).get(CONF_SERIAL_CONFIG, {})
-        if serial_config_overrides:
+        connection_config = model_def.get("communication", {}).get(
+            CONF_SERIAL_CONFIG, {}
+        )
+        if connection_config_overrides:
             LOG.info(
-                f"Overriding {model_id} serial config: {serial_config_overrides}; url={url}"
+                f"Overriding {model_id} serial config: {connection_config_overrides}; url={url}"
             )
-            serial_config.update(serial_config_overrides)
+            connection_config.update(connection_config_overrides)
 
         if event_loop:
             # lazy import the async client to avoid loading both sync/async
             from .async_client import DeviceClientAsync
 
-            return DeviceClientAsync(model_def, url, serial_config, event_loop)
+            return DeviceClientAsync(model_def, url, connection_config, event_loop)
         else:
             from .sync_client import DeviceClientSync
 
-            return DeviceClientSync(model_def, url, serial_config)
+            return DeviceClientSync(model_def, url, connection_config)

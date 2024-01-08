@@ -33,7 +33,9 @@ class DeviceConnection:
 
 class Connection:
     @staticmethod
-    def create(url: str, config=None, event_loop=None) -> DeviceConnection | None:
+    def create(
+        url: str, connection_config=None, event_loop=None
+    ) -> DeviceConnection | None:
         """
         Create an Connection instance given details about the given device.
 
@@ -42,27 +44,27 @@ class Connection:
         is returned.
 
         :param url: pyserial supported url for communication (e.g. '/dev/ttyUSB0' or 'socket://remote-host:7000/')
-        :param config: optional serial connection configuration
-        :param event_loop: to get an interface that can be used asynchronously, pass in an event loop
+        :param connection_config: pyserial connection configuration (optional)
+        :param event_loop: pass in an event loop to get an interface that can be used asynchronously (optional)
 
-        :return an instance of ConnectionBase
+        :return an instance of DeviceConnection
         """
-        if config is None:
-            config = {}
+        if not connection_config:
+            connection_config = {}
 
-        LOG.debug(f"Connecting to {url}: %s", config)
+        # FIXME: Types of config needed:
+        #  - connection (pyserial style)...must be passed in since it is determined based on connection type (ip, rs232, etc)
+        #
+        #  - timeouts/etc (from ???)
+        #  - encoding (from protocol def)
+
+        LOG.debug(f"Connecting to {url}: %s", connection_config)
 
         if event_loop:
-            return None
-            # lazy import the async controller to avoid loading both sync/async
-        #    from .async_connection import DeviceControllerAsync
+            from pyavcontrol.connection.async_connection import AsyncDeviceConnection
 
-        #    return DeviceControllerAsync(
-        #        model, url, connection_config, event_loop
-        #    )
+            return AsyncDeviceConnection(url, connection_config, event_loop)
+        else:
+            from pyavcontrol.connection.async_connection import SyncDeviceConnection
 
-        # lazy import the sync controller to avoid loading both sync/async
-        # from sync import DeviceControllerSync
-
-        # return DeviceControllerSync(model, url, connection_config)
-        return None
+            return SyncDeviceConnection(url, connection_config, event_loop)

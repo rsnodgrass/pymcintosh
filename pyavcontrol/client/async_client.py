@@ -57,14 +57,14 @@ class DeviceClientAsync(DeviceClient, ABC):
         if not self._connection_ref:
             LOG.debug(
                 f"Connecting to {self._model}/{self._protocol_name} @ {self._url}: %s %s",
-                self._serial_config,
+                self._connection_config,
                 self._protocol_def,
             )
 
             self._connection_ref = await async_get_rs232_connection(
                 self._url,
                 self._model_def,
-                self._serial_config,
+                self._connection_config,
                 self._protocol_def,
                 self._loop,
             )

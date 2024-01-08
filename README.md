@@ -9,9 +9,7 @@
 [![Buy Me A Coffee](https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg)](https://buymeacoffee.com/DYks67r)
 
 Library created to control a wide variety of A/V equipment which expose text-based control 
-protocols over RS232, USB serial connections, and/or remote IP sockets. 
-
-# THIS IS IN DEVELOPMENT - DOES NOT WORK YET!!!
+protocols over RS232, USB serial connections, and/or remote IP sockets.
 
 ### Background
 
@@ -102,18 +100,18 @@ Async example:
 ```python
     loop = asyncio.get_event_loop()
 
-    library = DeviceModelLibrary.create(event_loop=loop)
-    model_definition = library.load_model("mcintosh_mx160")
-    
-    client = DeviceClient.create(
-        model_definition, 
-        url,
-        serial_config_overrides=config,
-        event_loop=loop
-    )
-    
-    await client.power.on()
-    await client.volume.set(50)
+library = DeviceModelLibrary.create(event_loop=loop)
+model_definition = library.load_model("mcintosh_mx160")
+
+client = DeviceClient.create(
+    model_definition,
+    url,
+    connection_config_overrides=config,
+    event_loop=loop
+)
+
+await client.power.on()
+await client.volume.set(50)
 ```
 
 ### Connection URL

@@ -31,21 +31,16 @@ def locked_coro(coro):
 
 
 class AsyncDeviceConnection(DeviceConnection, ABC):
-    def __init__(
-        self, url: str, config: dict, serial_config: dict, protocol_config: dict, loop
-    ):
+    def __init__(self, url: str, connection_config: dict, loop):
         """
         :param url: pyserial compatible url
+        :param connection_config: pyserial connection config (plus additional attributes timeout/encoding)
         """
-        # FIXME: ...have it async created lazily
-        # FIXME: ...implement!!!
         super().__init__()
 
         self._url = url
-        self._protocol_def = (
-            config  # FIXME: aka model_def aka config aka...what is best name!
-        )
-        self._serial_config = serial_config
+        self._connection_config = connection_config
+        self._event_loop = loop
 
         # FIXME: schedule a connection (or on first use connect!)
         asyncio.create_task(self._connect())
@@ -53,11 +48,11 @@ class AsyncDeviceConnection(DeviceConnection, ABC):
     async def _connect(self) -> None:
         # FIXME: hacky...merge this old code into this class eventually...
         self._legacy_connection = await async_get_rs232_connection(
-            url,
-            self._protocol_def,
-            serial_config,
-            protocol_config,
-            loop,
+            self._url,
+            self._connection_config,  # self._config,
+            self._connection_config,
+            self._connection_config,  # self._protocol_def,
+            self._event_loop,
         )
 
     async def is_connected(self) -> bool:
@@ -69,7 +64,7 @@ class AsyncDeviceConnection(DeviceConnection, ABC):
 
 
 async def async_get_rs232_connection(
-    serial_port: str, config: dict, serial_config: dict, protocol_config: dict, loop
+    serial_port: str, config: dict, connection_config: dict, protocol_def: dict, loop
 ):
     # ensure only a single, ordered command is sent to RS232 at a time (non-reentrant lock)
     def locked_method(method):
@@ -96,16 +91,18 @@ async def async_get_rs232_connection(
         return wrapper
 
     class RS232ControlProtocol(asyncio.Protocol):
-        def __init__(self, serial_port, config, serial_config, protocol_config, loop):
+        def __init__(
+            self, serial_port, config, connection_config, protocol_config, loop
+        ):
             super().__init__()
 
             self._serial_port = serial_port
             self._config = config
-            self._serial_config = serial_config
+            self._connection_config = connection_config
             self._loop = loop
 
             # FIXME: this should actually be on the client layer and not connection itself
-            self._encoding = protocol_config.get("encoding", "ascii")
+            self._encoding = self._connection_config.get("encoding", DEFAULT_ENCODING)
 
             self._response_eol = protocol_config[CONF_RESPONSE_EOL].encode(
                 self._encoding
@@ -113,7 +110,7 @@ async def async_get_rs232_connection(
             self._response_callback = None
 
             self._last_send = time.time() - 1
-            self._timeout = self._config.get("timeout", DEFAULT_TIMEOUT)
+            self._timeout = self._connection_config.get("timeout", DEFAULT_TIMEOUT)
             LOG.info(f"Timeout set to {self._timeout}")
 
             self._transport = None
@@ -228,11 +225,11 @@ async def async_get_rs232_connection(
                 raise
 
     factory = functools.partial(
-        RS232ControlProtocol, serial_port, config, serial_config, protocol_config, loop
+        RS232ControlProtocol, serial_port, config, connection_config, protocol_def, loop
     )
 
-    LOG.info(f"Connecting to {serial_port}: {serial_config}")
+    LOG.info(f"Connecting to {serial_port}: {connection_config}")
     _, protocol = await create_serial_connection(
-        loop, factory, serial_port, **serial_config
+        loop, factory, serial_port, **connection_config
     )
     return protocol
