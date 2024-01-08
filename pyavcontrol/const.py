@@ -13,6 +13,7 @@ DEFAULT_MODEL_LIBRARIES = [
 ]  # FIXME: remove this later
 
 DEFAULT_ENCODING = "ascii"
+DEFAULT_EOL = "\r\n"
 
 CONF_COMMAND_EOL = "command_eol"
 CONF_RESPONSE_EOL = "response_eol"

@@ -67,4 +67,4 @@ class Connection:
         else:
             from pyavcontrol.connection.async_connection import SyncDeviceConnection
 
-            return SyncDeviceConnection(url, connection_config, event_loop)
+            return SyncDeviceConnection(url, connection_config)
