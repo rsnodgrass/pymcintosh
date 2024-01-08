@@ -144,7 +144,7 @@ def _get_args_for_command(action_def: dict) -> List[str]:
     if cmd := action_def.get("cmd"):
         if regex := cmd.get("regex"):
             named_regex = extract_named_regex(regex)
-            LOG.warning(f"Command regex found BUT IGNORING! {named_regex}")
+            LOG.info(f"Command regex found BUT IGNORING! {named_regex}")
 
         fstring = cmd.get("fstring")
         if args := get_fstring_vars(fstring):
@@ -230,83 +230,10 @@ def create_activity_group_class(
     return cls(model_id, actions_model["actions"])
 
 
-class GroupActions:
-    """ """
-
-    def __init__(self, group: str, actions_def):
-        self._group = group
-        self._actions_def = actions_def
-
-        self._validator = ActionArgsValidator()
-        self._parser = ActionParser()
-
-        # call superclass constructor (if any)
-
-        for action, action_def in actions_def.items():
-            if cmd := action_def.get("msg"):
-                print(cmd)
-
-    def make_method_call(self, method, *args, **kwargs):
-        """
-        Call the action on the remote device
-        """
-        validated_params = self._validate_params(method, *args, **kwargs)
-        api_response = self.make_api_call(method, validated_Params)
-        return self._parse_api_response(method, api_respons)
-
-    def _validate_params(self, method, *args, **kwargs):
-        """
-        Validate that the required params for this method have been passed in
-        """
-        input_model = self.get_operation_model(method)["input"]
-        return self._validator.validate(input_model, *args, **kwargs)
-
-    def _parse_response(self, method, api_repsonse):
-        output_model = self.get_operational_model(method)["output"]
-        return self._parser.parse(output_model, api_response)
-
-    def _get_operation_model(self, method):
-        operation_models = self._model_def["operations"]
-        if method not in operation_models:
-            raise RuntimeError("Unknown operation: %s" % method)
-        return operation_models[method]
-
-
-class ModelInterface:
-    """
-    Dynamic class generation to represent a device model based on its API
-    definition for RS232/IP communication.
-    """
-
-    def __init__(self, device):
-        variable = "test"
-
-        def _f(captured_variable=variable):
-            print(captured_variable)
-
-        # get the API model for the device
-        api = device.config.get("api", {})
-        for group, group_def in api.items():
-            LOG.debug(f"Adding property for group {group}")
-            property_name = group
-            setattr(type(self), property_name, _f)
-
-            # create class that handles all the actions for the API
-            actions_def = group_def.get("actions", {})
-            actions = GroupActions(group, actions_def)
-
-            # set a property of this class that references the object containing all
-            # the dynamic methods for each action
-            setattr(type(self), property_name, _f)
-
-            # FIXME: display help for the new class
-            # help(cls)
-
-
 # Process:
 #  1. create mixin class
 #  2. inject the mixin to the DeviceClient
-def inject_client_activity_groups(model_id: str, client: DeviceClient, model_def: dict):
+def inject_client_api(client: DeviceClient, model_id: str, model_def: dict):
     """
     Add a property at the top level of a DeviceClient class that exposes a
     group of actions that can be called. If none are specified in the
@@ -336,20 +263,22 @@ def main():
     url = "socket://localhost:4999"
 
     library = DeviceModelLibrary.create()
-    print(library.supported_models())
-    return
+    # supported_models = library.supported_models()
+    supported_models = ["mcintosh_mx160"]
 
-    supported_models = MODELS  # [ "mcintosh_mx160" ]
     for model_id in supported_models:
-        model_def = DeviceModelLibrary.create().load_model(model_id)
+        model_def = library.load_model(model_id)
+
         client = DeviceClient.create(model_def, url)
+        print(type(client))
+
         # FIXME: the type of the returned DeviceClient should be the SPECIFIC model E.g. McIntoshMx160Client
-        return inject_client_activity_groups(model_id, client, model_def)
+        client = inject_client_api(client, model_id, model_def)
+        print(type(client))
 
-    # FIXME: the above construct_dynamic_classes(model, url) needs to be in DeviceClient.create()
-    client = DeviceClient.create(model_def, url)
+        help(client)
+        return
 
-    help(client)
     # client.source.get()
     # client.source.next()
     # client.source.set()
@@ -358,4 +287,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-22
