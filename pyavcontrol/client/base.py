@@ -21,7 +21,7 @@ class DeviceClient(ABC):
 
     def __init__(self, model_def: dict, url: str, serial_config: dict):
         super().__init__()
-        self._model_def = model_def
+        self._protocol_def = model_def
         self._url = url
         self._serial_config = serial_config
         self._callbacks = []
@@ -78,7 +78,7 @@ class DeviceClient(ABC):
 
     # @abstractmethod
     def describe(self) -> dict:
-        return self._model_def
+        return self._protocol_def
 
     @classmethod
     def create(
