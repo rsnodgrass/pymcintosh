@@ -38,25 +38,6 @@ from pyavcontrol.core import (
 LOG = logging.getLogger(__name__)
 coloredlogs.install(level="DEBUG")
 
-MODELS = [
-    "hdfury_vrroom",
-    "trinnov_altitude32",
-    "lyngdorf_cd2",
-    "mcintosh_mx160",
-    "xantech_mx88_audio",
-    "lyngdorf_tdai3400",
-]
-
-
-class ActionArgsValidator:
-    def __init__(self):
-        return
-
-
-class ActionParser:
-    def __init__(self):
-        return
-
 
 class DynamicActions:
     """
@@ -120,9 +101,7 @@ def _create_action_method(
 
 def _get_vars_for_message(action_def: dict) -> dict:
     """
-    Parse out all variables that would be returned in the msg response
-    for this action.
-
+    Parse out all variables returned in the msg response for this action.
     :return: list of variables for the message
     """
     if msg := action_def.get("msg"):
@@ -136,7 +115,6 @@ def _get_args_for_command(action_def: dict) -> List[str]:
     """
     Parse the command definition into an array of arguments for the action, with a dictionary
     describing additional type information about each argument.
-
     :return: list of arguments for a given command
     """
     args = []
