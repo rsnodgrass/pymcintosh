@@ -42,6 +42,8 @@ class AsyncDeviceConnection(DeviceConnection, ABC):
         self._connection_config = connection_config
         self._event_loop = loop
 
+        self._encoding = connection_config.get("encoding", DEFAULT_ENCODING)
+
         # FIXME: schedule a connection (or on first use connect!)
         asyncio.create_task(self._connect())
 

@@ -25,11 +25,18 @@ class DeviceClient(ABC):
         self._url = url
         self._connection_config = connection_config
         self._callback = None
+        self._encoding = DEFAULT_ENCODING
+
+    def encoding(self) -> str:
+        """
+        :return: the bytes encoding format for requests/responses
+        """
+        return self._encoding
 
     @property
     def is_async(self):
         """
-        :return: True if this client impemenation is asynchronous (asyncio) versus synchronous.
+        :return: True if this client implemenation is asynchronous (asyncio) versus synchronous.
         """
         return False
 

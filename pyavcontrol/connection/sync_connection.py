@@ -52,6 +52,9 @@ class SyncDeviceConnection(DeviceConnection, ABC):
 
         self._port = serial.serial_for_url(self._url, **self._connection_config)
 
+    def encoding(self) -> str:
+        return self._encoding
+
     def send(self, data: bytes) -> None:
         """
         :param data: request that is sent to the device

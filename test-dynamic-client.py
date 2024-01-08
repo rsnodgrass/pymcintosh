@@ -72,10 +72,10 @@ def _create_action_method(
         if cmd := action_def.get("cmd"):
             if fstring := cmd.get("fstring"):
                 request = substitute_fstring_vars(fstring, kwargs)
-                return request.encode("ascii")
+                return request.encode(client.encoding())
         return None
 
-    def _activity_call_sync(**kwargs):
+    def _activity_call_sync(**kwargs) -> None:
         """
         Synchronous version of making a client call
         """
@@ -83,7 +83,7 @@ def _create_action_method(
             return client.send_raw(request)
         LOG.warning(f"Failed to make request for {group_name}.{action_name}")
 
-    async def _activity_call_async(self, **kwargs):
+    async def _activity_call_async(self, **kwargs) -> None:
         """
         Asynchronous version of making a client call is used when an event_loop
         is provided. Calling code knows whether they instantiated a synchronous
@@ -150,7 +150,7 @@ def _generate_docs_for_action(action_name: str, action_def: dict):
         msg_docs = action_def.get("msg", {}).get("docs", {})
         doc += "\n:return: {"
         for var in v:
-            var_doc = msg_docs.get(arg, "see protocol manual from manufacturer")
+            var_doc = msg_docs.get(var, "see protocol manual from manufacturer")
             doc += f"\n   {var}: {var_doc},"
         doc += "\n}"
 
@@ -171,6 +171,12 @@ class ClientAPIAction:
     group: ClientAPIGroup
     name: str
     definition: dict
+
+
+def create_dynamic_client_class(client: DeviceClient) -> DeviceClient:
+    # create subclass of DeviceConnection?
+    # can you change the type of a class on the fly??? E.g. MixIn after the fact?
+    return client
 
 
 def create_activity_group_class(
@@ -226,13 +232,11 @@ def inject_client_api(client: DeviceClient, model_id: str, model_def: dict):
         )
         setattr(type(client), group_name, group_class)
 
-        help(group_class)  # FIXME
-
     # FIXME: after injection do we change the TYPE of the client to the SPECIFIC model E.g. McIntoshMx160Client
     class_name = camel_case(f"{model_id} Client")
-    LOG.debug(f"Created {class_name} client with injected activities")
-    #    client.__name__ = class_name
-    #    client.__qualname__ = f"pyavcontrol.{class_name}"
+    LOG.debug(f"Created {class_name} client with injected {model_id} protocol APIs")
+    client.__name__ = class_name
+    client.__qualname__ = f"pyavcontrol.client.{class_name}"
 
     return client
 
@@ -251,10 +255,11 @@ def main():
         print(type(client))
 
         # FIXME: the type of the returned DeviceClient should be the SPECIFIC model E.g. McIntoshMx160Client
-        client = inject_client_api(client, model_id, model_def)
+        new_client = inject_client_api(client, model_id, model_def)
         print(type(client))
+        print(type(new_client))
 
-        help(client)
+        #        help(client)
         return
 
     # client.source.get()

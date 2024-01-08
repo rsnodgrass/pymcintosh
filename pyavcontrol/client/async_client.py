@@ -15,6 +15,7 @@ class DeviceClientAsync(DeviceClient, ABC):
         self._loop = loop
         self._connection_ref = None
         self._callback = None
+        self._encoding = serial_config.get("encoding", DEFAULT_ENCODING)
 
     @property
     def is_async(self):

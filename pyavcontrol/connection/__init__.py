@@ -1,5 +1,7 @@
 import logging
 
+from pyavcontrol.const import DEFAULT_ENCODING
+
 LOG = logging.getLogger(__name__)
 
 

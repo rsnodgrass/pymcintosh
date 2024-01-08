@@ -16,6 +16,7 @@ class DeviceClientSync(DeviceClient, ABC):
         DeviceClient.__init__(self, model_def, url, serial_config)
         self._connection = serial.serial_for_url(url, **serial_config)
         self._callback = None
+        self._encoding = serial_config.get("encoding", DEFAULT_ENCODING)
 
     @synchronized
     def send_raw(self, data: bytes) -> None:
